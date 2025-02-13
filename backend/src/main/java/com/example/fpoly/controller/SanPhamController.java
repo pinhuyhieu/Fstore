@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -31,6 +32,15 @@ public class SanPhamController {
     @ModelAttribute("danhmuc")
     public List<DanhMuc> getDanhMuc() {
         return danhMucRepository.findAll();
+    }
+    @PostMapping("/add")
+    public String addSanPham(SanPham sanPham){
+        sanPhamRepository.save(sanPham);
+        return "redirect:/sanpham-add";
+    }
+    @GetMapping("/add")
+    public String showAddForm(){
+        return "sanpham-add";
     }
 
 }
