@@ -22,6 +22,6 @@ public class DanhMuc {
     private String tenDanhMuc;
     @Column(name = "mo_ta")
     private String moTa;
-    @Column(name = "ngay_tao")
+    @Column(name = "ngay_tao", insertable = false, updatable = false)
     private LocalDateTime ngayTao;
 }
