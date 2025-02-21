@@ -6,11 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-@Service
-public class DanhMucService {
-    @Autowired
-    DanhMucRepository danhMucRepository;
-    public void deleteDanhMuc(Integer id) {
-        danhMucRepository.deleteById(id);
-    }
+public interface DanhMucService {
+    List<DanhMuc> getAll();
+    DanhMuc getById(Integer id);
+    DanhMuc save(DanhMuc danhMuc);
+    DanhMuc update(Integer id, DanhMuc danhMuc);
+    void delete(Integer id);
 }

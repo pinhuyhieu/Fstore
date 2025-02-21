@@ -37,4 +37,6 @@ public class SanPham {
     // có thể thêm @PrePersist.
     @Column(name = "ngay_tao")
     private LocalDateTime ngayTao;
+
+
 }

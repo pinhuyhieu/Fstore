@@ -39,7 +39,7 @@
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="form-container">
-                <form action="/danh-muc/add" method="post">
+                <form action="/danh-muc/admin/add" method="post">
                     <div class="mb-3">
                         <label class="form-label">Tên danh mục:</label>
                         <input type="text" name="tenDanhMuc" class="form-control" required>
@@ -76,7 +76,7 @@
                     <td>${item.ngayTao}</td>
                     <td>
                         <a href="/shop/product/update/${item.id}" class="btn btn-warning btn-sm">Sửa</a>
-                        <a href="/danh-muc/delete?id=${item.id}" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn xóa?')">Xóa</a>
+                        <a href="/danh-muc/admin/delete?id=${item.id}" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn xóa?')">Xóa</a>
                     </td>
                 </tr>
             </c:forEach>
