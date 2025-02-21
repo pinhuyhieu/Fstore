@@ -19,19 +19,19 @@ public class DanhMucController {
     DanhMucRepository danhMucRepository;
     @Autowired
     DanhMucService danhMucService;
-    @GetMapping("/list")
+    @GetMapping("/admin/list")
     public String hienThi(Model model){
         model.addAttribute("listDanhMuc",danhMucRepository.findAll());
-        return "danhmuc";
+        return "admin/danhmuc";
     }
-    @PostMapping("/add")
+    @PostMapping("/admin/add")
     public String addDanhMuc(DanhMuc danhMuc){
         danhMucRepository.save(danhMuc);
-        return "redirect:/danh-muc/list";
+        return "redirect:/danh-muc/admin/list";
     }
-    @GetMapping("/delete")
+    @GetMapping("/admin/delete")
     public String deleteDanhMuc(@RequestParam("id") Integer id){
-        danhMucService.deleteDanhMuc(id);
-        return "redirect:/danh-muc/list";
+        danhMucService.delete(id);
+        return "redirect:/danh-muc/admin/list";
     }
 }

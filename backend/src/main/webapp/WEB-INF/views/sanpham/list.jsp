@@ -38,7 +38,7 @@
 </head>
 <body>
 
-<%@ include file="include/header.jsp" %>
+<%@ include file="../include/header.jsp" %>
 
 <div class="container mt-4">
     <h1 class="mb-4">Danh sách sản phẩm</h1>
@@ -108,7 +108,7 @@
     </div>
 </div>
 
-<%@ include file="include/footer.jsp" %>
+<%@ include file="../include/footer.jsp" %>
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
