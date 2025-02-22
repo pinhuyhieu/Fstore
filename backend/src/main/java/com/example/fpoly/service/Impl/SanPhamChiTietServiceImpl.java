@@ -1,7 +1,9 @@
 package com.example.fpoly.service.Impl;
 
+import com.example.fpoly.entity.MauSac;
 import com.example.fpoly.entity.SanPham;
 import com.example.fpoly.entity.SanPhamChiTiet;
+import com.example.fpoly.entity.Size;
 import com.example.fpoly.repository.SanPhamChiTietRepository;
 import com.example.fpoly.repository.SanPhamRepository;
 import com.example.fpoly.service.SanPhamCTService;
@@ -9,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+
 @Service
 public class SanPhamChiTietServiceImpl implements SanPhamCTService{
     @Autowired
@@ -48,4 +52,9 @@ public class SanPhamChiTietServiceImpl implements SanPhamCTService{
     public void delete(Integer id) {
         sanPhamChiTietRepository.deleteById(id);
     }
+
+    public Optional<SanPhamChiTiet> findBySanPhamAndMauSacAndSize(SanPham sanPham, MauSac mauSac, Size size) {
+        return sanPhamChiTietRepository.findBySanPhamAndMauSacAndSize(sanPham, mauSac, size);
+    }
+
 }

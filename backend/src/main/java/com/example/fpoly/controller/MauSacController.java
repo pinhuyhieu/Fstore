@@ -16,7 +16,7 @@ public class MauSacController {
     @GetMapping("/list")
     public String listSizes(Model model) {
         model.addAttribute("mausacs", service.getAll());
-        return "admin/mausac"; // Thêm "admin/"
+        return "admin/MauSacJSP"; // Thêm "admin/"
     }
 
     @GetMapping("/form")
@@ -31,7 +31,7 @@ public class MauSacController {
         MauSac mausac = service.getById(id);
         model.addAttribute("mausac", mausac);
         model.addAttribute("mausacs", service.getAll()); // Để hiện danh sách
-        return "admin/mausac"; // Trả về trang form
+        return "admin/MauSacJSP"; // Trả về trang form
     }
 
     @PostMapping("/save")

@@ -17,7 +17,7 @@ public class SizeController {
     @GetMapping("/list")
     public String listSizes(Model model) {
         model.addAttribute("sizes", service.getAll());
-        return "admin/size"; // Thêm "admin/"
+        return "admin/SizeJSP"; // Thêm "admin/"
     }
 
     @GetMapping("/form")
@@ -32,7 +32,7 @@ public class SizeController {
         Size size = service.getById(id);
         model.addAttribute("size", size);
         model.addAttribute("sizes", service.getAll()); // Để hiện danh sách
-        return "admin/size"; // Trả về trang form
+        return "admin/SizeJSP"; // Trả về trang form
     }
 
 

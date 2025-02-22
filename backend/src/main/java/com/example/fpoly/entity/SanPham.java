@@ -8,6 +8,8 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -37,6 +39,8 @@ public class SanPham {
     // có thể thêm @PrePersist.
     @Column(name = "ngay_tao")
     private LocalDateTime ngayTao;
+    @OneToMany(mappedBy = "sanPham", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<HinhAnhSanPham> hinhAnhs;
 
 
 }

@@ -82,9 +82,16 @@
                 <c:forEach var="sp" items="${dsSanPham}">
                     <div class="col-md-4">
                         <div class="product-card">
-                            <!-- Ảnh demo, thay link ảnh thực nếu có -->
-                            <img src="https://cdn2-retail-images.kiotviet.vn/2024/10/27/giaychat180dongcac/965ae399497b486388128232d246c1fa.jpg"
-                                 alt="${sp.tenSanPham}" />
+                            <c:choose>
+                                <c:when test="${not empty sp.hinhAnhs}">
+                                    <img src="${pageContext.request.contextPath}/${sp.hinhAnhs[0].duongDan}"
+                                         alt="${sp.tenSanPham}" />
+                                </c:when>
+                                <c:otherwise>
+                                    <img src="https://via.placeholder.com/300"
+                                         alt="Ảnh mặc định" />
+                                </c:otherwise>
+                            </c:choose>
                             <h5>${sp.tenSanPham}</h5>
                             <p>Giá: <b>${sp.giaBan} ₫</b></p>
                             <p>${sp.moTa}</p>

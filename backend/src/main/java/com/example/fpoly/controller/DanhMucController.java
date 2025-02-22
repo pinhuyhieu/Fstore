@@ -1,37 +1,41 @@
 package com.example.fpoly.controller;
 
 import com.example.fpoly.entity.DanhMuc;
-import com.example.fpoly.repository.DanhMucRepository;
 import com.example.fpoly.service.DanhMucService;
-import jdk.jfr.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/danh-muc")
+@RequestMapping("/danhmuc")
 public class DanhMucController {
+
     @Autowired
-    DanhMucRepository danhMucRepository;
-    @Autowired
-    DanhMucService danhMucService;
-    @GetMapping("/admin/list")
-    public String hienThi(Model model){
-        model.addAttribute("listDanhMuc",danhMucRepository.findAll());
+    private DanhMucService danhMucService;
+
+    @GetMapping("/list")
+    public String hienThi(Model model) {
+        model.addAttribute("danhmucs", danhMucService.getAll());
         return "admin/danhmuc";
     }
-    @PostMapping("/admin/add")
-    public String addDanhMuc(DanhMuc danhMuc){
-        danhMucRepository.save(danhMuc);
-        return "redirect:/danh-muc/admin/list";
+
+    @PostMapping("/save")
+    public String saveDanhMuc(@ModelAttribute DanhMuc danhMuc) {
+        danhMucService.save(danhMuc);
+        return "redirect:/danhmuc/list";
     }
-    @GetMapping("/admin/delete")
-    public String deleteDanhMuc(@RequestParam("id") Integer id){
+
+    @GetMapping("/delete/{id}")
+    public String deleteDanhMuc(@PathVariable("id") Integer id) {
         danhMucService.delete(id);
-        return "redirect:/danh-muc/admin/list";
+        return "redirect:/danhmuc/list";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String editDanhMuc(@PathVariable("id") Integer id, Model model) {
+        model.addAttribute("danhmuc", danhMucService.getById(id));
+        model.addAttribute("danhmucs", danhMucService.getAll());
+        return "admin/danhmuc";
     }
 }
