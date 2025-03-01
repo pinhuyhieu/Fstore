@@ -12,4 +12,5 @@ public interface SizeService {
     Size save(Size size);
     Size update(Integer id, Size size);
     void delete(Integer id);
+    public List<Size> getAvailableSizesBySanPhamId(Integer sanPhamId);
 }

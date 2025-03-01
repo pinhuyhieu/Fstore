@@ -18,7 +18,7 @@
 
     <!-- Form Thêm/Sửa Size -->
     <div class="form-section">
-        <form method="POST" action="${pageContext.request.contextPath}/size/save">
+        <form method="POST" action="${pageContext.request.contextPath}/admin/size/save">
             <input type="hidden" name="id" value="${size.id}" />
 
             <div class="mb-3">
@@ -52,8 +52,8 @@
                 <td>${s.id}</td>
                 <td>${s.tenSize}</td>
                 <td>
-                    <a href="${pageContext.request.contextPath}/size/edit/${s.id}" class="btn btn-warning btn-sm">Sửa</a>
-                    <a href="${pageContext.request.contextPath}/size/delete/${s.id}"
+                    <a href="${pageContext.request.contextPath}/admin/size/edit/${s.id}" class="btn btn-warning btn-sm">Sửa</a>
+                    <a href="${pageContext.request.contextPath}/admin/size/delete/${s.id}"
                        class="btn btn-danger btn-sm"
                        onclick="return confirm('Bạn có chắc chắn muốn xóa?');">
                         Xóa

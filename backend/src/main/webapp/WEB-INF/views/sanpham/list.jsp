@@ -98,7 +98,7 @@
                             <div>
                                 <!-- Tùy ý đổi text nút -->
                                 <a class="btn btn-info btn-sm btn-action"
-                                   href="${pageContext.request.contextPath}/sanpham/edit/${sp.id}">
+                                   href="${pageContext.request.contextPath}/sanpham/detail/${sp.id}">
                                     Mua ngay
                                 </a>
                                 <br>

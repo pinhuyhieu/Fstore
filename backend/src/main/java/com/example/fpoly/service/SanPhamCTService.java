@@ -5,7 +5,9 @@ import com.example.fpoly.entity.SanPham;
 import com.example.fpoly.entity.SanPhamChiTiet;
 import com.example.fpoly.entity.Size;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface SanPhamCTService {
@@ -15,4 +17,6 @@ public interface SanPhamCTService {
     void delete(Integer id);
     List<SanPhamChiTiet> findBySanPhamId(Integer sanPhamId);
     Optional<SanPhamChiTiet> findBySanPhamAndMauSacAndSize(SanPham sanPham, MauSac mauSac, Size size);
+
+    public Map<String, Object> getSoLuongTonVaGiaTien(Integer mauSacId, Integer sizeId, Integer sanPhamId);
 }
