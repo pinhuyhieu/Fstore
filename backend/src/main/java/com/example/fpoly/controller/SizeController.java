@@ -8,7 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/size")
+@RequestMapping("/admin/size")
 public class SizeController {
     private final SizeServiceImpl service;
 
@@ -39,14 +39,14 @@ public class SizeController {
     @PostMapping ("/save")
     public String saveSize(@ModelAttribute Size size) {
         service.save(size);
-        return "redirect:/size/list";
+        return "redirect:/admin/size/list";
     }
 
 
     @GetMapping("/delete/{id}")
     public String deleteSize(@PathVariable("id") int id) {
         service.delete(id);
-        return "redirect:/size/list";
+        return "redirect:/admin/size/list";
     }
 
 }

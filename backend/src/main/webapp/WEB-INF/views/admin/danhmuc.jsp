@@ -18,7 +18,7 @@
 
     <!-- Form Thêm/Sửa Danh Mục -->
     <div class="form-section">
-        <form method="POST" action="${pageContext.request.contextPath}/danhmuc/save">
+        <form method="POST" action="${pageContext.request.contextPath}/admin/danhmuc/save">
             <input type="hidden" name="id" value="${danhmuc.id}" />
 
             <div class="mb-3">
@@ -52,8 +52,8 @@
                 <td>${d.id}</td>
                 <td>${d.tenDanhMuc}</td>
                 <td>
-                    <a href="${pageContext.request.contextPath}/danhmuc/edit/${d.id}" class="btn btn-warning btn-sm">Sửa</a>
-                    <a href="${pageContext.request.contextPath}/danhmuc/delete/${d.id}"
+                    <a href="${pageContext.request.contextPath}/admin/danhmuc/edit/${d.id}" class="btn btn-warning btn-sm">Sửa</a>
+                    <a href="${pageContext.request.contextPath}/admin/danhmuc/delete/${d.id}"
                        class="btn btn-danger btn-sm"
                        onclick="return confirm('Bạn có chắc chắn muốn xóa?');">
                         Xóa

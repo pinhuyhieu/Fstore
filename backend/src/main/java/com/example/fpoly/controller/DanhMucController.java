@@ -8,7 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/danhmuc")
+@RequestMapping("/admin/danhmuc")
 public class DanhMucController {
 
     @Autowired
@@ -23,13 +23,13 @@ public class DanhMucController {
     @PostMapping("/save")
     public String saveDanhMuc(@ModelAttribute DanhMuc danhMuc) {
         danhMucService.save(danhMuc);
-        return "redirect:/danhmuc/list";
+        return "redirect:/admin/danhmuc/list";
     }
 
     @GetMapping("/delete/{id}")
     public String deleteDanhMuc(@PathVariable("id") Integer id) {
         danhMucService.delete(id);
-        return "redirect:/danhmuc/list";
+        return "redirect:/admin/danhmuc/list";
     }
 
     @GetMapping("/edit/{id}")

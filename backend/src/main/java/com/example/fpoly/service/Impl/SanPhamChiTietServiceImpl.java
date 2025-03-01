@@ -10,7 +10,9 @@ import com.example.fpoly.service.SanPhamCTService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -55,6 +57,21 @@ public class SanPhamChiTietServiceImpl implements SanPhamCTService{
 
     public Optional<SanPhamChiTiet> findBySanPhamAndMauSacAndSize(SanPham sanPham, MauSac mauSac, Size size) {
         return sanPhamChiTietRepository.findBySanPhamAndMauSacAndSize(sanPham, mauSac, size);
+    }
+
+    public Map<String, Object> getSoLuongTonVaGiaTien(Integer mauSacId, Integer sizeId, Integer sanPhamId) {
+        Optional<SanPhamChiTiet> sanPhamChiTiet = sanPhamChiTietRepository.findByMauSacAndSizeAndSanPham(mauSacId, sizeId, sanPhamId);
+        if (sanPhamChiTiet.isPresent()) {
+            return Map.of(
+                    "soLuongTon", sanPhamChiTiet.get().getSoLuongTon(),
+                    "giaTien", sanPhamChiTiet.get().getGia()
+            );
+        } else {
+            return Map.of(
+                    "soLuongTon", 0,
+                    "giaTien", BigDecimal.ZERO
+            );
+        }
     }
 
 }

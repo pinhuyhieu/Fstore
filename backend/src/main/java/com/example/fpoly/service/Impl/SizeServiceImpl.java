@@ -42,4 +42,7 @@ public class SizeServiceImpl implements SizeService {
     public void delete(Integer id) {
         sizeRepository.deleteById(id);
     }
+    public List<Size> getAvailableSizesBySanPhamId(Integer sanPhamId) {
+        return sizeRepository.findAvailableSizesBySanPhamId(sanPhamId);
+    }
 }

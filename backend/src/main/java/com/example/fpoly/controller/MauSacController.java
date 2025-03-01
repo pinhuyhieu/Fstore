@@ -7,7 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/mausac")
+@RequestMapping("/admin/mausac")
 public class MauSacController {
     private final MauSacServiceImpl service;
 
@@ -37,13 +37,13 @@ public class MauSacController {
     @PostMapping("/save")
     public String saveMS(@ModelAttribute MauSac mausac) {
         service.save(mausac);
-        return "redirect:/mausac/list";
+        return "redirect:/admin/mausac/list";
     }
 
     @GetMapping("/delete/{id}")
     public String deleteMS(@PathVariable("id") int id) {
         service.delete(id);
-        return "redirect:/mausac/list";
+        return "redirect:/admin/mausac/list";
     }
 
 }

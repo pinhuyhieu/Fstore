@@ -42,4 +42,7 @@ public class MauSacServiceImpl implements MauSacService {
     public void delete(Integer id) {
         mauSacRepository.deleteById(id);
     }
+    public List<MauSac> getAvailableColorsBySanPhamId(Integer sanPhamId) {
+        return mauSacRepository.findAvailableColorsBySanPhamId(sanPhamId);
+    }
 }

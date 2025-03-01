@@ -10,4 +10,5 @@ public interface MauSacService {
     MauSac save(MauSac mauSac);
     MauSac update(Integer id, MauSac mauSac);
     void delete(Integer id);
+    List<MauSac> getAvailableColorsBySanPhamId(Integer sanPhamId) ;
 }

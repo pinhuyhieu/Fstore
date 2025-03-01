@@ -18,7 +18,7 @@
 
     <!-- Form Thêm/Sửa Màu Sắc -->
     <div class="form-section">
-        <form method="POST" action="${pageContext.request.contextPath}/mausac/save">
+        <form method="POST" action="${pageContext.request.contextPath}/admin/mausac/save">
             <input type="hidden" name="id" value="${mausac.id}" />
 
             <div class="mb-3">
@@ -32,7 +32,7 @@
                     <c:otherwise>Cập nhật</c:otherwise>
                 </c:choose>
             </button>
-            <a href="${pageContext.request.contextPath}/mausac/list" class="btn btn-secondary">Hủy</a>
+            <a href="${pageContext.request.contextPath}/admin/mausac/list" class="btn btn-secondary">Hủy</a>
         </form>
     </div>
 
@@ -52,8 +52,8 @@
                 <td>${s.id}</td>
                 <td>${s.tenMauSac}</td>
                 <td>
-                    <a href="${pageContext.request.contextPath}/mausac/edit/${s.id}" class="btn btn-warning btn-sm">Sửa</a>
-                    <a href="${pageContext.request.contextPath}/mausac/delete/${s.id}"
+                    <a href="${pageContext.request.contextPath}/admin/mausac/edit/${s.id}" class="btn btn-warning btn-sm">Sửa</a>
+                    <a href="${pageContext.request.contextPath}/admin/mausac/delete/${s.id}"
                        class="btn btn-danger btn-sm"
                        onclick="return confirm('Bạn có chắc chắn muốn xóa?');">
                         Xóa
