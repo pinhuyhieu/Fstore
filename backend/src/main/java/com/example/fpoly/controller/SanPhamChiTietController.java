@@ -9,6 +9,8 @@ import com.example.fpoly.service.SanPhamCTService;
 import com.example.fpoly.service.SanPhamService;
 import com.example.fpoly.service.SizeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +29,8 @@ public class SanPhamChiTietController {
     private MauSacRepository mauSacRepository;
     @Autowired
     private SanPhamService sanPhamService;
+    @Autowired
+    private SanPhamCTService sanPhamCTService;
     @GetMapping("/list/{sanPhamId}")
     public String listChiTiet(@PathVariable Integer sanPhamId, Model model) {
 
@@ -93,6 +97,17 @@ public class SanPhamChiTietController {
             return "redirect:/sanphamchitiet/list/" + sanPhamId;
         }
         return "redirect:/sanpham/list";
+    }
+    @GetMapping("/sanPhamChiTietId")
+    public ResponseEntity<Integer> getSanPhamChiTietId(
+            @RequestParam("sanPhamId") Integer sanPhamId,
+            @RequestParam("mauSacId") Integer mauSacId,
+            @RequestParam("sizeId") Integer sizeId) {
+        Integer sanPhamChiTietId = sanPhamCTService.findIdBySanPhamAndMauSacAndSize(sanPhamId, mauSacId, sizeId);
+        if (sanPhamChiTietId == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        return ResponseEntity.ok(sanPhamChiTietId);
     }
 }
 

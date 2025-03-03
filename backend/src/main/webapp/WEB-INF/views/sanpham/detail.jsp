@@ -37,6 +37,8 @@
     </style>
 </head>
 <body>
+<%@ include file="../include/header.jsp" %>
+
 <div class="container mt-5">
     <div class="row">
         <!-- Hình ảnh sản phẩm -->
@@ -86,6 +88,10 @@
                     </c:forEach>
                 </div>
             </div>
+            <div class="mb-3">
+                <label><strong>Số lượng:</strong></label>
+                <input type="number" name="soLuong" id="soLuong" class="form-control" value="1" min="1">
+            </div>
 
             <!-- Hiển thị số lượng tồn -->
             <div class="mb-3">
@@ -99,6 +105,7 @@
             </div>
 
             <!-- Nút Thêm vào giỏ hàng -->
+            <!-- Nút thêm vào giỏ hàng -->
             <button id="btnThemVaoGio" class="btn btn-success">Thêm vào giỏ hàng</button>
             <a href="/sanpham/list" class="btn btn-secondary">Quay lại danh sách</a>
             <input type="hidden" id="sanPhamId" value="${sanPham.id}">
@@ -184,6 +191,40 @@
         document.getElementById('hetHang').style.display = isHetHang ? 'inline' : 'none';
         document.getElementById('btnThemVaoGio').classList.toggle('disabled', isHetHang);
     }
+
+    document.getElementById('btnThemVaoGio').addEventListener('click', function () {
+        const sanPhamId = document.getElementById('sanPhamId').value;
+        const soLuong = document.getElementById('soLuong') ? document.getElementById('soLuong').value : 1;
+        const mauSac = document.querySelector('input[name="mauSacId"]:checked');
+        const size = document.querySelector('input[name="sizeId"]:checked');
+
+        if (!mauSac || !size) {
+            alert("Vui lòng chọn màu sắc và kích thước trước khi thêm vào giỏ hàng!");
+            return;
+        }
+
+        const data = new URLSearchParams();
+        data.append("sanPhamId", sanPhamId);
+        data.append("mauSacId", mauSac.value);
+        data.append("sizeId", size.value);
+        data.append("soLuong", soLuong);
+
+        fetch('/cart/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: data.toString()
+        })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    alert("✅ Đã thêm vào giỏ hàng!");
+                    window.location.reload(); // Cập nhật giỏ hàng ngay
+                } else {
+                    alert("❌ Lỗi khi thêm vào giỏ hàng!");
+                }
+            })
+            .catch(error => console.error("Lỗi gửi yêu cầu giỏ hàng:", error));
+    });
 
 </script>
 </body>

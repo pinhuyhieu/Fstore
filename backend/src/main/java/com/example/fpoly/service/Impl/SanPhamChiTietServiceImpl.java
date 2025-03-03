@@ -73,5 +73,10 @@ public class SanPhamChiTietServiceImpl implements SanPhamCTService{
             );
         }
     }
+    @Override
+    public Integer findIdBySanPhamAndMauSacAndSize(Integer sanPhamId, Integer mauSacId, Integer sizeId) {
+        Optional<SanPhamChiTiet> sanPhamChiTiet = sanPhamChiTietRepository.findByMauSacAndSizeAndSanPham(mauSacId, sizeId, sanPhamId);
+        return sanPhamChiTiet.map(SanPhamChiTiet::getId).orElse(null);
+    }
 
 }
