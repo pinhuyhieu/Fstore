@@ -17,6 +17,6 @@ public interface SanPhamCTService {
     void delete(Integer id);
     List<SanPhamChiTiet> findBySanPhamId(Integer sanPhamId);
     Optional<SanPhamChiTiet> findBySanPhamAndMauSacAndSize(SanPham sanPham, MauSac mauSac, Size size);
-
+    public Integer findIdBySanPhamAndMauSacAndSize(Integer sanPhamId, Integer mauSacId, Integer sizeId);
     public Map<String, Object> getSoLuongTonVaGiaTien(Integer mauSacId, Integer sizeId, Integer sanPhamId);
 }

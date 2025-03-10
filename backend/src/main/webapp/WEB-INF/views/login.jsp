@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -5,6 +6,12 @@
 </head>
 <body>
 <h1>Đăng Nhập</h1>
+<c:if test="${param.error != null}">
+    <p style="color: red;">Sai tên đăng nhập hoặc mật khẩu!</p>
+</c:if>
+<c:if test="${param.logout != null}">
+    <p style="color: green;">Bạn đã đăng xuất thành công.</p>
+</c:if>
 <form action="/doLogin" method="post">
     <div>
         <label for="username">Tên đăng nhập:</label>

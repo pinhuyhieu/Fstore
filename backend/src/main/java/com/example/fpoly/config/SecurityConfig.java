@@ -18,15 +18,18 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.access.AccessDeniedException;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.security.web.firewall.StrictHttpFirewall;
+import org.springframework.security.web.firewall.DefaultHttpFirewall;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 
-import java.io.IOException;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 
 @Configuration
+@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -55,15 +58,38 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)) // Sử dụng session
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/login", "/register", "/doLogin", "/doRegister", "/sanpham/**","/cart/**").permitAll()
+                        .requestMatchers("/WEB-INF/views/**").permitAll() // Cho phép truy cập JSP
+                        .requestMatchers("/css/**", "/js/**", "/uploads/**").permitAll()
                         .requestMatchers("/user/**").hasRole("USER")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(exception -> exception.accessDeniedHandler(accessDeniedHandler())); // Thêm exceptionHandling và accessDeniedHandler
+                .formLogin(form -> form
+                        .loginPage("/login") // Trang đăng nhập
+                        .loginProcessingUrl("/doLogin") // URL xử lý đăng nhập
+                        .defaultSuccessUrl("/sanpham/list") // Chuyển hướng đến trang sản phẩm sau khi đăng nhập thành công
+                        .failureUrl("/login?error=true") // Nếu đăng nhập thất bại
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout=true")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .permitAll()
+                )
+                .authenticationProvider(authenticationProvider()) // Thêm AuthenticationProvider vào chuỗi bảo mật
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // JWT filter
+                .exceptionHandling(exception -> exception
+                        .accessDeniedHandler(accessDeniedHandler()) // Xử lý lỗi 403
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.getWriter().write("Bạn cần đăng nhập để truy cập tài nguyên này.");
+                        })
+                );
 
         return http.build();
     }
@@ -83,12 +109,27 @@ public class SecurityConfig {
 
     @Bean
     public AccessDeniedHandler accessDeniedHandler() {
-        return new AccessDeniedHandler() {
-            @Override
-            public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                response.getWriter().write("Bạn không có quyền truy cập tài nguyên này.");
-            }
+        return (request, response, accessDeniedException) -> {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.getWriter().write("Bạn không có quyền truy cập tài nguyên này.");
         };
+    }
+
+    /**
+     * Cho phép các URL chứa "//" không bị chặn bởi Spring Security Firewall
+     */
+    @Bean
+    public HttpFirewall allowDoubleSlashFirewall() {
+        StrictHttpFirewall firewall = new StrictHttpFirewall();
+        firewall.setAllowUrlEncodedDoubleSlash(true); // Cho phép URL chứa "//"
+        return firewall;
+    }
+
+    /**
+     * Đăng ký Firewall để tránh lỗi RequestRejectedException
+     */
+
+    public void configure(WebSecurity web) {
+        web.httpFirewall(allowDoubleSlashFirewall());
     }
 }
