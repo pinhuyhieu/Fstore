@@ -33,9 +33,14 @@ public class SanPhamChiTietServiceImpl implements SanPhamCTService{
 
     @Override
     public SanPhamChiTiet getById(Integer id) {
-        return sanPhamChiTietRepository.findById(id).orElse(null);
+        Optional<SanPhamChiTiet> spct = sanPhamChiTietRepository.findById(id);
+        if (spct.isEmpty()) {
+            System.out.println("❌ Không tìm thấy sản phẩm trong database với ID: " + id);
+        } else {
+            System.out.println("✅ Tìm thấy sản phẩm: " + spct.get().getSanPham());
+        }
+        return spct.orElse(null);
     }
-
     @Override
     public SanPhamChiTiet save(SanPhamChiTiet sanPhamChiTiet) {
         return sanPhamChiTietRepository.save(sanPhamChiTiet);

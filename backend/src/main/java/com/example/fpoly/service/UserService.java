@@ -8,4 +8,9 @@ public interface UserService {
     Optional<User> findByUsername(String username);
     Optional<User> findByEmail(String email);
     User loadUserByTenDangNhap(String tenDangNhap);
+    Optional<User> findById(Integer userId);
+    Integer getUserIdByUsername(String username);
+
+
+
 }

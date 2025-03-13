@@ -5,6 +5,8 @@ import com.example.fpoly.repository.DanhMucRepository;
 import com.example.fpoly.repository.SanPhamRepository;
 import com.example.fpoly.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -136,6 +138,18 @@ public class SanPhamController {
         model.addAttribute("dsSanPham", sanPhamService.getAll());
         model.addAttribute("listDanhMuc", danhMucService.getAll());
         return "/admin/sanpham-form"; // Trả về trang JSP đã có form chỉnh sửa
+    }
+    @GetMapping("/sanPhamChiTietId") // 💡 Đổi lại đúng tên API trong frontend
+    public ResponseEntity<Integer> getSanPhamChiTietId(
+            @RequestParam("sanPhamId") Integer sanPhamId,
+            @RequestParam("mauSacId") Integer mauSacId,
+            @RequestParam("sizeId") Integer sizeId) {
+
+        Integer sanPhamChiTietId = sanPhamCTService.findIdBySanPhamAndMauSacAndSize(sanPhamId, mauSacId, sizeId);
+        if (sanPhamChiTietId == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        return ResponseEntity.ok(sanPhamChiTietId);
     }
 
 

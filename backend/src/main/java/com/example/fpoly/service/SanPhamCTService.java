@@ -19,4 +19,6 @@ public interface SanPhamCTService {
     Optional<SanPhamChiTiet> findBySanPhamAndMauSacAndSize(SanPham sanPham, MauSac mauSac, Size size);
     public Integer findIdBySanPhamAndMauSacAndSize(Integer sanPhamId, Integer mauSacId, Integer sizeId);
     public Map<String, Object> getSoLuongTonVaGiaTien(Integer mauSacId, Integer sizeId, Integer sanPhamId);
+
+
 }

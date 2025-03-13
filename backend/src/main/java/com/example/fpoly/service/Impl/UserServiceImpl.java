@@ -50,4 +50,15 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByTenDangNhap(tenDangNhap)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng: " + tenDangNhap));
     }
+    @Override
+    public Optional<User> findById(Integer userId) {
+        return userRepository.findById(userId);
+    }
+    @Override
+    public Integer getUserIdByUsername(String username) {
+        return userRepository.findByTenDangNhap(username)
+                .map(User::getId)
+                .orElse(null);
+    }
+
 }

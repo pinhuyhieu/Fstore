@@ -1,39 +1,46 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
+
+<!DOCTYPE html>
+<html lang="vi">
 <head>
+    <meta charset="UTF-8">
     <title>Đăng Ký</title>
+    <link rel="stylesheet" href="/css/style.css"> <!-- Thêm CSS nếu cần -->
 </head>
 <body>
-<h1>Đăng Ký</h1>
-<form action="/doRegister" method="post">
-    <div>
-        <label for="hoTen">Họ và Tên:</label>
+
+<div class="container">
+    <h2>Đăng Ký Tài Khoản</h2>
+
+    <c:if test="${not empty error}">
+        <div class="alert alert-danger">${error}</div>
+    </c:if>
+
+    <form action="/doRegister" method="post">
+        <label for="hoTen">Họ và tên:</label>
         <input type="text" id="hoTen" name="hoTen" required>
-    </div>
-    <div>
+
         <label for="tenDangNhap">Tên đăng nhập:</label>
         <input type="text" id="tenDangNhap" name="tenDangNhap" required>
-    </div>
-    <div>
-        <label for="matKhau">Mật khẩu:</label>
-        <input type="password" id="matKhau" name="matKhau" required>
-    </div>
-    <div>
+
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" required>
-    </div>
-    <div>
+
         <label for="soDienThoai">Số điện thoại:</label>
         <input type="text" id="soDienThoai" name="soDienThoai">
-    </div>
-    <div>
+
         <label for="diaChi">Địa chỉ:</label>
         <input type="text" id="diaChi" name="diaChi">
-    </div>
-    <div>
+
+        <label for="matKhau">Mật khẩu:</label>
+        <input type="password" id="matKhau" name="matKhau" required>
+
         <button type="submit">Đăng Ký</button>
-    </div>
-</form>
-<p>Đã có tài khoản? <a href="/login">Đăng nhập ngay</a></p>
+    </form>
+
+    <p>Bạn đã có tài khoản? <a href="/login">Đăng nhập</a></p>
+</div>
+
 </body>
 </html>

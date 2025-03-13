@@ -192,39 +192,75 @@
         document.getElementById('btnThemVaoGio').classList.toggle('disabled', isHetHang);
     }
 
-    document.getElementById('btnThemVaoGio').addEventListener('click', function () {
-        const sanPhamId = document.getElementById('sanPhamId').value;
-        const soLuong = document.getElementById('soLuong') ? document.getElementById('soLuong').value : 1;
-        const mauSac = document.querySelector('input[name="mauSacId"]:checked');
-        const size = document.querySelector('input[name="sizeId"]:checked');
+    function addToCart() {
+        requestAnimationFrame(() => {
+            const selectedColor = document.querySelector('input[name="mauSac"]:checked');
+            const colorId = selectedColor ? selectedColor.value : null;
 
-        if (!mauSac || !size) {
-            alert("Vui lòng chọn màu sắc và kích thước trước khi thêm vào giỏ hàng!");
-            return;
-        }
+            const selectedSize = document.querySelector('.size-btn.active');
+            const sizeId = selectedSize ? selectedSize.dataset.size : null;
 
-        const data = new URLSearchParams();
-        data.append("sanPhamId", sanPhamId);
-        data.append("mauSacId", mauSac.value);
-        data.append("sizeId", size.value);
-        data.append("soLuong", soLuong);
+            const sanPhamInput = document.getElementById('sanPhamId');
+            const sanPhamId = sanPhamInput ? sanPhamInput.value : null;
 
-        fetch('/cart/add', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: data.toString()
-        })
-            .then(response => response.json())
-            .then(result => {
-                if (result.success) {
-                    alert("✅ Đã thêm vào giỏ hàng!");
-                    window.location.reload(); // Cập nhật giỏ hàng ngay
-                } else {
-                    alert("❌ Lỗi khi thêm vào giỏ hàng!");
-                }
-            })
-            .catch(error => console.error("Lỗi gửi yêu cầu giỏ hàng:", error));
-    });
+            const soLuongInput = document.getElementById('soLuong');
+            const soLuong = soLuongInput ? soLuongInput.value : 1;
+
+            if (!colorId || !sizeId || !sanPhamId) {
+                alert("❌ Vui lòng chọn màu sắc và kích thước trước khi thêm vào giỏ hàng!");
+                return;
+            }
+
+            const url = "/sanpham/sanPhamChiTietId?mauSacId=" + colorId + "&sizeId=" + sizeId + "&sanPhamId=" + sanPhamId;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    console.log("📌 API Response:", data);
+                    const sanPhamChiTietId = Number(data);
+                    if (isNaN(sanPhamChiTietId)) {
+                        alert("❌ Không tìm thấy sản phẩm chi tiết!");
+                        return;
+                    }
+
+                    console.log("✅ Sản phẩm chi tiết ID:", sanPhamChiTietId); // Debug
+
+                    // Chuẩn bị dữ liệu gửi đến API
+                    const cartData = new URLSearchParams();
+                    cartData.append("sanPhamChiTietId", sanPhamChiTietId);
+                    cartData.append("soLuong", soLuong); // Lấy từ input
+
+                    // Gửi request POST
+                    return fetch('/api/cart/details/add', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: cartData.toString()
+                    });
+                })
+                .then(response => response.json())
+                .then(result => {
+                    console.log("📌 API Response:", result); // Debug response
+
+
+                    if (result.message) {
+                        alert(result.message);
+                        window.location.reload();
+                    } else {
+                        alert("❌ Lỗi khi thêm vào giỏ hàng!");
+                    }
+                })
+                .catch(error => {
+                    console.error("❌ Lỗi:", error);
+                    alert("❌ Lỗi khi thêm sản phẩm vào giỏ hàng!");
+                });
+
+        });
+    }
+
+    // Gán sự kiện click cho nút "Thêm vào giỏ hàng"
+    document.getElementById('btnThemVaoGio').addEventListener('click', addToCart);
+
+
+
 
 </script>
 </body>
