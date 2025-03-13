@@ -1,0 +1,45 @@
+package com.example.fpoly.service.impl;
+
+import com.example.fpoly.entity.*;
+import com.example.fpoly.repository.GioHangChiTietRepository;
+import com.example.fpoly.service.GioHangChiTietService;
+import com.example.fpoly.service.GioHangService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor
+public class GioHangChiTietServiceImpl implements GioHangChiTietService {
+    private final GioHangChiTietRepository gioHangChiTietRepository;
+    private final GioHangService gioHangService;
+
+    @Override
+    public List<GioHangChiTiet> getCartDetails(GioHang gioHang) {
+        return gioHangChiTietRepository.findByGioHang(gioHang);
+    }
+
+    @Override
+    public void addToCart(User user, SanPhamChiTiet sanPhamChiTiet, int soLuong) {
+        GioHang gioHang = gioHangService.getGioHangByUser(user);
+        Optional<GioHangChiTiet> existingItem = gioHangChiTietRepository.findByGioHangAndSanPhamChiTiet(gioHang, sanPhamChiTiet);
+
+        GioHangChiTiet gioHangChiTiet = existingItem.orElse(new GioHangChiTiet(gioHang, sanPhamChiTiet, 0));
+        gioHangChiTiet.setSoLuong(gioHangChiTiet.getSoLuong() + soLuong);
+        gioHangChiTietRepository.save(gioHangChiTiet);
+    }
+
+    @Override
+    public void updateQuantity(Integer gioHangChiTietId, int soLuong) {
+        gioHangChiTietRepository.findById(gioHangChiTietId).ifPresent(item -> {
+            item.setSoLuong(soLuong);
+            gioHangChiTietRepository.save(item);
+        });
+    }
+
+    @Override
+    public void removeById(Integer gioHangChiTietId) {
+        gioHangChiTietRepository.deleteById(gioHangChiTietId);
+    }
+}

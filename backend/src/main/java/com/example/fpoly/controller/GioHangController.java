@@ -1,71 +1,55 @@
 package com.example.fpoly.controller;
 
 import com.example.fpoly.entity.GioHang;
+import com.example.fpoly.entity.GioHangChiTiet;
 import com.example.fpoly.entity.User;
-import com.example.fpoly.entity.SanPhamChiTiet;
+import com.example.fpoly.service.GioHangChiTietService;
 import com.example.fpoly.service.GioHangService;
-import com.example.fpoly.service.SanPhamCTService;
-import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import com.example.fpoly.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
+import java.util.Optional;
 
-@Controller
-@RequestMapping("/cart")
+@RestController
+@RequestMapping("/api/cart")
+@RequiredArgsConstructor
 public class GioHangController {
-    @Autowired
-    private GioHangService gioHangService;
+    private final GioHangService gioHangService;
+    private final UserService userService;
+    private final GioHangChiTietService gioHangChiTietService;
 
-    @Autowired
-    private SanPhamCTService sanPhamCTService;
-
-    // 🛒 Hiển thị giỏ hàng
+    // 🛒 Lấy giỏ hàng theo user
     @GetMapping
-    public ModelAndView showCart(HttpSession session) {
-        User user = (User) session.getAttribute("user"); // Lấy user từ session
-        if (user == null) {
-            return new ModelAndView("redirect:/login");
-        }
+    public ResponseEntity<GioHang> getCartByUser(@AuthenticationPrincipal UserDetails userDetails) {
+        User user = userService.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("❌ Không tìm thấy user"));
 
-        List<GioHang> gioHangList = gioHangService.getGioHangByUser(user);
-        ModelAndView modelAndView = new ModelAndView("cart");
-        modelAndView.addObject("gioHangList", gioHangList);
-        return modelAndView;
+        GioHang gioHang = gioHangService.getGioHangByUser(user);
+        return ResponseEntity.ok(gioHang);
     }
 
-    // 🛒 Thêm sản phẩm vào giỏ hàng
-    @PostMapping("/add")
-    public ResponseEntity<?> addToCart(
-            @RequestParam("sanPhamChiTietId") Integer sanPhamChiTietId,
-            @RequestParam("soLuong") int soLuong,
-            HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Vui lòng đăng nhập");
-        }
+    // 🗑 Xóa toàn bộ giỏ hàng
+    @DeleteMapping("/clear")
+    public ResponseEntity<String> clearCart(@AuthenticationPrincipal UserDetails userDetails) {
+        User user = userService.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("❌ Không tìm thấy user"));
 
-        SanPhamChiTiet sanPhamChiTiet = sanPhamCTService.getById(sanPhamChiTietId);
-        if (sanPhamChiTiet == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Sản phẩm không tồn tại");
-        }
-
-        gioHangService.addToCart(user, sanPhamChiTiet, soLuong);
-        return ResponseEntity.ok("Thêm vào giỏ hàng thành công");
+        gioHangService.clearCart(user);
+        return ResponseEntity.ok("✅ Đã xóa toàn bộ giỏ hàng.");
     }
+    @GetMapping("/user")
+    public ResponseEntity<List<GioHangChiTiet>> getUser(@AuthenticationPrincipal UserDetails userDetails) {
+        User user = userService.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("❌ Không tìm thấy user"));
 
-    // ❌ Xóa sản phẩm khỏi giỏ hàng
-    @GetMapping("/remove/{id}")
-    public String removeFromCart(@PathVariable("id") Integer id) {
-        gioHangService.removeFromCart(id);
-        return "redirect:/cart";
+        GioHang gioHang = gioHangService.getGioHangByUser(user);
+        List<GioHangChiTiet> chiTietGioHang = gioHangChiTietService.getCartDetails(gioHang);
+
+        return ResponseEntity.ok(chiTietGioHang);
     }
-
-
-
 }

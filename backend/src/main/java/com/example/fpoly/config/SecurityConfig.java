@@ -60,18 +60,18 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)) // Sử dụng session
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/register", "/doLogin", "/doRegister", "/sanpham/**","/cart/**").permitAll()
+                        .requestMatchers("/login", "/register", "/doLogin", "/doRegister", "/sanpham/**", "/cart/**", "/sanphamchitiet/**","/api/cart/detail/").permitAll()
                         .requestMatchers("/WEB-INF/views/**").permitAll() // Cho phép truy cập JSP
                         .requestMatchers("/css/**", "/js/**", "/uploads/**").permitAll()
                         .requestMatchers("/user/**").hasRole("USER")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-                .formLogin(form -> form
-                        .loginPage("/login") // Trang đăng nhập
-                        .loginProcessingUrl("/doLogin") // URL xử lý đăng nhập
-                        .defaultSuccessUrl("/sanpham/list") // Chuyển hướng đến trang sản phẩm sau khi đăng nhập thành công
-                        .failureUrl("/login?error=true") // Nếu đăng nhập thất bại
+                .formLogin(login -> login
+                        .loginPage("/login")
+                        .loginProcessingUrl("/doLogin") // Spring Security xử lý đăng nhập
+                        .defaultSuccessUrl("/sanpham/list", true)
+                        .failureUrl("/login?error=true")
                         .permitAll()
                 )
                 .logout(logout -> logout
@@ -115,9 +115,6 @@ public class SecurityConfig {
         };
     }
 
-    /**
-     * Cho phép các URL chứa "//" không bị chặn bởi Spring Security Firewall
-     */
     @Bean
     public HttpFirewall allowDoubleSlashFirewall() {
         StrictHttpFirewall firewall = new StrictHttpFirewall();
@@ -125,11 +122,9 @@ public class SecurityConfig {
         return firewall;
     }
 
-    /**
-     * Đăng ký Firewall để tránh lỗi RequestRejectedException
-     */
-
     public void configure(WebSecurity web) {
         web.httpFirewall(allowDoubleSlashFirewall());
     }
+
 }
+
