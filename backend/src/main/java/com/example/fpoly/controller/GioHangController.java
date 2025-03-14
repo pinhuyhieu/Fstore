@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,14 +25,29 @@ public class GioHangController {
     private final GioHangChiTietService gioHangChiTietService;
 
     // 🛒 Lấy giỏ hàng theo user
-    @GetMapping
-    public ResponseEntity<GioHang> getCartByUser(@AuthenticationPrincipal UserDetails userDetails) {
-        User user = userService.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new RuntimeException("❌ Không tìm thấy user"));
 
-        GioHang gioHang = gioHangService.getGioHangByUser(user);
-        return ResponseEntity.ok(gioHang);
+    public String showCart(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        if (userDetails == null) {
+            model.addAttribute("error", "Bạn chưa đăng nhập!");
+            return "cart"; // Trả về trang giỏ hàng nhưng có thông báo lỗi
+        }
+
+        Optional<User> userOpt = userService.findByUsername(userDetails.getUsername());
+        if (userOpt.isEmpty()) {
+            model.addAttribute("error", "Không tìm thấy người dùng!");
+            return "cart";
+        }
+
+        GioHang gioHang = gioHangService.getGioHangByUser(userOpt.get());
+        if (gioHang == null || gioHang.getGioHangChiTietList().isEmpty()) {
+            model.addAttribute("gioHang", new GioHang()); // Trả về giỏ hàng rỗng
+        } else {
+            model.addAttribute("gioHang", gioHang);
+        }
+
+        return "cart"; // Trả về JSP
     }
+
 
     // 🗑 Xóa toàn bộ giỏ hàng
     @DeleteMapping("/clear")
