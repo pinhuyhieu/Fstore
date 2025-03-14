@@ -240,7 +240,6 @@
                 .then(result => {
                     console.log("📌 API Response:", result); // Debug response
 
-
                     if (result.message) {
                         alert(result.message);
                         window.location.reload();

@@ -43,7 +43,7 @@ public class GioHangChiTietController {
         model.addAttribute("gioHangChiTietList", cartDetails);
         model.addAttribute("tongTien", tongTien);
 
-        return "cart"; // Trả về trang cart.jsp
+        return "/cart"; // Trả về trang cart.jsp
     }
 
 
