@@ -13,4 +13,5 @@ public interface GioHangChiTietService {
     void addToCart(User user, SanPhamChiTiet sanPhamChiTiet, int soLuong);
     void updateQuantity(Integer gioHangChiTietId, int soLuong);
     void removeById(Integer gioHangChiTietId);
+    Optional<GioHangChiTiet> findById(Integer id);
 }

@@ -65,10 +65,15 @@ public class GioHangChiTietController {
     }
 
     // ✏️ Cập nhật số lượng sản phẩm trong giỏ hàng
+    // ✏️ API cập nhật số lượng sản phẩm trong giỏ hàng
     @PutMapping("/update/{gioHangChiTietId}")
     public ResponseEntity<String> updateQuantity(@PathVariable Integer gioHangChiTietId, @RequestParam int soLuong) {
-        gioHangChiTietService.updateQuantity(gioHangChiTietId, soLuong);
-        return ResponseEntity.ok("✅ Cập nhật số lượng thành công.");
+        try {
+            gioHangChiTietService.updateQuantity(gioHangChiTietId, soLuong);
+            return ResponseEntity.ok("✅ Cập nhật số lượng thành công.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("❌ " + e.getMessage());
+        }
     }
 
     // 🗑 Xóa sản phẩm khỏi giỏ hàng
