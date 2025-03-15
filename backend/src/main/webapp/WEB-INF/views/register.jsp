@@ -27,6 +27,7 @@
             width: 280px;  /* Thu nhỏ form */
             text-align: center;
             transition: transform 0.3s ease;
+
         }
 
         .container:hover {
@@ -124,7 +125,7 @@
         }
 
         .form-group {
-            margin-bottom: 5px; /* Giảm khoảng cách giữa các nhóm input */
+            margin-bottom: 5px; /* Giảm khoảng cách giữa các input  */
             text-align: left;
         }
 
