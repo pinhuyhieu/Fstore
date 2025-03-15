@@ -4,6 +4,7 @@ import com.example.fpoly.entity.*;
 import com.example.fpoly.repository.GioHangChiTietRepository;
 import com.example.fpoly.service.GioHangChiTietService;
 import com.example.fpoly.service.GioHangService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -12,6 +13,10 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class GioHangChiTietServiceImpl implements GioHangChiTietService {
+    @Override
+    public Optional<GioHangChiTiet> findById(Integer id) {
+        return gioHangChiTietRepository.findById(id);
+    }
     private final GioHangChiTietRepository gioHangChiTietRepository;
     private final GioHangService gioHangService;
 
@@ -31,11 +36,20 @@ public class GioHangChiTietServiceImpl implements GioHangChiTietService {
     }
 
     @Override
+    @Transactional
     public void updateQuantity(Integer gioHangChiTietId, int soLuong) {
-        gioHangChiTietRepository.findById(gioHangChiTietId).ifPresent(item -> {
-            item.setSoLuong(soLuong);
-            gioHangChiTietRepository.save(item);
-        });
+        Optional<GioHangChiTiet> optionalGioHangChiTiet = gioHangChiTietRepository.findById(gioHangChiTietId);
+        if (optionalGioHangChiTiet.isPresent()) {
+            GioHangChiTiet gioHangChiTiet = optionalGioHangChiTiet.get();
+            if (soLuong > 0) {
+                gioHangChiTiet.setSoLuong(soLuong);
+                gioHangChiTietRepository.save(gioHangChiTiet);
+            } else {
+                gioHangChiTietRepository.deleteById(gioHangChiTietId); // Nếu số lượng về 0, xóa sản phẩm khỏi giỏ
+            }
+        } else {
+            throw new RuntimeException("❌ Không tìm thấy sản phẩm trong giỏ hàng");
+        }
     }
 
     @Override

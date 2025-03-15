@@ -3,6 +3,7 @@
 <html>
 <head>
     <title>🛒 Giỏ hàng</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -37,14 +38,18 @@
             color: white;
         }
         .btn {
-            padding: 10px 15px;
+            padding: 8px 12px;
             border: none;
             cursor: pointer;
             border-radius: 5px;
-            font-size: 16px;
+            font-size: 14px;
         }
         .btn-remove {
             background: red;
+            color: white;
+        }
+        .btn-update {
+            background: orange;
             color: white;
         }
         .btn-checkout {
@@ -59,15 +64,33 @@
             font-size: 18px;
             color: #666;
         }
+        .quantity-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .quantity-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 5px;
+        }
+        .quantity-input {
+            width: 50px;
+            text-align: center;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            margin: 0 5px;
+            padding: 5px;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <h2>🛒 Giỏ hàng của bạn</h2>
-
-    <c:if test="${not empty error}">
-        <p style="color: red; text-align: center;">${error}</p>
-    </c:if>
 
     <c:choose>
         <c:when test="${gioHang != null and not empty gioHang.gioHangChiTietList}">
@@ -78,18 +101,29 @@
                     <th>Màu sắc</th>
                     <th>Số lượng</th>
                     <th>Giá</th>
+                    <th>Hành động</th>
                 </tr>
                 <c:forEach var="item" items="${gioHang.gioHangChiTietList}">
-                    <tr>
+                    <tr id="row-${item.id}">
                         <td>${item.sanPhamChiTiet.sanPham.tenSanPham}</td>
                         <td>${item.sanPhamChiTiet.size.tenSize}</td>
                         <td>${item.sanPhamChiTiet.mauSac.tenMauSac}</td>
-                        <td>${item.soLuong}</td>
-                        <td>${item.sanPhamChiTiet.gia * item.soLuong} ₫</td>
+                        <td class="quantity-container">
+                            <button class="quantity-btn btn-decrease" data-id="${item.id}">-</button>
+                            <input type="text" id="quantity-${item.id}" class="quantity-input" value="${item.soLuong}" readonly>
+                            <button class="quantity-btn btn-increase" data-id="${item.id}">+</button>
+                        </td>
+                        <td><span id="total-${item.id}">${item.sanPhamChiTiet.gia * item.soLuong}</span> ₫</td>
+                        <td>
+                            <button class="btn btn-remove" data-id="${item.id}">❌ Xóa</button>
+                        </td>
                     </tr>
                 </c:forEach>
             </table>
-            <form action="/api/order/checkout" method="post">
+
+            <h3>💰 Tổng tiền: <span id="total-price">${tongTien}</span> ₫</h3>
+
+            <form id="checkout-form" action="/api/order/checkout" method="post">
                 <button type="submit" class="btn btn-checkout">🛒 Đặt hàng</button>
             </form>
         </c:when>
@@ -98,5 +132,71 @@
         </c:otherwise>
     </c:choose>
 </div>
+
+<script>
+    $(document).ready(function () {
+        // Cập nhật số lượng sản phẩm bằng AJAX
+        $(".btn-increase, .btn-decrease").click(function () {
+            let itemId = $(this).data("id");
+            let isIncrease = $(this).hasClass("btn-increase");
+            let quantityElem = $("#quantity-" + itemId);
+            let totalElem = $("#total-" + itemId);
+            let totalPriceElem = $("#total-price");
+
+            let newQuantity = parseInt(quantityElem.val()) + (isIncrease ? 1 : -1);
+
+            if (newQuantity <= 0) {
+                removeFromCart(itemId);
+                return;
+            }
+
+            $.ajax({
+                url: "/api/cart/details/update/" + itemId + "?soLuong=" + newQuantity,
+                type: "PUT",
+                success: function () {
+                    quantityElem.val(newQuantity);
+                    let price = parseFloat(totalElem.text()) / parseInt(quantityElem.val());
+                    totalElem.text((price * newQuantity).toFixed(2));
+
+                    let totalPrice = 0;
+                    $("span[id^='total-']").each(function () {
+                        totalPrice += parseFloat($(this).text());
+                    });
+                    totalPriceElem.text(totalPrice.toFixed(2));
+                }
+            });
+        });
+
+        // Xóa sản phẩm khỏi giỏ hàng bằng AJAX
+        $(".btn-remove").click(function () {
+            let itemId = $(this).data("id");
+            removeFromCart(itemId);
+        });
+
+        function removeFromCart(itemId) {
+            $.ajax({
+                url: "/api/cart/details/remove/" + itemId,
+                type: "DELETE",
+                success: function () {
+                    $("#row-" + itemId).remove();
+
+                    let totalPrice = 0;
+                    $("span[id^='total-']").each(function () {
+                        totalPrice += parseFloat($(this).text());
+                    });
+                    $("#total-price").text(totalPrice.toFixed(2));
+                }
+            });
+        }
+
+        // Xác nhận đặt hàng
+        $("#checkout-form").submit(function (event) {
+            if (!confirm("Bạn có chắc chắn muốn đặt hàng không?")) {
+                event.preventDefault();
+            }
+        });
+    });
+</script>
+
 </body>
 </html>
