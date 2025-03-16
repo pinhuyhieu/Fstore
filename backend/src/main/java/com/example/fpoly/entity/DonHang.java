@@ -51,8 +51,7 @@ public class DonHang {
 
 //    @OneToMany(mappedBy = "donHang", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private List<ChiTietDonHang> chiTietDonHangList;
-@OneToMany(mappedBy = "donHang", cascade = CascadeType.ALL, orphanRemoval = true)
+@OneToMany(mappedBy = "donHang", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 @JsonManagedReference
 private List<ChiTietDonHang> chiTietDonHangList;
-
 }
