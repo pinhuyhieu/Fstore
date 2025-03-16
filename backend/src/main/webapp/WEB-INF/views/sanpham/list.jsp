@@ -4,109 +4,138 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Danh sách sản phẩm</title>
+    <title>Danh sách sản phẩm - Fstore</title>
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
-        .product-card {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            padding: 15px;
-            margin-bottom: 20px;
-            text-align: center;
+        body {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: #333;
         }
+
+        .container {
+            margin-top: 40px;
+        }
+
+        .product-card {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
         .product-card img {
             max-width: 100%;
             height: auto;
+            border-radius: 8px;
             margin-bottom: 10px;
-            border-radius: 5px;
         }
+
         .product-card h5 {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
         }
+
         .product-card p {
-            font-size: 14px;
-            color: #666;
+            font-size: 16px;
+            color: #555;
         }
+
         .btn-action {
-            margin: 5px 0;
+            margin: 5px;
+            width: 100%;
         }
+
+        /* Sidebar cải tiến */
+        .sidebar {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h4 {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0984e3;
+            text-align: center;
+        }
+
+        .list-group-item-action:hover {
+            background-color: #dfe6e9;
+            color: #0984e3;
+        }
+
+        .list-group-item-action {
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar .badge {
+            font-size: 14px;
+        }
+
+        footer {
+            background-color: #f8f9fa;
+            line-height: 1.5;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 14px;
+            margin-top: 20px;
+            width: 100%;
+            position: relative;
+            bottom: 0;
+        }
+
     </style>
 </head>
 <body>
 
 <%@ include file="../include/header.jsp" %>
 
-<div class="container mt-4">
-    <h1 class="mb-4">Danh sách sản phẩm</h1>
+<div class="container">
     <div class="row">
-        <!-- SIDEBAR (col-lg-3) -->
-        <div class="col-lg-3 col-md-4">
-            <aside>
-                <h4>Danh mục</h4>
-                <ul class="list-group mb-4">
+        <!-- Sidebar -->
+        <div class="col-lg-3">
+            <div class="sidebar">
+                <h4>Danh mục sản phẩm</h4>
+                <ul class="list-group">
                     <c:forEach var="dm" items="${danhmuc}">
-                        <li class="list-group-item">
-                            <!-- Giả sử bạn muốn link đến /sanpham?danhMucID=xx -->
-                            <a href="${pageContext.request.contextPath}/sanpham?danhMucID=${dm.id}">
-                                    ${dm.tenDanhMuc}
-                            </a>
-                        </li>
+                        <a href="${pageContext.request.contextPath}/sanpham?danhMucID=${dm.id}"
+                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <span>${dm.tenDanhMuc}</span>
+
+                        </a>
                     </c:forEach>
                 </ul>
-
-                <!-- Bạn có thể thêm các phần sidebar khác như bộ lọc giá, top sản phẩm, v.v. -->
-                <h4>Bộ lọc giá (ví dụ)</h4>
-                <div class="mb-4">
-                    <!-- Tùy ý, demo thôi -->
-                    <form action="#" method="get">
-                        <label for="minPrice">Giá tối thiểu</label>
-                        <input type="number" class="form-control" name="minPrice" id="minPrice" />
-                        <label for="maxPrice" class="mt-2">Giá tối đa</label>
-                        <input type="number" class="form-control" name="maxPrice" id="maxPrice" />
-                        <button type="submit" class="btn btn-primary mt-2">Lọc</button>
-                    </form>
-                </div>
-            </aside>
+            </div>
         </div>
-
-        <!-- DANH SÁCH SẢN PHẨM (col-lg-9) -->
-        <div class="col-lg-9 col-md-8">
-            <a class="btn btn-primary mb-3"
-               href="${pageContext.request.contextPath}/sanpham/create">Thêm Sản Phẩm</a>
-
+        <!-- Product list -->
+        <div class="col-lg-9">
+            <h1 class="mb-4">Danh sách sản phẩm</h1>
             <div class="row">
                 <c:forEach var="sp" items="${dsSanPham}">
-                    <div class="col-md-4">
+                    <div class="col-md-4 mb-4">
                         <div class="product-card">
                             <c:choose>
                                 <c:when test="${not empty sp.hinhAnhs}">
-                                    <img src="${pageContext.request.contextPath}/${sp.hinhAnhs[0].duongDan}"
-                                         alt="${sp.tenSanPham}" />
+                                    <img src="${pageContext.request.contextPath}/${sp.hinhAnhs[0].duongDan}" alt="${sp.tenSanPham}">
                                 </c:when>
                                 <c:otherwise>
-                                    <img src="https://via.placeholder.com/300"
-                                         alt="Ảnh mặc định" />
+                                    <img src="https://via.placeholder.com/300" alt="Ảnh mặc định">
                                 </c:otherwise>
                             </c:choose>
                             <h5>${sp.tenSanPham}</h5>
                             <p>Giá: <b>${sp.giaBan} ₫</b></p>
-                            <p>${sp.moTa}</p>
-                            <div>
-                                <!-- Tùy ý đổi text nút -->
-                                <a class="btn btn-info btn-sm btn-action"
-                                   href="${pageContext.request.contextPath}/sanpham/detail/${sp.id}">
-                                    Mua ngay
-                                </a>
-                                <br>
-                                <a class="btn btn-danger btn-sm btn-action"
-                                   href="${pageContext.request.contextPath}/sanpham/delete/${sp.id}">
-                                    Thêm vào giỏ
-                                </a>
-                            </div>
+                            <a class="btn btn-primary btn-action" href="${pageContext.request.contextPath}/sanpham/detail/${sp.id}">Mua ngay</a>
+                            <a class="btn btn-secondary btn-action" href="${pageContext.request.contextPath}/sanpham/cart/add/${sp.id}">Thêm vào giỏ</a>
                         </div>
                     </div>
                 </c:forEach>

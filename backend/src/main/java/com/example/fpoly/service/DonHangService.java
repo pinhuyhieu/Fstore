@@ -11,4 +11,8 @@ public interface DonHangService {
     List<DonHang> getOrdersByUser(User user);
     Optional<DonHang> getOrderById(Integer id);
     void deleteOrder(Integer id);
+
+
+    // 🆕 Tiến hành đặt hàng
+    DonHang tienHanhDatHang(User user, DonHang donHang);
 }
