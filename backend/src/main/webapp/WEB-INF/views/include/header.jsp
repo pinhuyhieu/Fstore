@@ -48,7 +48,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/sanpham">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/sanpham/list">
                         🛍️ Sản Phẩm
                     </a>
                 </li>

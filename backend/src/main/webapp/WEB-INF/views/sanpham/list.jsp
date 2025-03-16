@@ -123,8 +123,8 @@
             <div class="row">
                 <c:forEach var="sp" items="${dsSanPham}">
                     <div class="col-md-4 mb-4">
-                        <div class="product-card">
-                            <c:choose>
+                        <div class="product-card" onclick="window.location.href='${pageContext.request.contextPath}/sanpham/detail/${sp.id}'" style="cursor: pointer;">
+                        <c:choose>
                                 <c:when test="${not empty sp.hinhAnhs}">
                                     <img src="${pageContext.request.contextPath}/${sp.hinhAnhs[0].duongDan}" alt="${sp.tenSanPham}">
                                 </c:when>
@@ -134,8 +134,8 @@
                             </c:choose>
                             <h5>${sp.tenSanPham}</h5>
                             <p>Giá: <b>${sp.giaBan} ₫</b></p>
-                            <a class="btn btn-primary btn-action" href="${pageContext.request.contextPath}/sanpham/detail/${sp.id}">Mua ngay</a>
-                            <a class="btn btn-secondary btn-action" href="${pageContext.request.contextPath}/sanpham/cart/add/${sp.id}">Thêm vào giỏ</a>
+<%--                            <a class="btn btn-primary btn-action" href="${pageContext.request.contextPath}/sanpham/detail/${sp.id}">Mua ngay</a>--%>
+<%--                            <a class="btn btn-secondary btn-action" href="${pageContext.request.contextPath}/sanpham/cart/add/${sp.id}">Thêm vào giỏ</a>--%>
                         </div>
                     </div>
                 </c:forEach>

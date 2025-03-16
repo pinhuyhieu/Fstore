@@ -225,6 +225,13 @@
         </c:otherwise>
     </c:choose>
 
+    <div style="text-align: center; margin: 15px 0;">
+        <a href="${pageContext.request.contextPath}/sanpham/list"
+           class="btn btn-success"
+           style="text-decoration: none;">🔙 Quay lại trang sản phẩm</a>
+    </div>
+
+
 
     <c:if test="${gioHang != null and not empty gioHang.gioHangChiTietList}">
         <div class="container mt-5">
