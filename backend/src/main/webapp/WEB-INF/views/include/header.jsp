@@ -37,7 +37,7 @@
         <!-- Logo / Trang chủ -->
         <a class="navbar-brand" href="${pageContext.request.contextPath}/sanpham/index">Trang Chủ</a>
 
-        <!-- Nút toggle khi màn hình hẹp -->
+        <!-- Nút toggle khi màn hình hẹp lại -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarNav" aria-controls="navbarNav"
                 aria-expanded="false" aria-label="Toggle navigation">
