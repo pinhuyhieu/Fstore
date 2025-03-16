@@ -20,16 +20,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
-import org.springframework.security.web.firewall.DefaultHttpFirewall;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.web.DefaultSecurityFilterChain;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Arrays;
 
 @Configuration
-@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -70,7 +67,7 @@ public class SecurityConfig {
                 .formLogin(login -> login
                         .loginPage("/login")
                         .loginProcessingUrl("/doLogin") // Spring Security xử lý đăng nhập
-                        .defaultSuccessUrl("/sanpham/list", true)
+                        .successHandler(customLoginSuccessHandler()) // Xử lý chuyển hướng sau khi đăng nhập
                         .failureUrl("/login?error=true")
                         .permitAll()
                 )
@@ -92,6 +89,23 @@ public class SecurityConfig {
                 );
 
         return http.build();
+    }
+
+    @Bean
+    public AuthenticationSuccessHandler customLoginSuccessHandler() {
+        return (request, response, authentication) -> {
+            authentication.getAuthorities().forEach(grantedAuthority -> {
+                try {
+                    if (grantedAuthority.getAuthority().equals("ROLE_ADMIN")) {
+                        response.sendRedirect("/admin/home"); // 🔹 Chuyển hướng admin
+                    } else {
+                        response.sendRedirect("/sanpham/list"); // 🔹 Chuyển hướng user thường
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        };
     }
 
     @Bean
@@ -121,10 +135,4 @@ public class SecurityConfig {
         firewall.setAllowUrlEncodedDoubleSlash(true); // Cho phép URL chứa "//"
         return firewall;
     }
-
-    public void configure(WebSecurity web) {
-        web.httpFirewall(allowDoubleSlashFirewall());
-    }
-
 }
-
