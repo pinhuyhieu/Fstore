@@ -1,5 +1,6 @@
 package com.example.fpoly.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -42,6 +43,8 @@ public class User {
     private LocalDateTime ngayTao;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonIgnore // Ngăn vòng lặp
+
     @JoinTable(
             name = "nguoi_dung_vai_tro",
             joinColumns = @JoinColumn(name = "nguoi_dung_id"),
