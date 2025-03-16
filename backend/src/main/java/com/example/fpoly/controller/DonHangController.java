@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-@RestController
+@Controller
 @RequestMapping("/api/donhang")
 @RequiredArgsConstructor
 public class DonHangController {
@@ -92,5 +93,23 @@ public class DonHangController {
     public ResponseEntity<String> deleteOrder(@PathVariable Integer id) {
         donHangService.deleteOrder(id);
         return ResponseEntity.ok("✅ Đã xóa đơn hàng thành công.");
+    }
+    @GetMapping("/danh-sach")
+    public String danhSachDonHang(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        User user = userService.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("❌ Không tìm thấy user"));
+
+        List<DonHang> donHangs = donHangService.getOrdersByUser(user);
+        model.addAttribute("donHangs", donHangs);
+
+        return "danh-sach-don-hang"; // Trả về trang JSP
+    }
+    @GetMapping("/chi-tiet/{id}")
+    public String chiTietDonHang(@PathVariable Integer id, Model model) {
+        DonHang donHang = donHangService.getOrderById(id)
+                .orElseThrow(() -> new RuntimeException("❌ Đơn hàng không tồn tại."));
+
+        model.addAttribute("donHang", donHang);
+        return "chi-tiet-don-hang";
     }
 }
