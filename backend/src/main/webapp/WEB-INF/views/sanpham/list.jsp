@@ -11,10 +11,13 @@
         body {
             background: linear-gradient(135deg, #74b9ff, #0984e3);
             color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Ensure the body takes at least the full height of the viewport */
         }
 
         .container {
-            margin-top: 40px;
+            flex: 1; /* Ensure the container takes up available space */
         }
 
         .product-card {

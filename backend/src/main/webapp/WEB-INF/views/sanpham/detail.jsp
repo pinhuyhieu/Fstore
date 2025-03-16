@@ -224,7 +224,7 @@
                 <span id="giaTien">0 VNĐ</span>
             </div>
 
-            <!-- Nút Thêm vào giỏ hàng -->
+
             <!-- Nút thêm vào giỏ hàng -->
             <button id="btnThemVaoGio" class="btn btn-success">Thêm vào giỏ hàng</button>
             <a href="/sanpham/list" class="btn btn-secondary">Quay lại danh sách</a>
@@ -378,6 +378,21 @@
     // Gán sự kiện click cho nút "Thêm vào giỏ hàng"
     document.getElementById('btnThemVaoGio').addEventListener('click', addToCart);
 
+    // Hàm tăng số lượng
+    function increase() {
+        const quantityInput = document.getElementById('soLuong');
+        let quantity = parseInt(quantityInput.value);
+        quantityInput.value = quantity + 1;  // Tăng số lượng lên 1
+    }
+
+    // Hàm giảm số lượng
+    function decrease() {
+        const quantityInput = document.getElementById('soLuong');
+        let quantity = parseInt(quantityInput.value);
+        if (quantity > 1) {
+            quantityInput.value = quantity - 1;  // Giảm số lượng xuống 1
+        }
+    }
 
 
 

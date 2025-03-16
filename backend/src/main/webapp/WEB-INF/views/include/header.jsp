@@ -35,7 +35,7 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
         <!-- Logo / Trang chủ -->
-        <a class="navbar-brand" href="${pageContext.request.contextPath}/">Trang Chủ</a>
+        <a class="navbar-brand" href="${pageContext.request.contextPath}/sanpham/index">Trang Chủ</a>
 
         <!-- Nút toggle khi màn hình hẹp -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
