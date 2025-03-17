@@ -105,7 +105,7 @@
         }
 
         .quantity-btn {
-            background-color: #007bff; /* Blue color */
+            background-color: #343a40; /* Blue color */
             color: white;
             border: none;
             padding: 8px 14px;
@@ -120,7 +120,7 @@
         }
 
         .quantity-btn:hover {
-            background-color: #0056b3; /* Darker blue */
+            background-color: #333333; /* Darker blue */
             transform: scale(1.1); /* Slight zoom effect */
         }
 
@@ -207,7 +207,7 @@
                 <label for="soLuong">Số lượng:</label>
                 <div class="quantity-wrapper">
                     <button class="quantity-btn" onclick="decrease()">-</button>
-                    <input type="number" name="soLuong" id="soLuong" class="quantity-input" value="1" min="1">
+                    <input type="number" name="soLuong" id="soLuong" class="quantity-input" value="1" min="1" oninput="validateQuantity()">
                     <button class="quantity-btn" onclick="increase()">+</button>
                 </div>
             </div>
@@ -227,6 +227,8 @@
 
             <!-- Nút thêm vào giỏ hàng -->
             <button id="btnThemVaoGio" class="btn btn-success">Thêm vào giỏ hàng</button>
+            <!-- Nút mua hàng -->
+            <button id="btnMuaHang" class="btn btn-primary">Mua hàng</button>
             <a href="/sanpham/list" class="btn btn-secondary">Quay lại danh sách</a>
             <input type="hidden" id="sanPhamId" value="${sanPham.id}">
         </div>
@@ -314,6 +316,15 @@
 
     function addToCart() {
         requestAnimationFrame(() => {
+            const soLuongInput = document.getElementById('soLuong');
+            const soLuong = parseInt(soLuongInput.value);
+            const soLuongTon = parseInt(document.getElementById('soLuongTon').innerText);
+
+            if (soLuong > soLuongTon) {
+                alert("❌ Số lượng vượt quá hàng tồn kho!");
+                return;
+            }
+
             const selectedColor = document.querySelector('input[name="mauSac"]:checked');
             const colorId = selectedColor ? selectedColor.value : null;
 
@@ -322,9 +333,6 @@
 
             const sanPhamInput = document.getElementById('sanPhamId');
             const sanPhamId = sanPhamInput ? sanPhamInput.value : null;
-
-            const soLuongInput = document.getElementById('soLuong');
-            const soLuong = soLuongInput ? soLuongInput.value : 1;
 
             if (!colorId || !sizeId || !sanPhamId) {
                 alert("❌ Vui lòng chọn màu sắc và kích thước trước khi thêm vào giỏ hàng!");
@@ -335,21 +343,16 @@
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    console.log("📌 API Response:", data);
                     const sanPhamChiTietId = Number(data);
                     if (isNaN(sanPhamChiTietId)) {
                         alert("❌ Không tìm thấy sản phẩm chi tiết!");
                         return;
                     }
 
-                    console.log("✅ Sản phẩm chi tiết ID:", sanPhamChiTietId); // Debug
-
-                    // Chuẩn bị dữ liệu gửi đến API
                     const cartData = new URLSearchParams();
                     cartData.append("sanPhamChiTietId", sanPhamChiTietId);
-                    cartData.append("soLuong", soLuong); // Lấy từ input
+                    cartData.append("soLuong", soLuong);
 
-                    // Gửi request POST
                     return fetch('/api/cart/details/add', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -358,8 +361,6 @@
                 })
                 .then(response => response.json())
                 .then(result => {
-                    console.log("📌 API Response:", result); // Debug response
-
                     if (result.message) {
                         alert(result.message);
                         window.location.reload();
@@ -371,19 +372,106 @@
                     console.error("❌ Lỗi:", error);
                     alert("❌ Lỗi khi thêm sản phẩm vào giỏ hàng!");
                 });
-
         });
     }
+
 
     // Gán sự kiện click cho nút "Thêm vào giỏ hàng"
     document.getElementById('btnThemVaoGio').addEventListener('click', addToCart);
 
+    function validateQuantity() {
+        const quantityInput = document.getElementById('soLuong');
+        const soLuongTon = parseInt(document.getElementById('soLuongTon').innerText);
+        let quantity = parseInt(quantityInput.value);
+
+        if (quantity > soLuongTon) {
+            alert("❌ Số lượng vượt quá hàng tồn kho!");
+            quantityInput.value = soLuongTon;  // Đặt lại về số lượng tồn tối đa
+        } else if (quantity < 1) {
+            quantityInput.value = 1;  // Không cho phép nhập số lượng nhỏ hơn 1
+        }
+    }
+
     // Hàm tăng số lượng
     function increase() {
         const quantityInput = document.getElementById('soLuong');
+        const soLuongTon = parseInt(document.getElementById('soLuongTon').innerText);
         let quantity = parseInt(quantityInput.value);
-        quantityInput.value = quantity + 1;  // Tăng số lượng lên 1
+
+        if (quantity < soLuongTon) {
+            quantityInput.value = quantity + 1;  // Tăng số lượng lên 1
+        } else {
+            alert("❌ Số lượng vượt quá hàng tồn kho!");
+        }
     }
+
+    // // Gán sự kiện click cho nút "Mua hàng"
+    // document.getElementById('btnMuaHang').addEventListener('click', function() {
+    //     addToCart(true); // Gọi hàm addToCart với tham số true để chuyển trang
+    // });
+    //
+    // function addToCart(redirectToCart = false) {
+    //     requestAnimationFrame(() => {
+    //         const soLuongInput = document.getElementById('soLuong');
+    //         const soLuong = parseInt(soLuongInput.value);
+    //         const soLuongTon = parseInt(document.getElementById('soLuongTon').innerText);
+    //
+    //         if (soLuong > soLuongTon) {
+    //             alert("❌ Số lượng vượt quá hàng tồn kho!");
+    //             return;
+    //         }
+    //
+    //         const selectedColor = document.querySelector('input[name="mauSac"]:checked');
+    //         const colorId = selectedColor ? selectedColor.value : null;
+    //
+    //         const selectedSize = document.querySelector('.size-btn.active');
+    //         const sizeId = selectedSize ? selectedSize.dataset.size : null;
+    //
+    //         const sanPhamInput = document.getElementById('sanPhamId');
+    //         const sanPhamId = sanPhamInput ? sanPhamInput.value : null;
+    //
+    //         if (!colorId || !sizeId || !sanPhamId) {
+    //             alert("❌ Vui lòng chọn màu sắc và kích thước trước khi mua!");
+    //             return;
+    //         }
+    //
+    //         const url = "/sanpham/sanPhamChiTietId?mauSacId=" + colorId + "&sizeId=" + sizeId + "&sanPhamId=" + sanPhamId;
+    //         fetch(url)
+    //             .then(response => response.json())
+    //             .then(data => {
+    //                 const sanPhamChiTietId = Number(data);
+    //                 if (isNaN(sanPhamChiTietId)) {
+    //                     alert("❌ Không tìm thấy sản phẩm chi tiết!");
+    //                     return;
+    //                 }
+    //
+    //                 const cartData = new URLSearchParams();
+    //                 cartData.append("sanPhamChiTietId", sanPhamChiTietId);
+    //                 cartData.append("soLuong", soLuong);
+    //
+    //                 return fetch('/api/cart/details/add', {
+    //                     method: 'POST',
+    //                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    //                     body: cartData.toString()
+    //                 });
+    //             })
+    //             .then(response => response.json())
+    //             .then(result => {
+    //                 if (result.message) {
+    //                     if (redirectToCart) {
+    //                         window.location.href = "/cart"; // Điều hướng đến trang giỏ hàng
+    //                     } else {
+    //                         window.location.reload();
+    //                     }
+    //                 }
+    //             })
+    //             .catch(error => {
+    //                 console.error("❌ Lỗi:", error);
+    //                 alert("❌ Lỗi khi thêm sản phẩm vào giỏ hàng!");
+    //             });
+    //     });
+    // }
+
 
     // Hàm giảm số lượng
     function decrease() {

@@ -64,11 +64,20 @@ public class GioHangChiTietController {
         return ResponseEntity.ok(Map.of("success", true, "message", "✅ Sản phẩm đã được thêm vào giỏ hàng!"));
     }
 
+
     // ✏️ Cập nhật số lượng sản phẩm trong giỏ hàng
-    // ✏️ API cập nhật số lượng sản phẩm trong giỏ hàng
     @PutMapping("/update/{gioHangChiTietId}")
     public ResponseEntity<String> updateQuantity(@PathVariable Integer gioHangChiTietId, @RequestParam int soLuong) {
         try {
+            // Lấy số lượng tồn kho của sản phẩm
+            int soLuongTon = gioHangChiTietService.getSoLuongTon(gioHangChiTietId);
+
+            // Kiểm tra số lượng yêu cầu có vượt quá tồn kho không
+            if (soLuong > soLuongTon) {
+                return ResponseEntity.badRequest().body("❌ Số lượng tồn kho không đủ. Hiện chỉ còn " + soLuongTon + " sản phẩm.");
+            }
+
+            // Cập nhật số lượng nếu hợp lệ
             gioHangChiTietService.updateQuantity(gioHangChiTietId, soLuong);
             return ResponseEntity.ok("✅ Cập nhật số lượng thành công.");
         } catch (RuntimeException e) {

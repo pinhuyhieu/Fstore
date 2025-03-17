@@ -300,8 +300,7 @@
             $.ajax({
                 url: "/api/cart/details/update/" + itemId + "?soLuong=" + newQuantity,
                 type: "PUT",
-                success: function () {
-                    // Cập nhật số lượng hiển thị
+                success: function (response) {
                     quantityElem.val(newQuantity);
 
                     // Tính lại giá tiền sản phẩm
@@ -311,9 +310,13 @@
 
                     // Cập nhật lại tổng tiền giỏ hàng
                     updateTotalPrice();
+                },
+                error: function (xhr) {
+                    alert(xhr.responseText); // Hiển thị thông báo lỗi từ server
                 }
             });
         });
+
 
         // Xóa sản phẩm khỏi giỏ hàng bằng AJAX
         $(".btn-remove").click(function () {
