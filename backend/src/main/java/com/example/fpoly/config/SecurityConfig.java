@@ -78,6 +78,7 @@ public class SecurityConfig {
                         .deleteCookies("JSESSIONID")
                         .permitAll()
                 )
+
                 .authenticationProvider(authenticationProvider()) // Thêm AuthenticationProvider vào chuỗi bảo mật
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // JWT filter
                 .exceptionHandling(exception -> exception
@@ -86,6 +87,7 @@ public class SecurityConfig {
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                             response.getWriter().write("Bạn cần đăng nhập để truy cập tài nguyên này.");
                         })
+
                 );
 
         return http.build();
@@ -124,8 +126,7 @@ public class SecurityConfig {
     @Bean
     public AccessDeniedHandler accessDeniedHandler() {
         return (request, response, accessDeniedException) -> {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            response.getWriter().write("Bạn không có quyền truy cập tài nguyên này.");
+            response.sendRedirect("/auth/access-denied");
         };
     }
 

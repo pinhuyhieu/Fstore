@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -112,4 +113,26 @@ public class DonHangController {
         model.addAttribute("donHang", donHang);
         return "chi-tiet-don-hang";
     }
+    @GetMapping("/admin/list")
+    public String listOrders(Model model) {
+        List<DonHang> donHangs = donHangService.getAllOrders(); // Lấy tất cả đơn hàng
+        model.addAttribute("donHangs", donHangs);
+        return "admin/order-list"; // Trả về trang JSP hiển thị danh sách đơn hàng
+    }
+    @PostMapping("/admin/update-status/{id}")
+    public String updateOrderStatus(@PathVariable Integer id,
+                                    @RequestParam String trangThai,
+                                    RedirectAttributes redirectAttributes) {
+        DonHang donHang = donHangService.getOrderById(id)
+                .orElseThrow(() -> new RuntimeException("Đơn hàng không tồn tại."));
+        donHang.setTrangThai(trangThai);
+        donHangService.updateOrder(donHang);
+
+        // 🟢 Thêm thông báo vào session
+        redirectAttributes.addFlashAttribute("successMessage", "Cập nhật trạng thái thành công!");
+
+        return "redirect:/api/donhang/admin/list"; // Chuyển hướng về danh sách đơn hàng
+    }
+
+
 }

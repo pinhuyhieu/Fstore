@@ -67,6 +67,11 @@ public class AuthController {
 
         return "redirect:/login?registerSuccess=true";
     }
+    @GetMapping("/auth/access-denied")
+    public String accessDeniedPage(Model model) {
+        model.addAttribute("error", "Bạn không có quyền truy cập trang này!");
+        return "access-denied"; // Trả về trang access-denied.jsp hoặc access-denied.html
+    }
 }
 
 

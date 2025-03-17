@@ -12,6 +12,8 @@ public interface DonHangService {
     Optional<DonHang> getOrderById(Integer id);
     void deleteOrder(Integer id);
 
+    public List<DonHang> getAllOrders();
+    public DonHang updateOrder(DonHang donHang) ;
 
     // 🆕 Tiến hành đặt hàng
     DonHang tienHanhDatHang(User user, DonHang donHang);
