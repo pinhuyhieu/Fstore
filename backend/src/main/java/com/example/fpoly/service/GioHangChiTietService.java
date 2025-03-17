@@ -12,6 +12,7 @@ public interface GioHangChiTietService {
     List<GioHangChiTiet> getCartDetails(GioHang gioHang);
     void addToCart(User user, SanPhamChiTiet sanPhamChiTiet, int soLuong);
     void updateQuantity(Integer gioHangChiTietId, int soLuong);
+    int getSoLuongTon(Integer gioHangChiTietId); // Thêm phương thức mới
     void removeById(Integer gioHangChiTietId);
     Optional<GioHangChiTiet> findById(Integer id);
 }

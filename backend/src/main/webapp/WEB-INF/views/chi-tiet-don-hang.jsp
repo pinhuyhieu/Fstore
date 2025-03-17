@@ -4,55 +4,56 @@
 <html>
 <head>
     <title>Chi Tiết Đơn Hàng</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-<h2>Chi Tiết Đơn Hàng</h2>
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Chi Tiết Đơn Hàng</h2>
 
-<p><strong>ID:</strong> ${donHang.id}</p>
-<p><strong>Ngày Đặt Hàng:</strong> ${donHang.ngayDatHang}</p>
-<p><strong>Tổng Tiền:</strong> ${donHang.tongTien} VND</p>
-<p><strong>Trạng Thái:</strong> ${donHang.trangThai}</p>
-<p><strong>Người Nhận:</strong> ${donHang.tenNguoiNhan}</p>
-<p><strong>Địa Chỉ Giao Hàng:</strong> ${donHang.diaChiGiaoHang}</p>
-<p><strong>Phương Thức Thanh Toán:</strong> ${donHang.phuongThucThanhToan.tenPhuongThuc}</p>
+    <div class="card mb-4">
+        <div class="card-body">
+            <p><strong>ID:</strong> ${donHang.id}</p>
+            <p><strong>Ngày Đặt Hàng:</strong> ${donHang.ngayDatHang}</p>
+            <p><strong>Tổng Tiền:</strong> ${donHang.tongTien} VND</p>
+            <p><strong>Trạng Thái:</strong>
+                <span class="badge badge-info">${donHang.trangThai}</span>
+            </p>
+            <p><strong>Người Nhận:</strong> ${donHang.tenNguoiNhan}</p>
+            <p><strong>Địa Chỉ Giao Hàng:</strong> ${donHang.diaChiGiaoHang}</p>
+            <p><strong>Phương Thức Thanh Toán:</strong> ${donHang.phuongThucThanhToan.tenPhuongThuc}</p>
+        </div>
+    </div>
 
-<h3>Sản phẩm trong đơn hàng</h3>
-<table>
-    <thead>
-    <tr>
-        <th>Sản phẩm</th>
-        <th>Số lượng</th>
-        <th>Đơn giá</th>
-        <th>Thành tiền</th>
-    </tr>
-    </thead>
-    <tbody>
-    <c:forEach var="chiTiet" items="${donHang.chiTietDonHangList}">
+    <h3>Sản phẩm trong đơn hàng</h3>
+    <table class="table table-bordered table-hover">
+        <thead class="thead-dark">
         <tr>
-            <td>${chiTiet.sanPhamChiTiet.sanPham.tenSanPham}</td>
-            <td>${chiTiet.soLuong}</td>
-            <td>${chiTiet.giaBan} VND</td>
-            <td>${chiTiet.soLuong * chiTiet.giaBan} VND</td>
+            <th>Sản phẩm</th>
+            <th>Số lượng</th>
+            <th>Đơn giá</th>
+            <th>Thành tiền</th>
         </tr>
-    </c:forEach>
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+        <c:forEach var="chiTiet" items="${donHang.chiTietDonHangList}">
+            <tr>
+                <td>${chiTiet.sanPhamChiTiet.sanPham.tenSanPham}</td>
+                <td>${chiTiet.soLuong}</td>
+                <td>${chiTiet.giaBan} VND</td>
+                <td>${chiTiet.soLuong * chiTiet.giaBan} VND</td>
+            </tr>
+        </c:forEach>
+        </tbody>
+    </table>
 
-<br>
-<a href="/donhang/danh-sach">⬅ Quay lại danh sách đơn hàng</a>
+    <a href="/api/donhang/danh-sach" class="btn btn-secondary mt-3" style="margin-bottom: 20px">⬅ Quay lại danh sách đơn hàng</a>
+
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

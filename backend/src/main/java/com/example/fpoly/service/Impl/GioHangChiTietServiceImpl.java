@@ -1,4 +1,4 @@
-package com.example.fpoly.service.impl;
+package com.example.fpoly.service.Impl;
 
 import com.example.fpoly.entity.*;
 import com.example.fpoly.repository.GioHangChiTietRepository;
@@ -50,6 +50,14 @@ public class GioHangChiTietServiceImpl implements GioHangChiTietService {
         } else {
             throw new RuntimeException("❌ Không tìm thấy sản phẩm trong giỏ hàng");
         }
+    }
+    @Override
+    public int getSoLuongTon(Integer gioHangChiTietId) {
+        GioHangChiTiet gioHangChiTiet = gioHangChiTietRepository.findById(gioHangChiTietId)
+                .orElseThrow(() -> new RuntimeException("❌ Không tìm thấy sản phẩm trong giỏ hàng."));
+
+        // Giả sử `SanPhamChiTiet` có phương thức `getSoLuongTon()`
+        return gioHangChiTiet.getSanPhamChiTiet().getSoLuongTon();
     }
 
     @Override

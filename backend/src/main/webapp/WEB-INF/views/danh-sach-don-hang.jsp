@@ -4,51 +4,52 @@
 <html>
 <head>
     <title>Danh Sách Đơn Hàng</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-<h2>Danh Sách Đơn Hàng</h2>
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Danh Sách Đơn Hàng</h2>
 
-<table>
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Ngày Đặt Hàng</th>
-        <th>Tổng Tiền</th>
-        <th>Trạng Thái</th>
-        <th>Người Nhận</th>
-        <th>Địa Chỉ Giao Hàng</th>
-        <th>Phương Thức Thanh Toán</th>
-        <th>Chi Tiết</th>
-    </tr>
-    </thead>
-    <tbody>
-    <c:forEach var="donHang" items="${donHangs}">
+    <table class="table table-bordered table-hover">
+        <thead class="thead-dark">
         <tr>
-            <td>${donHang.id}</td>
-            <td>${donHang.ngayDatHang}</td>
-            <td>${donHang.tongTien} VND</td>
-            <td>${donHang.trangThai}</td>
-            <td>${donHang.tenNguoiNhan}</td>
-            <td>${donHang.diaChiGiaoHang}</td>
-            <td>${donHang.phuongThucThanhToan.tenPhuongThuc}</td>
-            <td><a href="/api/donhang/chi-tiet/${donHang.id}">Xem chi tiết</a></td>
+            <th>ID</th>
+            <th>Ngày Đặt Hàng</th>
+            <th>Tổng Tiền</th>
+            <th>Trạng Thái</th>
+            <th>Người Nhận</th>
+            <th>Địa Chỉ Giao Hàng</th>
+            <th>Phương Thức Thanh Toán</th>
+            <th>Chi Tiết</th>
         </tr>
-    </c:forEach>
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+        <c:forEach var="donHang" items="${donHangs}">
+            <tr>
+                <td>${donHang.id}</td>
+                <td>${donHang.ngayDatHang}</td>
+                <td>${donHang.tongTien} VND</td>
+                <td>
+                    <span class="badge badge-info">${donHang.trangThai}</span>
+                </td>
+                <td>${donHang.tenNguoiNhan}</td>
+                <td>${donHang.diaChiGiaoHang}</td>
+                <td>${donHang.phuongThucThanhToan.tenPhuongThuc}</td>
+                <td>
+                    <a href="/api/donhang/chi-tiet/${donHang.id}" class="btn btn-primary btn-sm">
+                        Xem chi tiết
+                    </a>
+                </td>
+            </tr>
+        </c:forEach>
+        </tbody>
+    </table>
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

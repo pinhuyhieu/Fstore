@@ -11,10 +11,13 @@
         body {
             background: linear-gradient(135deg, #74b9ff, #0984e3);
             color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Ensure the body takes at least the full height of the viewport */
         }
 
         .container {
-            margin-top: 40px;
+            flex: 1; /* Ensure the container takes up available space */
         }
 
         .product-card {
@@ -134,6 +137,7 @@
                             </c:choose>
                             <h5>${sp.tenSanPham}</h5>
                             <p>Giá: <b>${sp.giaBan} ₫</b></p>
+<%--                            nút --%>
 <%--                            <a class="btn btn-primary btn-action" href="${pageContext.request.contextPath}/sanpham/detail/${sp.id}">Mua ngay</a>--%>
 <%--                            <a class="btn btn-secondary btn-action" href="${pageContext.request.contextPath}/sanpham/cart/add/${sp.id}">Thêm vào giỏ</a>--%>
                         </div>
