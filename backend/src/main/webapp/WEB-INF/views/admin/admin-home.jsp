@@ -122,7 +122,7 @@
             </div>
 
             <div class="col-md-4">
-                <a href="${pageContext.request.contextPath}/admin/users?type=1" class="text-decoration-none">
+                <a href="${pageContext.request.contextPath}/api/donhang/admin/list" class="text-decoration-none">
                     <div class="card">
                         <i class="fa-solid fa-circle-user text-primary"></i>
                         <h4>Users</h4>

@@ -77,5 +77,14 @@ public class DonHangServiceImpl implements DonHangService {
 
         return savedOrder;
     }
+    @Override
+    public List<DonHang> getAllOrders() {
+        return donHangRepository.findAll();
+    }
+    @Override
+    public DonHang updateOrder(DonHang donHang) {
+        return donHangRepository.save(donHang);
+    }
+
 
 }
