@@ -250,6 +250,29 @@
                     <input type="text" class="form-control" name="diaChiGiaoHang" placeholder="Nhập địa chỉ" required>
                 </div>
                 <div class="form-group">
+                    <label for="tinhThanh">Tỉnh/Thành phố:</label>
+                    <select class="form-control" id="tinhThanh" name="tinhThanh" required>
+                        <option value="">Chọn Tỉnh/Thành phố</option>
+                        <!-- Tỉnh/Thành phố sẽ được lấy từ cơ sở dữ liệu hoặc API -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="quanHuyen">Quận/Huyện:</label>
+                    <select class="form-control" id="quanHuyen" name="quanHuyen" required>
+                        <option value="">Chọn Quận/Huyện</option>
+                        <!-- Quận/Huyện sẽ được lấy khi chọn Tỉnh/Thành phố -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="phuongXa">Phường/Xã:</label>
+                    <select class="form-control" id="phuongXa" name="phuongXa" required>
+                        <option value="">Chọn Phường/Xã</option>
+                        <!-- Phường/Xã sẽ được lấy khi chọn Quận/Huyện -->
+                    </select>
+                </div>
+                <div class="form-group">
                     <label>Phương thức thanh toán:</label>
                     <select class="form-control" name="phuongThucThanhToanId" required>
                         <option value="1">Thanh toán khi nhận hàng</option>
@@ -374,7 +397,112 @@
                 event.preventDefault();
             }
         });
+        $(document).ready(function () {
+            // Lấy Tỉnh/Thành phố khi trang được tải
+            $.ajax({
+                url: '/api/ghn/provinces',  // API lấy danh sách Tỉnh/Thành phố
+                method: 'GET',
+                success: function (data) {
+                    console.log('Dữ liệu tỉnh thành:', data);  // Kiểm tra dữ liệu trả về
+                    var tinhThanhSelect = $('#tinhThanh');
+                    tinhThanhSelect.empty();  // Xóa các tùy chọn cũ
+                    tinhThanhSelect.append('<option value="">Chọn Tỉnh/Thành phố</option>');  // Thêm lựa chọn mặc định
+
+                    // Kiểm tra nếu không có data hoặc data.data
+                    if (data && data.data) {
+                        data.data.forEach(function (province) {
+                            tinhThanhSelect.append('<option value="' + province.ProvinceID  + '">' + province.ProvinceName  + '</option>');
+                        });
+                    } else {
+                        alert("Không có dữ liệu tỉnh/thành phố.");
+                    }
+                },
+                error: function () {
+                    alert("Lỗi khi lấy danh sách tỉnh/thành phố.");
+                }
+            });
+
+            // Lấy danh sách Quận/Huyện khi người dùng chọn Tỉnh/Thành phố
+            $('#tinhThanh').change(function () {
+                var provinceId = $(this).val();  // Lấy giá trị provinceId từ dropdown
+
+                // Kiểm tra xem provinceId có hợp lệ không (không phải "undefined" hoặc rỗng)
+                if (!provinceId) {
+                    alert("Vui lòng chọn Tỉnh/Thành phố");
+                    return;  // Không thực hiện AJAX nếu không chọn Tỉnh
+                }
+
+                $.ajax({
+                    url: '/api/ghn/districts/' + provinceId,  // Gọi API để lấy Quận/Huyện theo provinceId
+                    method: 'GET',
+                    success: function (data) {
+                        console.log('Dữ liệu tỉnh thành:', data);
+                        var quanHuyenSelect = $('#quanHuyen');
+                        quanHuyenSelect.empty(); // Xóa các tùy chọn cũ
+                        quanHuyenSelect.append('<option value="">Chọn Quận/Huyện</option>');  // Thêm lựa chọn mặc định
+
+                        // Duyệt qua dữ liệu và thêm các quận huyện vào dropdown
+                        data.data.forEach(function (district) {
+                            quanHuyenSelect.append('<option value="' + district.DistrictID + '">' + district.DistrictName + '</option>');
+                        });
+                    },
+                    error: function () {
+                        alert("Lỗi khi lấy danh sách quận/huyện.");
+                    }
+                });
+            });
+
+            // Lấy danh sách Phường/Xã khi người dùng chọn Quận/Huyện
+            $('#quanHuyen').change(function () {
+                var districtId = $(this).val();  // Lấy giá trị districtId từ dropdown
+
+                // Kiểm tra xem districtId có hợp lệ không
+                if (!districtId) {
+                    return;  // Không thực hiện AJAX nếu không chọn Quận/Huyện
+                }
+
+                $.ajax({
+                    url: '/api/ghn/wards/' + districtId,  // Gọi API để lấy Phường/Xã theo districtId
+                    method: 'GET',
+                    success: function (data) {
+                        console.log('Dữ liệu tỉnh thành:', data);
+                        var phuongXaSelect = $('#phuongXa');
+                        phuongXaSelect.empty(); // Xóa các tùy chọn cũ
+                        phuongXaSelect.append('<option value="">Chọn Phường/Xã</option>');  // Thêm lựa chọn mặc định
+
+                        // Duyệt qua dữ liệu và thêm các phường xã vào dropdown
+                        data.data.forEach(function (ward) {
+                            phuongXaSelect.append('<option value="' + ward.WardCode + '">' + ward.WardName + '</option>');
+                        });
+                    },
+                    error: function () {
+                        alert("Lỗi khi lấy danh sách phường/xã.");
+                    }
+                });
+            });
+
+            // Gửi yêu cầu tạo đơn hàng
+            $('#create-order-form').submit(function (event) {
+                event.preventDefault();  // Ngừng gửi form mặc định
+
+                // Gửi yêu cầu tạo đơn hàng
+                $.ajax({
+                    url: '/api/ghn/create-order',
+                    method: 'POST',
+                    data: $(this).serialize(),  // Gửi toàn bộ form data
+                    success: function (response) {
+                        alert('Đơn hàng đã được tạo thành công!');
+                        // Bạn có thể thêm logic để điều hướng người dùng đến trang khác
+                    },
+                    error: function () {
+                        alert('Có lỗi xảy ra khi tạo đơn hàng!');
+                    }
+                });
+            });
+        });
+
     });
+
 </script>
 
 </body>
