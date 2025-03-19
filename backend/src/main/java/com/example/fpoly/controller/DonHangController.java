@@ -5,9 +5,11 @@ import com.example.fpoly.entity.DonHang;
 import com.example.fpoly.entity.PhuongThucThanhToan;
 import com.example.fpoly.entity.User;
 import com.example.fpoly.service.DonHangService;
+import com.example.fpoly.service.GHNService;
 import com.example.fpoly.service.PhuongThucThanhToanService;
 import com.example.fpoly.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -105,14 +107,38 @@ public class DonHangController {
 
         return "danh-sach-don-hang"; // Trả về trang JSP
     }
+
+    @Autowired
+    private GHNService ghnService;
+
     @GetMapping("/chi-tiet/{id}")
     public String chiTietDonHang(@PathVariable Integer id, Model model) {
+        // 🔹 Tìm đơn hàng theo ID từ database
         DonHang donHang = donHangService.getOrderById(id)
                 .orElseThrow(() -> new RuntimeException("❌ Đơn hàng không tồn tại."));
 
+        // 🔹 Lấy tên địa chỉ từ GHN API dựa trên mã đã lưu
+        String provinceName = ghnService.getProvinceName(donHang.getTinhThanh());
+        String districtName = ghnService.getDistrictName(
+                String.valueOf(donHang.getTinhThanh()), // Truyền provinceId
+                String.valueOf(donHang.getQuanHuyen())  // Truyền districtId
+        );
+
+        String wardName = ghnService.getWardName(
+                String.valueOf(donHang.getQuanHuyen()), // Truyền districtId
+                String.valueOf(donHang.getPhuongXa())   // Truyền wardCode
+        );
+
+        // 🔹 Gán vào đối tượng đơn hàng
+        donHang.setTinhThanh(provinceName);
+        donHang.setQuanHuyen(districtName);
+        donHang.setPhuongXa(wardName);
+
+        // 🔹 Truyền dữ liệu đến JSP
         model.addAttribute("donHang", donHang);
-        return "chi-tiet-don-hang";
+        return "chi-tiet-don-hang"; // Trả về trang JSP
     }
+
     @GetMapping("/admin/list")
     public String listOrders(Model model) {
         List<DonHang> donHangs = donHangService.getAllOrders(); // Lấy tất cả đơn hàng

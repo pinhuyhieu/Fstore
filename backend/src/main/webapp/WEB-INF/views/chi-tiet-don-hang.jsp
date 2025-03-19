@@ -20,7 +20,7 @@
                 <span class="badge badge-info">${donHang.trangThai}</span>
             </p>
             <p><strong>Người Nhận:</strong> ${donHang.tenNguoiNhan}</p>
-            <p><strong>Địa Chỉ Giao Hàng:</strong> ${donHang.diaChiGiaoHang}</p>
+            <p><strong>Địa Chỉ Giao Hàng:</strong> ${donHang.diaChiGiaoHang}, ${donHang.phuongXa}, ${donHang.quanHuyen}, ${donHang.tinhThanh}</p>
             <p><strong>Phương Thức Thanh Toán:</strong> ${donHang.phuongThucThanhToan.tenPhuongThuc}</p>
         </div>
     </div>

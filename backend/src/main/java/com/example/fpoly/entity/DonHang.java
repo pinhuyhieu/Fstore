@@ -44,6 +44,15 @@ public class DonHang {
 
     @Column(name = "dia_chi_giao_hang", nullable = false)
     private String diaChiGiaoHang;
+    // Các trường cho Tỉnh/Thành phố, Quận/Huyện, Phường/Xã
+    @Column(name = "tinh_thanh", nullable = false)
+    private String tinhThanh;
+
+    @Column(name = "quan_huyen", nullable = false)
+    private String quanHuyen;
+
+    @Column(name = "phuong_xa", nullable = false)
+    private String phuongXa;
 
     @ManyToOne
     @JoinColumn(name = "phuong_thuc_thanh_toan_id", referencedColumnName = "id", nullable = false)
