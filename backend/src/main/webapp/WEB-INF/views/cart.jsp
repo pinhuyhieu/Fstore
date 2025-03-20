@@ -236,7 +236,7 @@
     <c:if test="${gioHang != null and not empty gioHang.gioHangChiTietList}">
         <div class="container mt-5">
             <h2 class="text-center">Xác nhận đặt hàng</h2>
-            <form action="/api/donhang/dat-hang" method="post">
+            <form action="/api/donhang/dat-hang" method="post"  onsubmit="return confirm('Bạn có chắc chắn muốn đặt hàng không?')">
             <div class="form-group">
                     <label>Tên người nhận:</label>
                     <input type="text" class="form-control" name="tenNguoiNhan" placeholder="Nhập tên người nhận" required>
