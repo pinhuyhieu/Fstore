@@ -12,7 +12,7 @@
     <!-- Custom CSS -->
     <style>
         .navbar {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .cart-icon {
             position: relative;
@@ -36,7 +36,6 @@
     <div class="container-fluid">
         <!-- Logo / Trang chủ -->
         <a class="navbar-brand" href="${pageContext.request.contextPath}/sanpham/index">Trang Chủ</a>
-
         <!-- Nút toggle khi màn hình hẹp lại -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarNav" aria-controls="navbarNav"

@@ -34,6 +34,18 @@ public class SanPhamController {
     private MauSacService mauSacService;
     @Autowired
     private SizeService sizeService;
+
+
+    @GetMapping("/index")
+    public String index(Model model) {
+        List<SanPham> dssp = sanPhamRepository.findAll();
+        model.addAttribute("dsSanPham", dssp);
+        return "/sanpham/index"; // Trả về trang index.jsp
+    }
+
+
+
+
     @GetMapping("/list")
     public String listSanPham(Model model){
         List<SanPham> dssp = sanPhamRepository.findAll();
