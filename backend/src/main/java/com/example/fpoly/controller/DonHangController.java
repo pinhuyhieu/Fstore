@@ -4,10 +4,7 @@ import com.example.fpoly.entity.DonHang;
 
 import com.example.fpoly.entity.PhuongThucThanhToan;
 import com.example.fpoly.entity.User;
-import com.example.fpoly.service.DonHangService;
-import com.example.fpoly.service.GHNService;
-import com.example.fpoly.service.PhuongThucThanhToanService;
-import com.example.fpoly.service.UserService;
+import com.example.fpoly.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -59,13 +56,15 @@ public class DonHangController {
 //        DonHang newOrder = donHangService.createOrder(donHang);
 //        return ResponseEntity.ok(newOrder);
 //    }
-
+    @Autowired
+    private EmailService emailService;
     // ➕ Tạo đơn hàng mới
     @PostMapping("/dat-hang")
-    public ResponseEntity<DonHang> tienHanhDatHang(
+    public String tienHanhDatHang(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam Integer phuongThucThanhToanId,
-            @ModelAttribute DonHang donHang) {
+            @ModelAttribute DonHang donHang,
+            RedirectAttributes redirectAttributes) {
 
         User user = userService.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("❌ Không tìm thấy user"));
@@ -79,15 +78,19 @@ public class DonHangController {
         donHang.setPhuongThucThanhToan(phuongThucThanhToan);
 
         DonHang newOrder = donHangService.tienHanhDatHang(user, donHang);
-        return ResponseEntity.ok(newOrder);
+        redirectAttributes.addFlashAttribute("successMessage", "🎉 Đơn hàng của bạn đã được đặt thành công!");
+        emailService.sendOrderConfirmationEmail(user.getEmail(), newOrder.getId().toString());
+
+        // Chuyển hướng đến trang xác nhận đơn hàng
+        return "redirect:/api/donhang/xac-nhan?id=" + newOrder.getId();
     }
 
     @GetMapping("/xac-nhan")
-    public String showConfirmation(Model model, @RequestParam Integer orderId) {
-        DonHang donHang = donHangService.getOrderById(orderId)
+    public String showConfirmation(Model model, @RequestParam Integer id) {
+        DonHang donHang = donHangService.getOrderById(id)
                 .orElseThrow(() -> new RuntimeException("❌ Đơn hàng không tồn tại."));
         model.addAttribute("donHang", donHang);
-        return "xac-nhan-dat-hang";
+        return "xac-nhan";
     }
 
 
@@ -151,14 +154,19 @@ public class DonHangController {
                                     RedirectAttributes redirectAttributes) {
         DonHang donHang = donHangService.getOrderById(id)
                 .orElseThrow(() -> new RuntimeException("Đơn hàng không tồn tại."));
+
         donHang.setTrangThai(trangThai);
         donHangService.updateOrder(donHang);
 
         // 🟢 Thêm thông báo vào session
         redirectAttributes.addFlashAttribute("successMessage", "Cập nhật trạng thái thành công!");
 
+        // 🟢 Gửi email thông báo cập nhật trạng thái đơn hàng
+        emailService.sendOrderStatusUpdateEmail(donHang.getUser().getEmail(), id.toString(), trangThai);
+
         return "redirect:/api/donhang/admin/list"; // Chuyển hướng về danh sách đơn hàng
     }
+
 
 
 }
