@@ -2,51 +2,62 @@ package com.example.fpoly.controller;
 
 import com.example.fpoly.entity.GioHang;
 import com.example.fpoly.entity.GioHangChiTiet;
+import com.example.fpoly.entity.PhuongThucThanhToan;
 import com.example.fpoly.entity.User;
 import com.example.fpoly.service.GioHangChiTietService;
 import com.example.fpoly.service.GioHangService;
+import com.example.fpoly.service.PhuongThucThanhToanService;
 import com.example.fpoly.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
-@RestController
+@Controller
 @RequestMapping("/api/cart")
 @RequiredArgsConstructor
 public class GioHangController {
     private final GioHangService gioHangService;
     private final UserService userService;
     private final GioHangChiTietService gioHangChiTietService;
+    private final PhuongThucThanhToanService phuongThucThanhToanService;
 
     // 🛒 Lấy giỏ hàng theo user
 
+    @GetMapping
     public String showCart(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        // ✅ Kiểm tra chưa đăng nhập
         if (userDetails == null) {
-            model.addAttribute("error", "Bạn chưa đăng nhập!");
-            return "cart"; // Trả về trang giỏ hàng nhưng có thông báo lỗi
+            return "redirect:/login?requireLogin=true";
         }
 
+        // ✅ Tìm user trong hệ thống
         Optional<User> userOpt = userService.findByUsername(userDetails.getUsername());
         if (userOpt.isEmpty()) {
-            model.addAttribute("error", "Không tìm thấy người dùng!");
-            return "cart";
+            return "redirect:/login?error=userNotFound";
         }
 
-        GioHang gioHang = gioHangService.getGioHangByUser(userOpt.get());
+        User user = userOpt.get();
+
+        // ✅ Lấy giỏ hàng
+        GioHang gioHang = gioHangService.getGioHangByUser(user);
         if (gioHang == null || gioHang.getGioHangChiTietList().isEmpty()) {
-            model.addAttribute("gioHang", new GioHang()); // Trả về giỏ hàng rỗng
+            model.addAttribute("gioHang", new GioHang()); // Giỏ rỗng
         } else {
             model.addAttribute("gioHang", gioHang);
         }
+        List<PhuongThucThanhToan> list = phuongThucThanhToanService.getAllPaymentMethods();
+        model.addAttribute("dsPhuongThuc", list);
 
-        return "cart"; // Trả về JSP
+        return "cart"; // Trả về JSP hiển thị giỏ hàng
     }
+
 
 
     // 🗑 Xóa toàn bộ giỏ hàng

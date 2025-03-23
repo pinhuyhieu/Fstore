@@ -1,6 +1,7 @@
 package com.example.fpoly.service.Impl;
 
 import com.example.fpoly.entity.*;
+import com.example.fpoly.enums.TrangThaiDonHang;
 import com.example.fpoly.repository.ChiTietDonHangRepository;
 import com.example.fpoly.repository.DonHangRepository;
 import com.example.fpoly.repository.GioHangRepository;
@@ -28,7 +29,7 @@ public class DonHangServiceImpl implements DonHangService {
 
     @Override
     public List<DonHang> getOrdersByUser(User user) {
-        return donHangRepository.findByUser(user);
+        return donHangRepository.findByUserOrderByNgayDatHangDesc(user);
     }
 
     @Override
@@ -57,7 +58,7 @@ public class DonHangServiceImpl implements DonHangService {
         donHang.setUser(user);
         donHang.setNgayDatHang(LocalDateTime.now());
         donHang.setTongTien(tongTien);
-        donHang.setTrangThai("Mới");
+        donHang.setTrangThai(TrangThaiDonHang.CHO_XAC_NHAN);
 
         // Lưu đơn hàng
         DonHang savedOrder = donHangRepository.save(donHang);
@@ -79,7 +80,7 @@ public class DonHangServiceImpl implements DonHangService {
     }
     @Override
     public List<DonHang> getAllOrders() {
-        return donHangRepository.findAll();
+        return donHangRepository.findAllByOrderByNgayDatHangDesc();
     }
     @Override
     public DonHang updateOrder(DonHang donHang) {

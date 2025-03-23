@@ -3,6 +3,7 @@ package com.example.fpoly.controller;
 import com.example.fpoly.entity.SanPham;
 import com.example.fpoly.entity.SanPhamChiTiet;
 import com.example.fpoly.repository.MauSacRepository;
+import com.example.fpoly.repository.SanPhamChiTietRepository;
 import com.example.fpoly.repository.SizeRepository;
 import com.example.fpoly.service.Impl.SanPhamChiTietServiceImpl;
 import com.example.fpoly.service.SanPhamCTService;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -31,6 +33,8 @@ public class SanPhamChiTietController {
     private SanPhamService sanPhamService;
     @Autowired
     private SanPhamCTService sanPhamCTService;
+    @Autowired
+    private SanPhamChiTietRepository sanPhamChiTietRepository;
     @GetMapping("/list/{sanPhamId}")
     public String listChiTiet(@PathVariable Integer sanPhamId, Model model) {
 
@@ -56,7 +60,9 @@ public class SanPhamChiTietController {
     @PostMapping("/save")
     public String saveSanPhamChiTiet(@RequestParam(value = "id", required = false) Integer id,
                                      @RequestParam(value = "sanPhamId", required = false) Integer sanPhamId,
-                                     @ModelAttribute SanPhamChiTiet sanPhamChiTiet) {
+                                     @ModelAttribute SanPhamChiTiet sanPhamChiTiet,
+                                     RedirectAttributes redirectAttributes,
+                                     Model model) {
 
         System.out.println("DEBUG: sanPhamId = " + sanPhamId);
         System.out.println("DEBUG: id = " + id);
@@ -78,6 +84,19 @@ public class SanPhamChiTietController {
         if (sanPhamId == null) {
             throw new RuntimeException("sanPhamId không được null khi thêm mới!");
         }
+
+        // 🔒 Check trùng thuộc tính sản phẩm chi tiết
+        boolean exists = sanPhamChiTietRepository.existsBySanPhamIdAndSizeIdAndMauSacId(
+                sanPhamId,
+                sanPhamChiTiet.getSize().getId(),
+                sanPhamChiTiet.getMauSac().getId()
+        );
+
+        if (exists) {
+            redirectAttributes.addFlashAttribute("error", "❌ Đã tồn tại sản phẩm chi tiết trùng!");
+            return "redirect:/sanphamchitiet/list/" + sanPhamId;
+        }
+
         SanPham sanPham = sanPhamService.getById(sanPhamId);
         if (sanPham == null) {
             throw new RuntimeException("Không tìm thấy sản phẩm với ID: " + sanPhamId);
@@ -88,6 +107,7 @@ public class SanPhamChiTietController {
 
         return "redirect:/sanphamchitiet/list/" + sanPhamId;
     }
+
     @GetMapping("/delete/{id}")
     public String deleteChiTiet(@PathVariable("id") Integer id) {
         SanPhamChiTiet chiTiet = sanPhamChiTietService.getById(id);

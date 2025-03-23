@@ -1,5 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
 
 <html>
 <head>
@@ -12,6 +14,11 @@
         .table th { background-color: #007bff; color: #fff; }
         .table td, .table th { padding: 12px; }
         .btn-back { margin-top: 20px; }
+        .list-group-item {
+            border-left: 4px solid #0d6efd;
+            background-color: #f8f9fa;
+        }
+
     </style>
 </head>
 <body>
@@ -20,17 +27,46 @@
     <h2 class="text-center mb-4">Chi Tiết Đơn Hàng</h2>
 
     <div class="card shadow p-4">
-        <p><strong>ID:</strong> ${donHang.id}</p>
-        <p><strong>Ngày Đặt Hàng:</strong> ${donHang.ngayDatHang}</p>
-        <p><strong>Tổng Tiền:</strong> ${donHang.tongTien} VND</p>
-        <p><strong>Trạng Thái:</strong> ${donHang.trangThai}</p>
-        <p><strong>Người Nhận:</strong> ${donHang.tenNguoiNhan}</p>
-        <p><strong>Địa Chỉ Giao Hàng:</strong> ${donHang.diaChiGiaoHang}, ${donHang.phuongXa}, ${donHang.quanHuyen}, ${donHang.tinhThanh}</p>
-        <p><strong>Phương Thức Thanh Toán:</strong> ${donHang.phuongThucThanhToan.tenPhuongThuc}</p>
+        <p><strong>ID đơn hàng:</strong> #${donHang.id}</p>
+
+        <p><strong>📅 Ngày đặt:</strong> ${donHang.ngayDatHang}</p>
+
+        </p>
+
+        <p><strong>💰 Tổng tiền:</strong>
+            ${donHang.tongTien}"
+        </p>
+
+        <p><strong>📦 Trạng thái:</strong> ${donHang.trangThai.hienThi}</p>
+
+        <p><strong>👤 Người nhận:</strong> ${donHang.tenNguoiNhan}</p>
+
+        <p><strong>📍 Địa chỉ giao hàng:</strong><br/>
+            ${donHang.diaChiGiaoHang}<br/>
+            ${donHang.phuongXa}, ${donHang.quanHuyen}, ${donHang.tinhThanh}
+        </p>
+
+        <p><strong>💳 Thanh toán:</strong> ${donHang.phuongThucThanhToan.tenPhuongThuc}</p>
     </div>
+
 
     <h3 class="mt-4">Sản phẩm trong đơn hàng</h3>
     <table class="table table-bordered table-striped">
+        <h5 class="mt-4">🕓 Lịch sử trạng thái đơn hàng</h5>
+        <ul class="list-group mb-4">
+            <c:forEach var="log" items="${lichSuTrangThai}">
+                <li class="list-group-item">
+                    <strong>${log.trangThaiMoi.hienThi}</strong>
+                    <span class="text-muted">
+                - ${log.thoiGian}
+            </span>
+                    <c:if test="${not empty log.ghiChu}">
+                        <br/><em>📝 ${log.ghiChu}</em>
+                    </c:if>
+                </li>
+            </c:forEach>
+        </ul>
+
         <thead class="table-dark">
         <tr>
             <th>Sản phẩm</th>

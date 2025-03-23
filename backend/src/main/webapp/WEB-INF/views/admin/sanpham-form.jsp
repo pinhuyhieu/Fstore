@@ -80,11 +80,6 @@
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Giá bán (VNĐ)</label>
-            <input type="number" name="giaBan" class="form-control" placeholder="Nhập giá bán" value="${sanPham.giaBan}" required>
-        </div>
-
-        <div class="mb-3">
             <label class="form-label">Danh mục</label>
             <select name="danhMuc" class="form-select">
                 <c:forEach items="${listDanhMuc}" var="item">
@@ -111,7 +106,6 @@
         <tr>
             <th>ID</th>
             <th>Tên sản phẩm</th>
-            <th>Giá bán</th>
             <th>Danh mục</th>
             <th>Hình ảnh</th>
             <th>Hành động</th>
@@ -122,7 +116,6 @@
             <tr>
                 <td>${item.id}</td>
                 <td>${item.tenSanPham}</td>
-                <td><b>${item.giaBan} VNĐ</b></td>
                 <td>${item.danhMuc.tenDanhMuc}</td>
                 <td>
                     <!-- Form Upload Ảnh -->

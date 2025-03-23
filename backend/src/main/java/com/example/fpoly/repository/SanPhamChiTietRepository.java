@@ -22,4 +22,6 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet,I
             @Param("sizeId") Integer sizeId,
             @Param("sanPhamId") Integer sanPhamId
     );
+    boolean existsBySanPhamIdAndSizeIdAndMauSacId(Integer sanPhamId, Integer sizeId, Integer mauSacId);
+
 }

@@ -31,8 +31,6 @@ public class SanPham {
     @JoinColumn(name = "danh_muc_id", referencedColumnName = "id")
     private DanhMuc danhMuc;
 
-    @Column(name = "gia_ban", nullable = false)
-    private BigDecimal giaBan;
     // Ở DB đã có default GETDATE(),
     // ta dùng LocalDateTime để map.
     // Nếu muốn JPA tự set ngày tạo,

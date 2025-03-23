@@ -35,13 +35,26 @@ public class EmailService {
     }
 
     public void sendOrderStatusUpdateEmail(String to, String orderId, String status) {
-        String subject = "Cập nhật trạng thái đơn hàng #" + orderId;
-        String body = "<h2>🔔 Đơn hàng của bạn đã được cập nhật!</h2>"
-                + "<p>Mã đơn hàng: <strong>" + orderId + "</strong></p>"
-                + "<p>Trạng thái mới: <strong>" + status + "</strong></p>";
+        String subject = "📦 Đơn hàng #" + orderId + " của bạn đã được cập nhật";
+
+        String body = """
+            <div style="font-family: Arial, sans-serif; color: #333;">
+                <h2 style="color: #007bff;">🔔 Cập nhật đơn hàng</h2>
+                <p>Xin chào quý khách,</p>
+                <p>Đơn hàng <strong>#%s</strong> của bạn đã được cập nhật trạng thái.</p>
+                <p><strong>Trạng thái mới:</strong> <span style="color: green;">%s</span></p>
+                <hr>
+                <p>Bạn có thể theo dõi chi tiết đơn hàng tại liên kết sau:</p>
+                <p><a href="http://yourdomain.com/api/donhang/chi-tiet/%s" style="color: #007bff;">Xem chi tiết đơn hàng</a></p>
+                <br>
+                <p>Trân trọng,</p>
+                <p><strong>Đội ngũ hỗ trợ khách hàng</strong></p>
+            </div>
+            """.formatted(orderId, status, orderId);
 
         sendEmail(to, subject, body);
     }
+
 
     private void sendEmail(String to, String subject, String body) {
         try {

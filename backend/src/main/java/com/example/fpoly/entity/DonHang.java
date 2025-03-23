@@ -1,5 +1,6 @@
 package com.example.fpoly.entity;
 
+import com.example.fpoly.enums.TrangThaiDonHang;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -33,8 +34,10 @@ public class DonHang {
     @Column(name = "tong_tien", nullable = false)
     private Double tongTien;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "trang_thai", nullable = false)
-    private String trangThai; // Ví dụ: "Đang xử lý", "Hoàn thành", "Đã hủy"
+    private TrangThaiDonHang trangThai = TrangThaiDonHang.CHO_XAC_NHAN;
+
 
     @Column(name = "ten_nguoi_nhan", nullable = false)
     private String tenNguoiNhan;
