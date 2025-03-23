@@ -53,6 +53,7 @@
             <th>Ngày Đặt</th>
             <th>Tổng Tiền</th>
             <th>Trạng Thái</th>
+            <th>Thanh toán</th>
             <th>Hành Động</th>
         </tr>
         </thead>
@@ -93,12 +94,20 @@
 
                         </c:otherwise>
                     </c:choose>
-
+                <td>
+                    <c:choose>
+                        <c:when test="${donHang.thanhToan.trangThaiThanhToan == 'DA_THANH_TOAN'}">
+                            <span style="color:green;font-weight:bold;">Đã thanh toán</span>
+                        </c:when>
+                        <c:otherwise>
+                            <span style="color:red;font-weight:bold;">Chưa thanh toán</span>
+                        </c:otherwise>
+                    </c:choose>
+                </td>
 
                 </td>
                 <td class="text-center">
                     <a href="/api/donhang/chi-tiet/${donHang.id}" class="btn btn-primary btn-sm">🔍 Xem</a>
-                    <a href="/api/donhang/delete/${donHang.id}" onclick="return confirm('Bạn có chắc muốn xóa?');" class="btn btn-danger btn-sm">🗑 Xóa</a>
                 </td>
             </tr>
         </c:forEach>

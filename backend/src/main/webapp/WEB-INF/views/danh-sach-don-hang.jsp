@@ -18,6 +18,7 @@
             <th>Ngày Đặt Hàng</th>
             <th>Tổng Tiền</th>
             <th>Trạng Thái</th>
+            <th>Thanh toán</th>
             <th>Người Nhận</th>
             <th>Địa Chỉ Giao Hàng</th>
             <th>Phương Thức Thanh Toán</th>
@@ -33,6 +34,17 @@
                 <td>
                     <span class="badge badge-info">${donHang.trangThai.hienThi}</span>
                 </td>
+                <td>
+                    <c:choose>
+                        <c:when test="${donHang.thanhToan.trangThaiThanhToan == 'DA_THANH_TOAN'}">
+                            <span style="color:green;font-weight:bold;">Đã thanh toán</span>
+                        </c:when>
+                        <c:otherwise>
+                            <span style="color:red;font-weight:bold;">Chưa thanh toán</span>
+                        </c:otherwise>
+                    </c:choose>
+                </td>
+
                 <td>${donHang.tenNguoiNhan}</td>
                 <td>${donHang.diaChiGiaoHang}</td>
                 <td>${donHang.phuongThucThanhToan.tenPhuongThuc}</td>
