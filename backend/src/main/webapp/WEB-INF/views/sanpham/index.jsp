@@ -15,7 +15,7 @@
             color: #333;
             display: flex;
             flex-direction: column;
-            min-height: 100vh; /* Ensure the body takes at least the full height of the viewport */
+            min-height: 100vh;
         }
         .banner {
             background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.3)),
@@ -33,7 +33,6 @@
             width: 100%;
             overflow: visible;
         }
-
 
         .banner-content {
             text-align: center;
@@ -53,7 +52,7 @@
 
         .banner img {
             width: 100%;
-            height: auto; /* Giữ nguyên tỷ lệ ảnh */
+            height: auto;
         }
 
         .btn-primary {
@@ -102,37 +101,37 @@
 <!-- Banner -->
 <div class="banner">
     <div class="banner-content">
-        <h1>Welcome to Fstore</h1>
-        <p>The best fashion store for you</p>
-        <a href="/sanpham/list" class="btn btn-primary">Shop Now</a>
+        <h1>Chào mừng đến với Fstore</h1>
+        <p>Thế giới thời trang tốt nhất cho bạn</p>
+        <a href="/sanpham/list" class="btn btn-primary">Mua ngay</a>
     </div>
 </div>
 
-<!-- Service Section -->
+<!-- Khu vực dịch vụ -->
 <div class="container service-section text-center">
-    <h2 class="mb-4">Service by Fstore</h2>
+    <h2 class="mb-4">Dịch vụ của Fstore</h2>
     <div class="row">
         <div class="col-md-4 service-item">
-            <img src="https://via.placeholder.com/80" alt="Free Shipping">
-            <h4>Free Shipping</h4>
-            <p>Free shipping nationwide on orders over 1,500,000₫</p>
+            <img src="https://via.placeholder.com/80" alt="Miễn phí vận chuyển">
+            <h4>Miễn phí vận chuyển</h4>
+            <p>Miễn phí vận chuyển toàn quốc cho đơn hàng trên 1,500,000₫</p>
         </div>
         <div class="col-md-4 service-item">
-            <img src="https://via.placeholder.com/80" alt="Genuine Products">
-            <h4>Genuine Products</h4>
-            <p>6-month warranty for all products</p>
+            <img src="https://via.placeholder.com/80" alt="Sản phẩm chính hãng">
+            <h4>Sản phẩm chính hãng</h4>
+            <p>Bảo hành 6 tháng cho tất cả sản phẩm</p>
         </div>
         <div class="col-md-4 service-item">
-            <img src="https://via.placeholder.com/80" alt="Free Cleaning">
-            <h4>Free Cleaning</h4>
-            <p>Free shoe cleaning within the first 3 months</p>
+            <img src="https://via.placeholder.com/80" alt="Vệ sinh miễn phí">
+            <h4>Vệ sinh miễn phí</h4>
+            <p>Vệ sinh giày miễn phí trong 3 tháng đầu tiên</p>
         </div>
     </div>
 </div>
 
-<!-- Best Sellers Section -->
+<!-- Khu vực sản phẩm bán chạy -->
 <div class="container product-section" id="products">
-    <h2 class="text-center mb-4">Best Sellers</h2>
+    <h2 class="text-center mb-4">Sản phẩm</h2>
     <div class="row">
         <c:forEach var="sp" items="${dsSanPham}">
             <div class="col-md-3">
