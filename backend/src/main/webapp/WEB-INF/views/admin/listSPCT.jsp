@@ -40,6 +40,13 @@
             background-color: #343a40;
             color: #fff;
         }
+        .btn {
+            margin: 3px;
+            font-size: 14px;
+        }
+        .btn:hover {
+            opacity: 0.85;
+        }
     </style>
 </head>
 <body>
@@ -79,6 +86,8 @@
         </c:forEach>
         </tbody>
     </table>
+
+    <a href="${pageContext.request.contextPath}/sanpham/admin/list" class="btn btn-primary btn-lg">Quay lại danh sách sản phẩm</a>
 
     <!-- Form Thêm / Cập Nhật Chi Tiết Sản Phẩm -->
     <h3 class="text-center text-success mt-4">Thêm / Cập nhật Chi tiết Sản phẩm</h3>
@@ -124,10 +133,7 @@
         </div>
     </form>
 
-    <div class="mt-4 text-center">
-        <a href="/sanphamchitiet/add/${sanPhamId}" class="btn btn-primary btn-lg">Thêm Sản phẩm Chi tiết</a>
-        <a href="/sanpham/list" class="btn btn-secondary btn-lg">Quay lại danh sách Sản phẩm</a>
-    </div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

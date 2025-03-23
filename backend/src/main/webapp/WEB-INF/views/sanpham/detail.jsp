@@ -228,7 +228,7 @@
             <!-- Nút thêm vào giỏ hàng -->
             <button id="btnThemVaoGio" class="btn btn-success">Thêm vào giỏ hàng</button>
             <!-- Nút mua hàng -->
-            <button id="btnMuaHang" class="btn btn-primary">Mua hàng</button>
+<%--            <button id="btnMuaHang" class="btn btn-primary">Mua hàng</button>--%>
             <a href="/sanpham/list" class="btn btn-secondary">Quay lại danh sách</a>
             <input type="hidden" id="sanPhamId" value="${sanPham.id}">
         </div>

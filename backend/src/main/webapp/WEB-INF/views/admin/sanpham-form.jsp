@@ -24,11 +24,11 @@
             text-align: center;
             vertical-align: middle;
         }
-        .btn-custom {
+        .btn {
             margin: 3px;
             font-size: 14px;
         }
-        .btn-custom:hover {
+        .btn:hover {
             opacity: 0.85;
         }
         .form-label {
@@ -36,23 +36,6 @@
         }
         .form-control, .form-select {
             border-radius: 8px;
-        }
-        .img-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-        }
-        .img-container img {
-            width: 80px;
-            height: auto;
-            border: 1px solid #ccc;
-            padding: 5px;
-            border-radius: 8px;
-            transition: transform 0.2s ease-in-out;
-        }
-        .img-container img:hover {
-            transform: scale(1.1);
         }
         .table thead {
             background-color: #343a40;
@@ -98,56 +81,10 @@
             <a href="${pageContext.request.contextPath}/sanpham/admin/add" class="btn btn-secondary btn-lg">Hủy</a>
         </div>
     </form>
-
-    <!-- Danh Sách Sản Phẩm -->
-    <h2 class="text-center text-primary mt-4">Danh Sách Sản Phẩm</h2>
-    <table class="table table-bordered table-striped mt-3">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Tên sản phẩm</th>
-            <th>Danh mục</th>
-            <th>Hình ảnh</th>
-            <th>Hành động</th>
-        </tr>
-        </thead>
-        <tbody>
-        <c:forEach items="${dsSanPham}" var="item">
-            <tr>
-                <td>${item.id}</td>
-                <td>${item.tenSanPham}</td>
-                <td>${item.danhMuc.tenDanhMuc}</td>
-                <td>
-                    <!-- Form Upload Ảnh -->
-                    <form action="${pageContext.request.contextPath}/hinhanh/upload" method="post" enctype="multipart/form-data">
-                        <input type="hidden" name="sanPhamId" value="${item.id}">
-                        <input type="file" name="file" required>
-                        <button type="submit" class="btn btn-primary btn-sm btn-custom">Tải ảnh</button>
-                    </form>
-
-                    <!-- Danh sách hình ảnh -->
-                    <div class="img-container">
-                        <c:forEach var="hinhAnh" items="${item.hinhAnhs}">
-                            <div>
-                                <img src="${pageContext.request.contextPath}/${hinhAnh.duongDan}">
-                                <br>
-                                <a href="${pageContext.request.contextPath}/hinhanh/delete/${hinhAnh.id}?sanPhamId=${item.id}"
-                                   onclick="return confirm('Bạn có chắc muốn xóa ảnh này?');"
-                                   class="btn btn-danger btn-sm btn-custom">Xóa</a>
-                            </div>
-                        </c:forEach>
-                    </div>
-                </td>
-                <td>
-                    <a href="${pageContext.request.contextPath}/sanpham/admin/edit/${item.id}" class="btn btn-warning btn-sm btn-custom">Sửa</a>
-                    <a href="/sanphamchitiet/list/${item.id}" class="btn btn-info btn-sm btn-custom">Chi tiết</a>
-                    <a href="/sanpham/admin/delete?id=${item.id}" class="btn btn-danger btn-sm btn-custom"
-                       onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?');">Xóa</a>
-                </td>
-            </tr>
-        </c:forEach>
-        </tbody>
-    </table>
+    <div style="text-align: center; margin-top: 10px">
+        <a href="${pageContext.request.contextPath}/admin/home" class="btn btn-primary btn-lg">Quay lại trang chủ</a>
+        <a href="${pageContext.request.contextPath}/sanpham/admin/list" class="btn btn-primary btn-lg">Xem danh sách sản phẩm</a>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

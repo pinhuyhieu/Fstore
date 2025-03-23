@@ -152,10 +152,17 @@ public class SanPhamController {
 
     @GetMapping("/admin/add")
     public String showAddForm(Model model){
-        model.addAttribute("dsSanPham",sanPhamRepository.findAll());
+//        model.addAttribute("dsSanPham",sanPhamRepository.findAll());
         model.addAttribute("listDanhMuc",danhMucRepository.findAll());
         return "/admin/sanpham-form";
     }
+
+    @GetMapping("/admin/list")
+    public String showList(Model model) {
+        model.addAttribute("dsSanPham", sanPhamRepository.findAll());
+        return "/admin/sanpham-list";
+    }
+
     @GetMapping("/admin/delete")
     public String deleteSanPham(@RequestParam("id") Integer id){
         sanPhamService.delete(id);
