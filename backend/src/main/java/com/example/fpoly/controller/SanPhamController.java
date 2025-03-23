@@ -12,7 +12,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @Controller
@@ -51,12 +54,30 @@ public class SanPhamController {
         List<SanPham> dssp = sanPhamRepository.findAll();
         List<DanhMuc> dsdm = danhMucRepository.findAll();
 
+        Map<Integer, String> giaSanPhamMap = new HashMap<>();
+
+        NumberFormat formatVND = NumberFormat.getInstance(new Locale("vi", "VN"));
+
         for (SanPham sp : dssp) {
             List<HinhAnhSanPham> hinhAnhs = hinhAnhSanPhamService.getImagesBySanPhamId(sp.getId());
             sp.setHinhAnhs(hinhAnhs);
+
+            List<SanPhamChiTiet> chiTiets = sanPhamCTService.findBySanPhamId(sp.getId());
+            BigDecimal minGia = chiTiets.stream().map(SanPhamChiTiet::getGia).min(BigDecimal::compareTo).orElse(BigDecimal.ZERO);
+            BigDecimal maxGia = chiTiets.stream().map(SanPhamChiTiet::getGia).max(BigDecimal::compareTo).orElse(BigDecimal.ZERO);
+
+            String giaMinStr = formatVND.format(minGia);
+            String giaMaxStr = formatVND.format(maxGia);
+
+            String giaHienThi = minGia.equals(maxGia)
+                    ? "Giá: " + giaMinStr + "₫"
+                    : "Giá: " + giaMinStr + "₫ – " + giaMaxStr + "₫";
+
+            giaSanPhamMap.put(sp.getId(), giaHienThi);
         }
-        model.addAttribute("dsSanPham" ,dssp);
-        model.addAttribute("danhmuc",dsdm);
+        model.addAttribute("dsSanPham", dssp);
+        model.addAttribute("danhmuc", dsdm);
+        model.addAttribute("giaMap", giaSanPhamMap); // Truyền giá
         return "/sanpham/list";
     }
     @GetMapping("/detail/{id}")

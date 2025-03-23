@@ -10,4 +10,7 @@ import java.util.List;
 @Repository
 public interface DonHangRepository extends JpaRepository<DonHang, Integer> {
     List<DonHang> findByUser(User user);
+    List<DonHang> findByUserOrderByNgayDatHangDesc(User user);
+    List<DonHang> findAllByOrderByNgayDatHangDesc();
+
 }

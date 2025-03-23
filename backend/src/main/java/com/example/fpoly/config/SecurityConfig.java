@@ -60,6 +60,7 @@ public class SecurityConfig {
                         .requestMatchers("/login", "/register", "/doLogin", "/doRegister", "/sanpham/**", "/cart/**", "/sanphamchitiet/**","/api/cart/detail/").permitAll()
                         .requestMatchers("/WEB-INF/views/**").permitAll() // Cho phép truy cập JSP
                         .requestMatchers("/css/**", "/js/**", "/uploads/**").permitAll()
+                        .requestMatchers("/api/payment/vnpay-return").permitAll()
                         .requestMatchers("/user/**").hasRole("USER")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
@@ -84,9 +85,17 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception
                         .accessDeniedHandler(accessDeniedHandler()) // Xử lý lỗi 403
                         .authenticationEntryPoint((request, response, authException) -> {
-                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                            response.getWriter().write("Bạn cần đăng nhập để truy cập tài nguyên này.");
+                            // Nếu là truy cập từ trình duyệt (HTML, JSP), chuyển về trang login
+                            if (request.getHeader("Accept") != null && request.getHeader("Accept").contains("text/html")) {
+                                response.sendRedirect("/login");
+                            } else {
+                                // Nếu là API (REST), trả về JSON lỗi
+                                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                                response.setContentType("application/json");
+                                response.getWriter().write("{\"error\": \"Bạn cần đăng nhập để truy cập tài nguyên này.\"}");
+                            }
                         })
+
 
                 );
 

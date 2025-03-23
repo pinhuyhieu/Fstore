@@ -3,13 +3,13 @@
 
 <html>
 <head>
-    <title>Danh Sách Đơn Hàng</title>
+    <title>Lịch Sử Đơn Hàng</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
 <div class="container mt-4">
-    <h2 class="text-center mb-4">Danh Sách Đơn Hàng</h2>
+    <h2 class="text-center mb-4">Lịch Sử Mua Hàng</h2>
 
     <table class="table table-bordered table-hover">
         <thead class="thead-dark">
@@ -31,7 +31,7 @@
                 <td>${donHang.ngayDatHang}</td>
                 <td>${donHang.tongTien} VND</td>
                 <td>
-                    <span class="badge badge-info">${donHang.trangThai}</span>
+                    <span class="badge badge-info">${donHang.trangThai.hienThi}</span>
                 </td>
                 <td>${donHang.tenNguoiNhan}</td>
                 <td>${donHang.diaChiGiaoHang}</td>
