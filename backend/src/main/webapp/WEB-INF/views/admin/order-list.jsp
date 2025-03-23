@@ -49,6 +49,7 @@
         <tr>
             <th>ID</th>
             <th>Người Đặt</th>
+            <th>Số Điện Thoại</th>
             <th>Ngày Đặt</th>
             <th>Tổng Tiền</th>
             <th>Trạng Thái</th>
@@ -69,19 +70,31 @@
                         </c:otherwise>
                     </c:choose>
                 </td>
+                <td>${donHang.soDienThoaiNguoiNhan}</td>
                 <td>${fn:substring(donHang.ngayDatHang, 0, 10)} ${fn:substring(donHang.ngayDatHang, 11, 16)}</td>
                 <td><fmt:formatNumber value="${donHang.tongTien}" type="currency" currencyCode="VND" /></td>
                 <td>
-                    <form action="/api/donhang/admin/update-status/${donHang.id}" method="POST">
-                        <select name="trangThai" class="form-select form-select-sm" onchange="this.form.submit()">
-                            <option value="Chờ xác nhận" ${donHang.trangThai eq 'Chờ xác nhận' ? 'selected' : ''}>Chờ xác nhận</option>
-                            <option value="Đã xác nhận" ${donHang.trangThai eq 'Đã xác nhận' ? 'selected' : ''}>Đã xác nhận</option>
-                            <option value="Đang giao hàng" ${donHang.trangThai eq 'Đang giao hàng' ? 'selected' : ''}>Đang giao hàng</option>
-                            <option value="Thành công" ${donHang.trangThai eq 'Thành công' ? 'selected' : ''}>Thành công</option>
-                            <option value="Thất bại" ${donHang.trangThai eq 'Thất bại' ? 'selected' : ''}>Thất bại</option>
-                            <option value="Hủy" ${donHang.trangThai eq 'Hủy' ? 'selected' : ''}>Hủy</option>
-                        </select>
-                    </form>
+                    <c:choose>
+                        <c:when test="${donHang.trangThai.name() == 'HOAN_TAT' || donHang.trangThai.name() == 'DA_HUY'}">
+                            <span class="badge bg-secondary">${donHang.trangThai.hienThi}</span>
+                        </c:when>
+                        <c:otherwise>
+                            <form action="/api/donhang/admin/update-status/${donHang.id}" method="POST" onsubmit="return true;">
+                                <select name="trangThai"
+                                        class="form-select form-select-sm"
+                                        onchange="confirmChange(this)">
+                                    <c:forEach var="tt" items="${dsTrangThai}">
+                                        <option value="${tt.name()}" ${tt == donHang.trangThai ? 'selected' : ''}>
+                                                ${tt.hienThi}
+                                        </option>
+                                    </c:forEach>
+                                </select>
+                            </form>
+
+                        </c:otherwise>
+                    </c:choose>
+
+
                 </td>
                 <td class="text-center">
                     <a href="/api/donhang/chi-tiet/${donHang.id}" class="btn btn-primary btn-sm">🔍 Xem</a>
@@ -92,6 +105,22 @@
         </tbody>
     </table>
 </div>
+<script>
+    function confirmChange(selectElement) {
+        const form = selectElement.form;
+        const selectedOption = selectElement.options[selectElement.selectedIndex];
+        const trangThai = selectedOption.text;
+
+        const xacNhan = confirm("Bạn có chắc muốn chuyển trạng thái đơn hàng sang \"" + trangThai + "\"?");
+        if (xacNhan) {
+            form.submit();
+        } else {
+            // Quay lại lựa chọn cũ nếu hủy
+            form.reset();
+        }
+    }
+</script>
+
 
 </body>
 </html>

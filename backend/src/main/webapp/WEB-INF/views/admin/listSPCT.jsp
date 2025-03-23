@@ -46,6 +46,9 @@
 
 <div class="container">
     <h2 class="text-center text-primary mb-4">Danh sách Chi tiết Sản phẩm</h2>
+    <c:if test="${not empty error}">
+        <div class="alert alert-danger">${error}</div>
+    </c:if>
 
     <!-- Danh Sách Chi Tiết Sản Phẩm -->
     <table class="table table-bordered table-striped">

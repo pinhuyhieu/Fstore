@@ -207,7 +207,7 @@
                         <td>${item.sanPhamChiTiet.mauSac.tenMauSac}</td>
                         <td class="quantity-container">
                             <button class="quantity-btn btn-decrease" data-id="${item.id}">-</button>
-                            <input type="text" id="quantity-${item.id}" class="quantity-input" value="${item.soLuong}" readonly>
+                            <input type="text" id="quantity-${item.id}" class="quantity-input" value="${item.soLuong}" >
                             <button class="quantity-btn btn-increase" data-id="${item.id}">+</button>
                         </td>
                         <td><span id="total-${item.id}">${item.sanPhamChiTiet.gia * item.soLuong}</span> ₫</td>
@@ -275,10 +275,11 @@
                 <div class="form-group">
                     <label>Phương thức thanh toán:</label>
                     <select class="form-control" name="phuongThucThanhToanId" required>
-                        <option value="1">Thanh toán khi nhận hàng</option>
-                        <option value="2">Chuyển khoản ngân hàng</option>
-                        <option value="3">Thanh toán bằng ví điện tử</option>
+                        <c:forEach var="pt" items="${dsPhuongThuc}">
+                            <option value="${pt.id}">${pt.tenPhuongThuc}</option>
+                        </c:forEach>
                     </select>
+
                 </div>
                 <div class="form-group">
                     <label>Tổng tiền:</label>

@@ -37,7 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             logger.info("🔍 Request Path: {}", requestPath);
 
             // ✅ Bỏ qua kiểm tra JWT cho API đăng nhập, đăng ký
-            if (requestPath.startsWith("/login") || requestPath.startsWith("/doLogin") ||
+            if (requestPath.startsWith("/login") || requestPath.startsWith("/doLogin") ||requestPath.startsWith("/api/payment/vnpay-return") ||
                     requestPath.startsWith("/register") || requestPath.startsWith("/doRegister") || requestPath.startsWith("/favicon.ico"))
 
             {

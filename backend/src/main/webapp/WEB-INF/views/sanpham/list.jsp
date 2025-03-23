@@ -136,7 +136,7 @@
                                 </c:otherwise>
                             </c:choose>
                             <h5>${sp.tenSanPham}</h5>
-                            <p>Giá: <b>${sp.giaBan} ₫</b></p>
+                            <p>${giaMap[sp.id]}</p>
 <%--                            nút --%>
 <%--                            <a class="btn btn-primary btn-action" href="${pageContext.request.contextPath}/sanpham/detail/${sp.id}">Mua ngay</a>--%>
 <%--                            <a class="btn btn-secondary btn-action" href="${pageContext.request.contextPath}/sanpham/cart/add/${sp.id}">Thêm vào giỏ</a>--%>

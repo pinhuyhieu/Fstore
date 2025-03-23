@@ -82,7 +82,7 @@
             </ul>
 
             <!-- Giỏ hàng -->
-            <a href="${pageContext.request.contextPath}/cart" class="nav-link cart-icon position-relative me-3">
+            <a href="${pageContext.request.contextPath}/api/cart" class="nav-link cart-icon position-relative me-3">
                 🛒 Giỏ hàng
                 <c:if test="${not empty sessionScope.gioHangList}">
                     <span class="cart-count">${sessionScope.gioHangList.size()}</span>
@@ -107,6 +107,11 @@
                                 <li>
                                     <a class="dropdown-item text-danger" href="${pageContext.request.contextPath}/logout">
                                         🚪 Đăng Xuất
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="${pageContext.request.contextPath}/api/donhang/danh-sach">
+                                        Lịch sử mua hàng
                                     </a>
                                 </li>
                             </ul>
