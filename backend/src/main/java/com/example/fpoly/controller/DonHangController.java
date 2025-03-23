@@ -136,6 +136,9 @@ public class DonHangController {
                 .orElseThrow(() -> new RuntimeException("❌ Không tìm thấy user"));
 
         List<DonHang> donHangs = donHangService.getOrdersByUser(user);
+        for (DonHang dh : donHangs) {
+            thanhToanService.findByDonHangId(dh.getId()).ifPresent(dh::setThanhToan);
+        }
         model.addAttribute("donHangs", donHangs);
 
 
@@ -180,7 +183,9 @@ public class DonHangController {
     @GetMapping("/admin/list")
     public String listOrders(Model model) {
         List<DonHang> donHangs = donHangService.getAllOrders(); // Lấy tất cả đơn hàng
-
+        for (DonHang dh : donHangs) {
+            thanhToanService.findByDonHangId(dh.getId()).ifPresent(dh::setThanhToan);
+        }
         model.addAttribute("donHangs", donHangs);
         model.addAttribute("dsTrangThai", TrangThaiDonHang.values());
         return "admin/order-list"; // Trả về trang JSP hiển thị danh sách đơn hàng
@@ -196,45 +201,50 @@ public class DonHangController {
         try {
             TrangThaiDonHang trangThaiMoi = TrangThaiDonHang.valueOf(trangThai);
 
+            // ⚠️ Nếu đơn hàng đã hoàn tất hoặc hủy thì không cho cập nhật
             if (donHang.getTrangThai() == TrangThaiDonHang.HOAN_TAT ||
                     donHang.getTrangThai() == TrangThaiDonHang.DA_HUY) {
-                redirectAttributes.addFlashAttribute("successMessage", "⚠️ Đơn hàng đã " +
-                        donHang.getTrangThai().getHienThi() + ". Không thể thay đổi trạng thái.");
+
+                redirectAttributes.addFlashAttribute("successMessage",
+                        "⚠️ Đơn hàng đã " + donHang.getTrangThai().getHienThi() + ". Không thể thay đổi trạng thái.");
                 return "redirect:/api/donhang/admin/list";
             }
 
+            // ❌ Nếu trạng thái mới không hợp lệ theo quy tắc chuyển đổi
             if (!TrangThaiValidator.isHopLe(donHang.getTrangThai(), trangThaiMoi)) {
-                redirectAttributes.addFlashAttribute("successMessage", "❌ Không thể chuyển từ trạng thái " +
-                        donHang.getTrangThai().getHienThi() + " sang " + trangThaiMoi.getHienThi());
+                redirectAttributes.addFlashAttribute("successMessage",
+                        "❌ Không thể chuyển từ trạng thái " + donHang.getTrangThai().getHienThi()
+                                + " sang " + trangThaiMoi.getHienThi());
                 return "redirect:/api/donhang/admin/list";
             }
 
+            // ⚠️ Nếu không có thay đổi
             if (donHang.getTrangThai() == trangThaiMoi) {
-                redirectAttributes.addFlashAttribute("successMessage", "⚠️ Trạng thái đã là " +
-                        trangThaiMoi.getHienThi());
+                redirectAttributes.addFlashAttribute("successMessage",
+                        "⚠️ Trạng thái đã là " + trangThaiMoi.getHienThi());
                 return "redirect:/api/donhang/admin/list";
             }
 
-            // ✅ Cập nhật trạng thái
+            // ✅ Cập nhật trạng thái đơn hàng
             donHang.setTrangThai(trangThaiMoi);
             donHangService.updateOrder(donHang);
 
-            // ✅ Ghi lịch sử
+            // ✅ Ghi lại lịch sử thay đổi
             lichSuTrangThaiService.ghiLichSu(donHang, trangThaiMoi, "Admin cập nhật trạng thái");
 
-            // ✅ Gửi email
+            // ✅ Gửi email cho người dùng
             emailService.sendOrderStatusUpdateEmail(
                     donHang.getUser().getEmail(),
                     id.toString(),
                     trangThaiMoi.getHienThi()
             );
 
-            // ✅ Nếu là COD và đã hoàn tất → đánh dấu đã thanh toán
+            // ✅ Nếu là COD và đơn hàng hoàn tất → cập nhật trạng thái thanh toán
             if (trangThaiMoi == TrangThaiDonHang.HOAN_TAT &&
-                    donHang.getPhuongThucThanhToan().getPhuongThucCode() == PhuongThucCode.COD) {
+                    PhuongThucCode.COD.equals(donHang.getPhuongThucThanhToan().getPhuongThucCode())) {
 
                 ThanhToan thanhToan = thanhToanService.findByDonHangId(donHang.getId())
-                        .orElseThrow(() -> new RuntimeException("❌ Không tìm thấy bản ghi thanh toán"));
+                        .orElseThrow(() -> new RuntimeException("❌ Không tìm thấy bản ghi thanh toán."));
 
                 if (thanhToan.getTrangThaiThanhToan() == TrangThaiThanhToan.CHUA_THANH_TOAN) {
                     thanhToan.setTrangThaiThanhToan(TrangThaiThanhToan.DA_THANH_TOAN);
@@ -251,5 +261,6 @@ public class DonHangController {
 
         return "redirect:/api/donhang/admin/list";
     }
+
 
 }

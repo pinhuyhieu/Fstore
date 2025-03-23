@@ -60,8 +60,11 @@ public class DonHang {
     @ManyToOne
     @JoinColumn(name = "phuong_thuc_thanh_toan_id", referencedColumnName = "id", nullable = false)
     private PhuongThucThanhToan phuongThucThanhToan;
+    @OneToOne(mappedBy = "donHang", fetch = FetchType.LAZY)
+    private ThanhToan thanhToan;
 
-//    @OneToMany(mappedBy = "donHang", cascade = CascadeType.ALL, orphanRemoval = true)
+
+    //    @OneToMany(mappedBy = "donHang", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private List<ChiTietDonHang> chiTietDonHangList;
 @OneToMany(mappedBy = "donHang", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 @JsonManagedReference
