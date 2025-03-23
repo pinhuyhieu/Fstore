@@ -26,13 +26,14 @@
                 <input type="text" class="form-control" id="tenMauSac" name="tenMauSac" value="${mausac.tenMauSac}" required>
             </div>
 
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-success">
                 <c:choose>
                     <c:when test="${empty mausac.id}">Thêm</c:when>
                     <c:otherwise>Cập nhật</c:otherwise>
                 </c:choose>
             </button>
             <a href="${pageContext.request.contextPath}/admin/mausac/list" class="btn btn-secondary">Hủy</a>
+            <a href="${pageContext.request.contextPath}/admin/home" class="btn btn-primary">Quay lại</a>
         </form>
     </div>
 

@@ -17,14 +17,15 @@ public class HinhAnhSanPhamController {
     public String uploadImage(@RequestParam("file") MultipartFile file,
                               @RequestParam("sanPhamId") Integer sanPhamId) {
         hinhAnhSanPhamService.uploadImage(file, sanPhamId);
-        return "redirect:/sanpham/admin/add";
+        return "redirect:/sanpham/admin/list";
     }
 
     @GetMapping("/delete/{id}")
     public String deleteImage(@PathVariable("id") Integer id,
                               @RequestParam("sanPhamId") Integer sanPhamId) {
         hinhAnhSanPhamService.deleteImage(id);
-        return "redirect:/sanpham/edit/" + sanPhamId;
+//        return "redirect:/sanpham/edit/" + sanPhamId;
+        return "redirect:/sanpham/admin/list";
     }
 }
 
