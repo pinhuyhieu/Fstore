@@ -18,7 +18,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +38,8 @@ public class DonHangController {
     private LichSuTrangThaiService lichSuTrangThaiService;
     @Autowired
     private VNPayConfig vnPayConfig;
+    @Autowired
+    private SanPhamCTService sanPhamCTService;
 
     // 🔹 Lấy danh sách đơn hàng của user
     @GetMapping
@@ -264,10 +268,18 @@ public class DonHangController {
     @GetMapping("/admin/list")
     public String listOrders(Model model,
                              @RequestParam(defaultValue = "1") int page,
-                             @RequestParam(defaultValue = "") String keyword) {
+                             @RequestParam(defaultValue = "") String keyword,
+                             @RequestParam(required = false) String trangThai,
+                             @RequestParam(required = false) String tuNgay,
+                             @RequestParam(required = false) String denNgay,
+                             @RequestParam(required = false) Double minGia,
+                             @RequestParam(required = false) Double maxGia,
+                             @RequestParam(required = false) String trangThaiThanhToan
+    ) {
 
         List<DonHang> donHangs = donHangService.getAllOrders();
 
+        // 🔍 Tìm kiếm theo keyword
         if (!keyword.isEmpty()) {
             donHangs = donHangs.stream()
                     .filter(dh ->
@@ -278,7 +290,52 @@ public class DonHangController {
                     ).toList();
         }
 
-        // Phân trang
+        // 🔎 Lọc theo trạng thái
+        if (trangThai != null && !trangThai.isEmpty()) {
+            donHangs = donHangs.stream()
+                    .filter(dh -> dh.getTrangThai().name().equalsIgnoreCase(trangThai))
+                    .toList();
+        }
+
+        // 📅 Lọc theo ngày tạo
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        if (tuNgay != null && !tuNgay.trim().isEmpty()) {
+            LocalDateTime fromDate = LocalDate.parse(tuNgay.trim(), formatter).atStartOfDay();
+            donHangs = donHangs.stream()
+                    .filter(dh -> dh.getNgayDatHang().isAfter(fromDate) || dh.getNgayDatHang().isEqual(fromDate))
+                    .toList();
+        }
+
+        if (denNgay != null && !denNgay.trim().isEmpty()) {
+            LocalDateTime toDate = LocalDate.parse(denNgay.trim(), formatter).atTime(23, 59, 59);
+            donHangs = donHangs.stream()
+                    .filter(dh -> dh.getNgayDatHang().isBefore(toDate) || dh.getNgayDatHang().isEqual(toDate))
+                    .toList();
+        }
+
+
+        // 💰 Lọc theo khoảng giá
+        if (minGia != null) {
+            donHangs = donHangs.stream()
+                    .filter(dh -> dh.getTongTien() >= minGia)
+                    .toList();
+        }
+
+        if (maxGia != null) {
+            donHangs = donHangs.stream()
+                    .filter(dh -> dh.getTongTien() <= maxGia)
+                    .toList();
+        }
+        if (trangThaiThanhToan != null && !trangThaiThanhToan.isEmpty()) {
+            donHangs = donHangs.stream()
+                    .filter(dh -> {
+                        if (dh.getThanhToan() == null) return false;
+                        return dh.getThanhToan().getTrangThaiThanhToan().name().equalsIgnoreCase(trangThaiThanhToan);
+                    }).toList();
+        }
+
+
+        // 📄 Phân trang
         int pageSize = 10;
         int totalItems = donHangs.size();
         int totalPages = (int) Math.ceil((double) totalItems / pageSize);
@@ -286,20 +343,28 @@ public class DonHangController {
         int toIndex = Math.min(fromIndex + pageSize, totalItems);
         List<DonHang> paginated = donHangs.subList(fromIndex, toIndex);
 
-        // Gán thanh toán cho bản ghi đang hiển thị
+        // Gán thanh toán
         for (DonHang dh : paginated) {
             thanhToanService.findByDonHangId(dh.getId()).ifPresent(dh::setThanhToan);
         }
 
-        // Truyền về view
+        // 🧾 Gửi dữ liệu về view
+        model.addAttribute("donHangs", paginated);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("keyword", keyword);
-        model.addAttribute("donHangs", paginated);
+        model.addAttribute("trangThai", trangThai);
+        model.addAttribute("tuNgay", tuNgay);
+        model.addAttribute("denNgay", denNgay);
+        model.addAttribute("minGia", minGia);
+        model.addAttribute("maxGia", maxGia);
         model.addAttribute("dsTrangThai", TrangThaiDonHang.values());
+        model.addAttribute("trangThaiThanhToan", trangThaiThanhToan);
+
 
         return "admin/order-list";
     }
+
 
     @PostMapping("/admin/update-status/{id}")
     public String updateOrderStatus(@PathVariable Integer id,
@@ -311,6 +376,17 @@ public class DonHangController {
 
         try {
             TrangThaiDonHang trangThaiMoi = TrangThaiDonHang.valueOf(trangThai);
+            // Nếu trạng thái mới là ĐÃ_HUY → hoàn lại số lượng tồn cho sản phẩm chi tiết
+            if (trangThaiMoi == TrangThaiDonHang.DA_HUY) {
+                List<ChiTietDonHang> chiTietList = donHang.getChiTietDonHangList();
+                for (ChiTietDonHang chiTiet : chiTietList) {
+                    SanPhamChiTiet spct = chiTiet.getSanPhamChiTiet();
+                    spct.setSoLuongTon(spct.getSoLuongTon() + chiTiet.getSoLuong());
+                    // Lưu lại sản phẩm chi tiết (nhớ inject SanPhamCTService vào)
+                    sanPhamCTService.save(spct);
+                }
+            }
+
 
             // ⚠️ Nếu đơn hàng đã hoàn tất hoặc hủy thì không cho cập nhật
             if (donHang.getTrangThai() == TrangThaiDonHang.HOAN_TAT ||
