@@ -30,6 +30,8 @@ public class DonHangController {
     private final DonHangService donHangService;
     private final UserService userService;
     private final PhuongThucThanhToanService phuongThucThanhToanService;
+    private final GioHangService gioHangService;
+    private final GioHangChiTietService gioHangChiTietService;
     @Autowired
     private LichSuTrangThaiService lichSuTrangThaiService;
     @Autowired
@@ -74,19 +76,65 @@ public class DonHangController {
                           @ModelAttribute DonHang donHang,
                           RedirectAttributes redirectAttributes) {
 
+        // 🔐 Lấy thông tin user
         User user = userService.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy user"));
 
+        // 💳 Lấy phương thức thanh toán
         PhuongThucThanhToan phuongThucThanhToan = phuongThucThanhToanService.findById(phuongThucThanhToanId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy phương thức thanh toán"));
 
+        // 🛒 Lấy giỏ hàng của user
+        GioHang gioHang = gioHangService.getGioHangByUser(user);
+        List<GioHangChiTiet> gioHangChiTiets = gioHangChiTietService.getCartDetails(gioHang);
+
+        if (gioHangChiTiets == null || gioHangChiTiets.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "❌ Giỏ hàng của bạn đang trống!");
+            return "redirect:/sanpham/list";
+        }
+
+        // 🔁 Map sang chi tiết đơn hàng
+        List<ChiTietDonHang> chiTietList = gioHangChiTiets.stream().map(item -> {
+            ChiTietDonHang ct = new ChiTietDonHang();
+            ct.setSanPhamChiTiet(item.getSanPhamChiTiet());
+            ct.setSoLuong(item.getSoLuong());
+            ct.setGiaBan(item.getGiaTaiThoiDiemThem());
+            return ct;
+        }).toList();
+
+        // Gán đơn hàng cho từng chi tiết (liên kết 2 chiều)
+        chiTietList.forEach(ct -> ct.setDonHang(donHang));
+        donHang.setChiTietDonHangList(chiTietList);
+
+        // 💰 Tính tổng tiền
+        double tongTien = chiTietList.stream()
+                .mapToDouble(ct -> ct.getGiaBan().doubleValue() * ct.getSoLuong())
+                .sum();
+
+        // 🚚 Tính phí ship
+        int tongSoLuong = chiTietList.stream().mapToInt(ChiTietDonHang::getSoLuong).sum();
+        int toDistrictId;
+        try {
+            toDistrictId = Integer.parseInt(donHang.getQuanHuyen());
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute("error", "❌ Quận/Huyện không hợp lệ!");
+            return "redirect:/sanpham/list";
+        }
+
+        int phiShip = ghnService.tinhTienShipTheoSoLuong(tongSoLuong, toDistrictId, donHang.getPhuongXa(), (int) tongTien);
+
+        // 📝 Gán thêm thông tin cho đơn hàng
         donHang.setUser(user);
         donHang.setPhuongThucThanhToan(phuongThucThanhToan);
         donHang.setTrangThai(TrangThaiDonHang.CHO_XAC_NHAN);
+        donHang.setTongTien(tongTien);
+        donHang.setPhiShip(phiShip);
 
+        // 💾 Lưu đơn hàng + chi tiết
         DonHang newOrder = donHangService.tienHanhDatHang(user, donHang);
         lichSuTrangThaiService.ghiLichSu(newOrder, TrangThaiDonHang.CHO_XAC_NHAN, "Khởi tạo đơn hàng");
 
+        // 💳 Tạo thanh toán
         ThanhToan thanhToan = new ThanhToan();
         thanhToan.setDonHang(newOrder);
         thanhToan.setPhuongThucThanhToan(phuongThucThanhToan);
@@ -94,6 +142,7 @@ public class DonHangController {
         thanhToan.setTrangThaiThanhToan(TrangThaiThanhToan.CHUA_THANH_TOAN);
         thanhToanService.save(thanhToan);
 
+        // 🌐 Thanh toán VNPAY
         if (phuongThucThanhToan.getPhuongThucCode() == PhuongThucCode.VNPAY) {
             try {
                 String url = vnPayConfig.createPaymentUrl(
@@ -103,15 +152,18 @@ public class DonHangController {
                 );
                 return "redirect:" + url;
             } catch (Exception e) {
-                redirectAttributes.addFlashAttribute("error", "Lỗi tạo link thanh toán VNPay: " + e.getMessage());
+                redirectAttributes.addFlashAttribute("error", "❌ Lỗi tạo link thanh toán VNPay: " + e.getMessage());
                 return "redirect:/sanpham/list";
             }
         }
 
-        redirectAttributes.addFlashAttribute("successMessage", "Đặt hàng thành công!");
+        // 📧 Gửi email + thông báo
         emailService.sendOrderConfirmationEmail(user.getEmail(), newOrder.getId().toString());
+        redirectAttributes.addFlashAttribute("successMessage", "✅ Đặt hàng thành công!");
         return "redirect:/api/donhang/xac-nhan?id=" + newOrder.getId();
     }
+
+
 
 
 
@@ -131,19 +183,46 @@ public class DonHangController {
         return ResponseEntity.ok("✅ Đã xóa đơn hàng thành công.");
     }
     @GetMapping("/danh-sach")
-    public String danhSachDonHang(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+    public String danhSachDonHang(
+            Model model,
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "") String keyword
+    ) {
         User user = userService.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("❌ Không tìm thấy user"));
 
         List<DonHang> donHangs = donHangService.getOrdersByUser(user);
-        for (DonHang dh : donHangs) {
+
+        // 🔍 Tìm kiếm theo mã đơn hàng
+        if (!keyword.isEmpty()) {
+            donHangs = donHangs.stream()
+                    .filter(dh -> String.valueOf(dh.getId()).contains(keyword))
+                    .toList();
+        }
+
+        // 🔢 Phân trang
+        int pageSize = 10;
+        int totalItems = donHangs.size();
+        int totalPages = (int) Math.ceil((double) totalItems / pageSize);
+        int fromIndex = (page - 1) * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, totalItems);
+        List<DonHang> paginated = donHangs.subList(fromIndex, toIndex);
+
+        // 🔄 Gán thông tin thanh toán
+        for (DonHang dh : paginated) {
             thanhToanService.findByDonHangId(dh.getId()).ifPresent(dh::setThanhToan);
         }
-        model.addAttribute("donHangs", donHangs);
 
+        // 📦 Gửi về view
+        model.addAttribute("donHangs", paginated);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("keyword", keyword);
 
-        return "danh-sach-don-hang"; // Trả về trang JSP
+        return "danh-sach-don-hang";
     }
+
 
     @Autowired
     private GHNService ghnService;
@@ -173,6 +252,8 @@ public class DonHangController {
 
         // 🔹 Truyền dữ liệu đến JSP
         List<LichSuTrangThaiDonHang> lichSu = lichSuTrangThaiService.findByDonHangId(id);
+// 🔹 Lấy thông tin thanh toán và gán vào đơn hàng
+        thanhToanService.findByDonHangId(donHang.getId()).ifPresent(donHang::setThanhToan);
 
         // 🟢 Truyền vào view
         model.addAttribute("donHang", donHang);
@@ -181,15 +262,45 @@ public class DonHangController {
     }
 
     @GetMapping("/admin/list")
-    public String listOrders(Model model) {
-        List<DonHang> donHangs = donHangService.getAllOrders(); // Lấy tất cả đơn hàng
-        for (DonHang dh : donHangs) {
+    public String listOrders(Model model,
+                             @RequestParam(defaultValue = "1") int page,
+                             @RequestParam(defaultValue = "") String keyword) {
+
+        List<DonHang> donHangs = donHangService.getAllOrders();
+
+        if (!keyword.isEmpty()) {
+            donHangs = donHangs.stream()
+                    .filter(dh ->
+                            String.valueOf(dh.getId()).contains(keyword)
+                                    || (dh.getUser() != null && dh.getUser().getHoTen() != null &&
+                                    dh.getUser().getHoTen().toLowerCase().contains(keyword.toLowerCase()))
+                                    || (dh.getSoDienThoaiNguoiNhan() != null && dh.getSoDienThoaiNguoiNhan().contains(keyword))
+                    ).toList();
+        }
+
+        // Phân trang
+        int pageSize = 10;
+        int totalItems = donHangs.size();
+        int totalPages = (int) Math.ceil((double) totalItems / pageSize);
+        int fromIndex = (page - 1) * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, totalItems);
+        List<DonHang> paginated = donHangs.subList(fromIndex, toIndex);
+
+        // Gán thanh toán cho bản ghi đang hiển thị
+        for (DonHang dh : paginated) {
             thanhToanService.findByDonHangId(dh.getId()).ifPresent(dh::setThanhToan);
         }
-        model.addAttribute("donHangs", donHangs);
+
+        // Truyền về view
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("donHangs", paginated);
         model.addAttribute("dsTrangThai", TrangThaiDonHang.values());
-        return "admin/order-list"; // Trả về trang JSP hiển thị danh sách đơn hàng
+
+        return "admin/order-list";
     }
+
     @PostMapping("/admin/update-status/{id}")
     public String updateOrderStatus(@PathVariable Integer id,
                                     @RequestParam String trangThai,

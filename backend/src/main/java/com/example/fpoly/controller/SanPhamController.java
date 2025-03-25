@@ -75,6 +75,7 @@ public class SanPhamController {
 
             giaSanPhamMap.put(sp.getId(), giaHienThi);
         }
+
         model.addAttribute("dsSanPham", dssp);
         model.addAttribute("danhmuc", dsdm);
         model.addAttribute("giaMap", giaSanPhamMap); // Truyền giá

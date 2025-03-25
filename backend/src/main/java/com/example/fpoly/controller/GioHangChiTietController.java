@@ -24,27 +24,7 @@ public class GioHangChiTietController {
     private final UserService userService;
 
     // 🛒 Hiển thị danh sách sản phẩm trong giỏ hàng trên JSP
-    @GetMapping
-    public String getCartPage(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-        // 🔹 Lấy thông tin User từ UserDetails
-        User user = userService.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new RuntimeException("❌ Không tìm thấy user"));
 
-        // 🔹 Lấy giỏ hàng của user
-        GioHang gioHang = gioHangService.getGioHangByUser(user);
-        List<GioHangChiTiet> cartDetails = gioHangChiTietService.getCartDetails(gioHang);
-
-        // 🔹 Tính tổng tiền
-        BigDecimal tongTien = cartDetails.stream()
-                .map(item -> item.getSanPhamChiTiet().getGia().multiply(BigDecimal.valueOf(item.getSoLuong()))) // ✅ Sửa lỗi
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        // 🔹 Truyền dữ liệu sang JSP
-        model.addAttribute("gioHangChiTietList", cartDetails);
-        model.addAttribute("tongTien", tongTien);
-
-        return "/cart"; // Trả về trang cart.jsp
-    }
 
 
     // ➕ Thêm sản phẩm vào giỏ hàng

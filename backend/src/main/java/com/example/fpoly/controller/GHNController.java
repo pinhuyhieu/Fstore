@@ -119,4 +119,16 @@ public class GHNController {
     public ResponseEntity<String> createShippingOrder(@RequestBody OrderRequest orderRequest) {
         return ghnService.createShippingOrder(orderRequest);
     }
+    @GetMapping("/api/ghn/calculate-fee")
+    @ResponseBody
+    public ResponseEntity<Integer> calculateShippingFee(
+            @RequestParam("soLuong") int soLuong,
+            @RequestParam("districtId") int districtId,
+            @RequestParam("wardCode") String wardCode,
+            @RequestParam("tongTien") int tongTien
+    ) {
+        int phiShip = ghnService.tinhTienShipTheoSoLuong(soLuong, districtId, wardCode, tongTien);
+        return ResponseEntity.ok(phiShip);
+    }
+
 }

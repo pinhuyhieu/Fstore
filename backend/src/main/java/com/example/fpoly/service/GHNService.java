@@ -120,6 +120,94 @@ public class GHNService {
         }
         return "Không xác định";
     }
+    public int getAvailableServiceId(int fromDistrictId, int toDistrictId) {
+        String url = "https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/available-services";
+
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("shop_id", 5691281); // ✅ Thay bằng shop ID thật của bạn
+        requestBody.put("from_district", fromDistrictId);
+        requestBody.put("to_district", toDistrictId);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Token", API_KEY); // ⚠️ Token GHN của bạn
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<String> entity = new HttpEntity<>(requestBody.toString(), headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                entity,
+                String.class
+        );
+
+        if (response.getStatusCode().is2xxSuccessful()) {
+            JSONObject jsonResponse = new JSONObject(response.getBody());
+            JSONArray dataArray = jsonResponse.getJSONArray("data");
+
+            if (!dataArray.isEmpty()) {
+                int serviceId = dataArray.getJSONObject(0).getInt("service_id"); // Lấy cái đầu tiên
+                System.out.println("✅ service_id được chọn: " + serviceId);
+                return serviceId;
+            } else {
+                throw new RuntimeException("❌ Không có dịch vụ khả dụng cho tuyến này.");
+            }
+        } else {
+            throw new RuntimeException("❌ Lỗi GHN khi lấy available-services: " + response.getBody());
+        }
+    }
+
+
+
+
+    public int tinhTienShipTheoSoLuong(int soLuongSanPham, int toDistrictId, String toWardCode, int insuranceValue) {
+        String url = API_URL + "v2/shipping-order/fee";
+
+        // Ước lượng cân nặng & kích thước
+        int weight = soLuongSanPham * 300; // mỗi món 300g
+        int length = 30, width = 25, height = 10;
+
+        if (soLuongSanPham <= 2) {
+            length = 25; width = 20; height = 5;
+        } else if (soLuongSanPham >= 5) {
+            length = 35; width = 30; height = 15;
+        }
+        int serviceId = getAvailableServiceId(1482, toDistrictId);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("token", API_KEY);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("shop_id", "5691281"); // điền ShopId thật
+
+        JSONObject json = new JSONObject();
+        try {
+            json.put("from_district_id", 1482); // Mã quận cửa hàng của bạn (ví dụ: Q.1 HCM)
+            json.put("service_id", serviceId);
+            json.put("to_district_id", toDistrictId);
+            json.put("to_ward_code", toWardCode);
+            json.put("weight", weight);
+            json.put("length", length);
+            json.put("width", width);
+            json.put("height", height);
+            json.put("insurance_value", insuranceValue);
+            System.out.println("📦 GHN Fee Request JSON:\n" + json.toString(2));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return 0;
+        }
+
+        HttpEntity<String> request = new HttpEntity<>(json.toString(), headers);
+        try {
+            ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+            JSONObject responseJson = new JSONObject(response.getBody());
+            JSONObject data = responseJson.getJSONObject("data");
+            return data.getInt("total");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
 
 
 }

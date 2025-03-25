@@ -43,6 +43,11 @@
     </c:if>
 
     <h2 class="text-center mb-4">Danh Sách Đơn Hàng</h2>
+    <form method="get" class="form-inline mb-3">
+        <input type="text" name="keyword" class="form-control mr-2" placeholder="Tìm theo ID, tên, SĐT..." value="${keyword}" />
+        <button type="submit" class="btn btn-outline-primary">🔍 Tìm kiếm</button>
+    </form>
+
 
     <table class="table table-bordered table-striped table-hover">
         <thead class="table-dark">
@@ -113,6 +118,16 @@
         </c:forEach>
         </tbody>
     </table>
+    <nav>
+        <ul class="pagination justify-content-center">
+            <c:forEach begin="1" end="${totalPages}" var="i">
+                <li class="page-item ${i == currentPage ? 'active' : ''}">
+                    <a class="page-link" href="?page=${i}&keyword=${keyword}">${i}</a>
+                </li>
+            </c:forEach>
+        </ul>
+    </nav>
+
 </div>
 <script>
     function confirmChange(selectElement) {

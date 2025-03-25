@@ -49,35 +49,33 @@ public class DonHangServiceImpl implements DonHangService {
         GioHang gioHang = gioHangRepository.findByUser(user)
                 .orElseThrow(() -> new RuntimeException("❌ Giỏ hàng không tồn tại."));
 
-        // Tính tổng tiền
-        double tongTien = gioHang.getGioHangChiTietList().stream()
-                .mapToDouble(item -> item.getGiaTaiThoiDiemThem().doubleValue() * item.getSoLuong())
+        // 👉 Nếu bạn đã tính tổng tiền ở Controller thì đoạn này có thể bỏ:
+        double tongTien = donHang.getChiTietDonHangList().stream()
+                .mapToDouble(item -> item.getGiaBan().doubleValue() * item.getSoLuong())
                 .sum();
+        donHang.setTongTien(tongTien); // Optional
 
         // Thiết lập thông tin đơn hàng
         donHang.setUser(user);
         donHang.setNgayDatHang(LocalDateTime.now());
-        donHang.setTongTien(tongTien);
         donHang.setTrangThai(TrangThaiDonHang.CHO_XAC_NHAN);
 
-        // Lưu đơn hàng
-        DonHang savedOrder = donHangRepository.save(donHang);
-
-        // Lưu chi tiết đơn hàng
-        for (GioHangChiTiet item : gioHang.getGioHangChiTietList()) {
-            ChiTietDonHang chiTiet = new ChiTietDonHang();
-            chiTiet.setDonHang(savedOrder);
-            chiTiet.setSanPhamChiTiet(item.getSanPhamChiTiet());
-            chiTiet.setSoLuong(item.getSoLuong());
-            chiTiet.setGiaBan(item.getGiaTaiThoiDiemThem());
-            chiTietDonHangRepository.save(chiTiet);
+        // 🔗 Gán lại đơn hàng cho từng chi tiết để đảm bảo liên kết hai chiều
+        if (donHang.getChiTietDonHangList() != null) {
+            for (ChiTietDonHang ct : donHang.getChiTietDonHangList()) {
+                ct.setDonHang(donHang);
+            }
         }
 
-        // Xóa giỏ hàng sau khi đặt hàng thành công
+        // 💾 Lưu đơn hàng → sẽ cascade luôn chi tiết đơn hàng
+        DonHang savedOrder = donHangRepository.save(donHang);
+
+        // ✅ Xoá giỏ hàng
         gioHangRepository.deleteById(gioHang.getId());
 
         return savedOrder;
     }
+
     @Override
     public List<DonHang> getAllOrders() {
         return donHangRepository.findAllByOrderByNgayDatHangDesc();
