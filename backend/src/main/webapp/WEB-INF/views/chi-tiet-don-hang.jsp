@@ -1,7 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<fmt:setLocale value="vi_VN" />
 
 <html>
 <head>
@@ -18,7 +19,6 @@
             border-left: 4px solid #0d6efd;
             background-color: #f8f9fa;
         }
-
     </style>
 </head>
 <body>
@@ -29,12 +29,12 @@
     <div class="card shadow p-4">
         <p><strong>ID đơn hàng:</strong> #${donHang.id}</p>
 
-        <p><strong>📅 Ngày đặt:</strong> ${donHang.ngayDatHang}</p>
-
+        <p><strong>📅 Ngày đặt:</strong>
+            ${fn:substring(donHang.ngayDatHang, 0, 10)} ${fn:substring(donHang.ngayDatHang, 11, 16)}
         </p>
 
         <p><strong>💰 Tổng tiền:</strong>
-            ${donHang.tongTien}"
+            <fmt:formatNumber value="${donHang.tongTien}" type="number" maxFractionDigits="0"/> ₫
         </p>
 
         <p><strong>📦 Trạng thái:</strong> ${donHang.trangThai.hienThi}</p>
@@ -47,29 +47,41 @@
         </p>
 
         <p><strong>💳 Thanh toán:</strong> ${donHang.phuongThucThanhToan.tenPhuongThuc}</p>
+
+        <p><strong>💸 Trạng thái thanh toán:</strong>
+            <c:choose>
+                <c:when test="${not empty donHang.thanhToan}">
+                    ${donHang.thanhToan.trangThaiThanhToan.hienThi}
+                </c:when>
+                <c:otherwise>
+                    Không có thông tin
+                </c:otherwise>
+            </c:choose>
+        </p>
     </div>
 
+    <h5 class="mt-4">🕓 Lịch sử trạng thái đơn hàng</h5>
+    <ul class="list-group mb-4">
+        <c:forEach var="log" items="${lichSuTrangThai}">
+            <li class="list-group-item">
+                <strong>${log.trangThaiMoi.hienThi}</strong>
+                <span class="text-muted">
+                    - ${fn:substring(log.thoiGian, 0, 10)} ${fn:substring(log.thoiGian, 11, 16)}
+                </span>
+                <c:if test="${not empty log.ghiChu}">
+                    <br/><em>📝 ${log.ghiChu}</em>
+                </c:if>
+            </li>
+        </c:forEach>
+    </ul>
 
     <h3 class="mt-4">Sản phẩm trong đơn hàng</h3>
     <table class="table table-bordered table-striped">
-        <h5 class="mt-4">🕓 Lịch sử trạng thái đơn hàng</h5>
-        <ul class="list-group mb-4">
-            <c:forEach var="log" items="${lichSuTrangThai}">
-                <li class="list-group-item">
-                    <strong>${log.trangThaiMoi.hienThi}</strong>
-                    <span class="text-muted">
-                - ${log.thoiGian}
-            </span>
-                    <c:if test="${not empty log.ghiChu}">
-                        <br/><em>📝 ${log.ghiChu}</em>
-                    </c:if>
-                </li>
-            </c:forEach>
-        </ul>
-
         <thead class="table-dark">
         <tr>
             <th>Sản phẩm</th>
+            <th>Màu sắc</th>
+            <th>Size</th>
             <th>Số lượng</th>
             <th>Đơn giá</th>
             <th>Thành tiền</th>
@@ -79,9 +91,11 @@
         <c:forEach var="chiTiet" items="${donHang.chiTietDonHangList}">
             <tr>
                 <td>${chiTiet.sanPhamChiTiet.sanPham.tenSanPham}</td>
+                <td>${chiTiet.sanPhamChiTiet.mauSac.tenMauSac}</td>
+                <td>${chiTiet.sanPhamChiTiet.size.tenSize}</td>
                 <td>${chiTiet.soLuong}</td>
-                <td>${chiTiet.giaBan} VND</td>
-                <td>${chiTiet.soLuong * chiTiet.giaBan} VND</td>
+                <td><fmt:formatNumber value="${chiTiet.giaBan}" type="number" maxFractionDigits="0"/> ₫</td>
+                <td><fmt:formatNumber value="${chiTiet.soLuong * chiTiet.giaBan}" type="number" maxFractionDigits="0"/> ₫</td>
             </tr>
         </c:forEach>
         </tbody>

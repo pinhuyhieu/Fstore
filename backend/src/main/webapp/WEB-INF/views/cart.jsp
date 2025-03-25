@@ -1,5 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<fmt:setLocale value="vi_VN" />
+
 <html>
 <head>
     <title>🛒 Giỏ hàng</title>
@@ -210,14 +213,25 @@
                             <input type="text" id="quantity-${item.id}" class="quantity-input" value="${item.soLuong}" >
                             <button class="quantity-btn btn-increase" data-id="${item.id}">+</button>
                         </td>
-                        <td><span id="total-${item.id}">${item.sanPhamChiTiet.gia * item.soLuong}</span> ₫</td>
+                        <td>
+                          <span id="gia-${item.id}" data-gia="${item.sanPhamChiTiet.gia}">
+                            <fmt:formatNumber value="${item.sanPhamChiTiet.gia}" type="number" maxFractionDigits="0"/>
+                          </span>
+                        </td>
+
                         <td>
                             <button class="btn btn-remove" data-id="${item.id}">❌ Xóa</button>
                         </td>
                     </tr>
                 </c:forEach>
             </table>
-            <h3>💰 Tổng tiền: <span id="total-price">${tongTien}</span></h3>
+            <h3>💰 Tổng tiền:
+                <span id="total-price" data-tong="${tongTien}">
+        <fmt:formatNumber value="${tongTien}" type="number" maxFractionDigits="0" />
+        ₫
+    </span>
+            </h3>
+
 
         </c:when>
         <c:otherwise>
@@ -251,9 +265,8 @@
                 </div>
                 <div class="form-group">
                     <label for="tinhThanh">Tỉnh/Thành phố:</label>
-                    <select class="form-control" id="tinhThanh" name="tinhThanh" required>
+                    <select class="form-control" id="tinhThanh" name="tinhThanh" required >
                         <option value="">Chọn Tỉnh/Thành phố</option>
-                        <!-- Tỉnh/Thành phố sẽ được lấy từ cơ sở dữ liệu hoặc API -->
                     </select>
                 </div>
 
@@ -261,17 +274,19 @@
                     <label for="quanHuyen">Quận/Huyện:</label>
                     <select class="form-control" id="quanHuyen" name="quanHuyen" required>
                         <option value="">Chọn Quận/Huyện</option>
-                        <!-- Quận/Huyện sẽ được lấy khi chọn Tỉnh/Thành phố -->
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label for="phuongXa">Phường/Xã:</label>
-                    <select class="form-control" id="phuongXa" name="phuongXa" required>
+                    <select class="form-control" id="phuongXa" name="phuongXa" required >
                         <option value="">Chọn Phường/Xã</option>
-                        <!-- Phường/Xã sẽ được lấy khi chọn Quận/Huyện -->
                     </select>
                 </div>
+
+
+
+
                 <div class="form-group">
                     <label>Phương thức thanh toán:</label>
                     <select class="form-control" name="phuongThucThanhToanId" required>
@@ -281,11 +296,15 @@
                     </select>
 
                 </div>
+
                 <div class="form-group">
-                    <label>Tổng tiền:</label>
-                    <p class="font-weight-bold">
-                        <span id="confirm-total-price">${donHang.tongTien}</span> VND
-                    </p>
+                    <label>Phí vận chuyển:</label>
+                    <p class="font-weight-bold"><span id="shippingFee">0</span> ₫</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Tổng cộng:</label>
+                    <p class="font-weight-bold"><span id="finalAmount">0</span> ₫</p>
                 </div>
                 <button type="submit" class="btn btn-checkout">🛒 Xác nhận đặt hàng</button>
             </form>
@@ -297,7 +316,10 @@
 <script>
 
 
+
     $(document).ready(function () {
+
+
         // Hiển thị tổng tiền ngay khi trang được tải
         updateTotalPrice();
 
@@ -305,41 +327,80 @@
         $(".product-checkbox").change(function () {
             updateTotalPrice();
         });
-
-        // Cập nhật số lượng sản phẩm bằng AJAX
         $(".btn-increase, .btn-decrease").click(function () {
             let itemId = $(this).data("id");
             let isIncrease = $(this).hasClass("btn-increase");
-            let quantityElem = $("#quantity-" + itemId);
-            let totalElem = $("#total-" + itemId);
+            let inputElem = $("#quantity-" + itemId);
+            let current = parseInt(inputElem.val());
 
-            let currentQuantity = parseInt(quantityElem.val());
-            let newQuantity = currentQuantity + (isIncrease ? 1 : -1);
+            if (isNaN(current)) current = 1;
 
-            if (newQuantity <= 0) {
+            let newQty = current + (isIncrease ? 1 : -1);
+            if (newQty <= 0) {
                 removeFromCart(itemId);
                 return;
+            }
+            if (newQty <= 0) newQty = 1;
+
+            inputElem.val(newQty).trigger("input"); // Gọi lại logic chính dưới
+        });
+
+// ✅ Gõ trực tiếp số lượng → xử lý cập nhật
+        $(".quantity-input").on("input", function () {
+            let itemId = $(this).attr("id").split("-")[1];
+            let quantityElem = $(this);
+            let newQuantity = parseInt(quantityElem.val());
+
+            if (isNaN(newQuantity) || newQuantity <= 0) {
+                newQuantity = 1;
+                quantityElem.val(newQuantity);
             }
 
             $.ajax({
                 url: "/api/cart/details/update/" + itemId + "?soLuong=" + newQuantity,
                 type: "PUT",
-                success: function (response) {
-                    quantityElem.val(newQuantity);
+                success: function () {
+                    // ✅ Lấy giá gốc từ data-gia
+                    let giaGoc = parseInt($("#gia-" + itemId).data("gia"));
+                    let newTotal = giaGoc * newQuantity;
 
-                    // Tính lại giá tiền sản phẩm
-                    let pricePerItem = parseFloat(totalElem.text().replace(/[^\d.-]/g, '')) / currentQuantity;
-                    let newTotal = pricePerItem * newQuantity;
-                    totalElem.text(newTotal.toFixed(2) + " ₫");
+                    // ✅ Cập nhật hiển thị thành tiền dòng
+                    let formatted = new Intl.NumberFormat('vi-VN').format(newTotal);
+                    $("#total-" + itemId).text(formatted + " ₫");
 
-                    // Cập nhật lại tổng tiền giỏ hàng
+                    // ✅ Cập nhật tổng giỏ hàng
                     updateTotalPrice();
+
+                    // ✅ Lưu lại số lượng cũ nếu cần dùng
+                    quantityElem.data("old", newQuantity);
                 },
                 error: function (xhr) {
-                    alert(xhr.responseText); // Hiển thị thông báo lỗi từ server
+                    alert("❌ Lỗi: " + xhr.responseText);
                 }
             });
         });
+
+// ✅ Hàm cập nhật tổng tiền toàn bộ giỏ hàng
+        function updateTotalPrice() {
+            let totalPrice = 0;
+
+            $("tr[id^='row-']").each(function () {
+                const row = $(this);
+                const itemId = row.attr("id").split("-")[1];
+                const isChecked = row.find(".product-checkbox").is(":checked");
+
+                if (isChecked) {
+                    const gia = parseInt($("#gia-" + itemId).data("gia"));
+                    const soLuong = parseInt($("#quantity-" + itemId).val()) || 1;
+                    totalPrice += gia * soLuong;
+                }
+            });
+
+            const formatted = new Intl.NumberFormat('vi-VN').format(totalPrice);
+            $("#total-price").text(formatted + " ₫").data("tong", totalPrice);
+            $("#confirm-total-price").text(formatted + " ₫");
+        }
+
 
 
         // Xóa sản phẩm khỏi giỏ hàng bằng AJAX
@@ -377,20 +438,8 @@
         }
 
 
-        // Hàm cập nhật tổng tiền dựa trên sản phẩm được chọn
-        function updateTotalPrice() {
-            let totalPrice = 0;
-            $("tr[id^='row-']").each(function () {
-                let itemId = $(this).attr("id").split("-")[1];
-                if ($("#row-" + itemId + " .product-checkbox").is(":checked")) {
-                    let itemTotal = parseFloat($("#total-" + itemId).text().replace(/[^\d.-]/g, ''));
-                    totalPrice += isNaN(itemTotal) ? 0 : itemTotal;
-                }
-            });
-            $("#total-price").text(totalPrice.toFixed(2) + " ₫");
-            // Cập nhật tổng tiền ở phần xác nhận đặt hàng
-            $("#confirm-total-price").text(totalPrice.toFixed(2) + " ₫");
-        }
+
+
 
         // Xác nhận đặt hàng
         $("#checkout-form").submit(function (event) {
@@ -479,7 +528,48 @@
                     error: function () {
                         alert("Lỗi khi lấy danh sách phường/xã.");
                     }
+
                 });
+                // Tính phí ship sau khi chọn Phường/Xã
+                $('#phuongXa').change(function () {
+                    const districtId = $('#quanHuyen').val();
+                    const wardCode = $('#phuongXa').val();
+
+                    if (!districtId || !wardCode) return;
+
+                    // Tính lại tổng tiền hiện tại từ các dòng được chọn
+                    let tongTien = 0;
+                    let soLuong = 0;
+
+                    $("tr[id^='row-']").each(function () {
+                        const id = $(this).attr("id").split("-")[1];
+                        if ($(this).find(".product-checkbox").is(":checked")) {
+                            const gia = parseInt($("#gia-" + id).data("gia"));
+                            const qty = parseInt($("#quantity-" + id).val()) || 1;
+                            tongTien += gia * qty;
+                            soLuong += qty;
+                        }
+                    });
+
+                    $.ajax({
+                        url: "/api/ghn/api/ghn/calculate-fee",
+                        type: "GET",
+                        data: {
+                            soLuong: soLuong,
+                            districtId: districtId,
+                            wardCode: wardCode,
+                            tongTien: tongTien
+                        },
+                        success: function (phi) {
+                            $("#shippingFee").text(phi.toLocaleString() + " ₫");
+                            $("#finalAmount").text((tongTien + phi).toLocaleString() + " ₫");
+                        },
+                        error: function () {
+                            alert("Lỗi khi tính phí vận chuyển.");
+                        }
+                    });
+                });
+
             });
 
             // Gửi yêu cầu tạo đơn hàng
@@ -503,6 +593,9 @@
         });
 
     });
+
+
+
 
 </script>
 

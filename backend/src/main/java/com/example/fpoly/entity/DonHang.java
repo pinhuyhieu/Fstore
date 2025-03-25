@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -56,6 +57,9 @@ public class DonHang {
 
     @Column(name = "phuong_xa", nullable = false)
     private String phuongXa;
+    @Column(name = "phi_ship", nullable = false)
+    private Integer phiShip = 0;
+
 
     @ManyToOne
     @JoinColumn(name = "phuong_thuc_thanh_toan_id", referencedColumnName = "id", nullable = false)
@@ -63,10 +67,7 @@ public class DonHang {
     @OneToOne(mappedBy = "donHang", fetch = FetchType.LAZY)
     private ThanhToan thanhToan;
 
-
-    //    @OneToMany(mappedBy = "donHang", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<ChiTietDonHang> chiTietDonHangList;
 @OneToMany(mappedBy = "donHang", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 @JsonManagedReference
-private List<ChiTietDonHang> chiTietDonHangList;
+private List<ChiTietDonHang> chiTietDonHangList= new ArrayList<>();
 }
