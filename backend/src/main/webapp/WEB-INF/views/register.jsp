@@ -128,9 +128,39 @@
             margin-bottom: 5px; /* Giảm khoảng cách giữa các input  */
             text-align: left;
         }
-
-
     </style>
+    <script>
+        function validateForm() {
+            const hoTen = document.getElementById("hoTen").value.trim();
+            const tenDangNhap = document.getElementById("tenDangNhap").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const soDienThoai = document.getElementById("soDienThoai").value.trim();
+            const diaChi = document.getElementById("diaChi").value.trim();
+            const matKhau = document.getElementById("matKhau").value.trim();
+
+            if (hoTen === "" || tenDangNhap === "" || diaChi === "" || email === "" || matKhau === "") {
+                alert("Vui lòng nhập đầy đủ thông tin bắt buộc!");
+                return false;
+            }
+
+            // Kiểm tra định dạng email
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email)) {
+                alert("Email không hợp lệ! Vui lòng nhập đúng định dạng.");
+                return false;
+            }
+
+            // Kiểm tra định dạng số điện thoại (tùy chọn)
+            const phonePattern = /^[0-9]{10,11}$/;
+            if (soDienThoai !== "" && !phonePattern.test(soDienThoai)) {
+                alert("Số điện thoại không hợp lệ! Vui lòng nhập 10-11 chữ số.");
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+
 </head>
 <body>
 
@@ -142,20 +172,20 @@
         <div class="alert alert-danger">${error}</div>
     </c:if>
 
-    <form action="/doRegister" method="post">
+    <form action="/doRegister" method="post" onsubmit="return validateForm();" novalidate>
         <div class="form-group">
             <label for="hoTen">Họ và tên:</label>
-            <input type="text" id="hoTen" name="hoTen" required>
+            <input type="text" id="hoTen" name="hoTen" >
         </div>
 
         <div class="form-group">
             <label for="tenDangNhap">Tên đăng nhập:</label>
-            <input type="text" id="tenDangNhap" name="tenDangNhap" required>
+            <input type="text" id="tenDangNhap" name="tenDangNhap" >
         </div>
 
         <div class="form-group">
             <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
+            <input type="email" id="email" name="email" >
         </div>
 
         <div class="form-group">
@@ -170,7 +200,7 @@
 
         <div class="form-group">
             <label for="matKhau">Mật khẩu:</label>
-            <input type="password" id="matKhau" name="matKhau" required>
+            <input type="password" id="matKhau" name="matKhau" >
         </div>
 
         <button type="submit">Đăng Ký</button>

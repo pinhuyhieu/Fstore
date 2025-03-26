@@ -132,6 +132,18 @@
             text-decoration: underline;
         }
     </style>
+    <script>
+        function validateForm() {
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value.trim();
+
+            if (username === "" || password === "") {
+                alert("Tên đăng nhập và mật khẩu không được bỏ trống!");
+                return false;
+            }
+            return true;
+        }
+    </script>
 </head>
 <body>
 <div class="container">
@@ -143,12 +155,12 @@
     <c:if test="${param.logout != null}">
         <p class="message success">Bạn đã đăng xuất thành công.</p>
     </c:if>
-    <form action="/doLogin" method="post">
+    <form action="/doLogin" method="post" onsubmit="return validateForm();">
         <label for="username">Tên đăng nhập:</label>
-        <input type="text" id="username" name="username" placeholder="Nhập tên đăng nhập" required>
+        <input type="text" id="username" name="username" placeholder="Nhập tên đăng nhập" >
 
         <label for="password">Mật khẩu:</label>
-        <input type="password" id="password" name="password" placeholder="Nhập mật khẩu" required>
+        <input type="password" id="password" name="password" placeholder="Nhập mật khẩu" >
 
         <button type="submit">Đăng Nhập</button>
     </form>
