@@ -5,6 +5,7 @@ import com.example.fpoly.service.Impl.MauSacServiceImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/admin/mausac")
@@ -35,8 +36,9 @@ public class MauSacController {
     }
 
     @PostMapping("/save")
-    public String saveMS(@ModelAttribute MauSac mausac) {
+    public String saveMS(@ModelAttribute MauSac mausac, RedirectAttributes redirectAttributes) {
         service.save(mausac);
+        redirectAttributes.addFlashAttribute("successMessage", "Thêm màu sắc thành công!");
         return "redirect:/admin/mausac/list";
     }
 

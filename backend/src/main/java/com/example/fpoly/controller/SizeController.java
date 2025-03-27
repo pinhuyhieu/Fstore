@@ -6,6 +6,7 @@ import org.springframework.boot.Banner;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/admin/size")
@@ -37,8 +38,9 @@ public class SizeController {
 
 
     @PostMapping ("/save")
-    public String saveSize(@ModelAttribute Size size) {
+    public String saveSize(@ModelAttribute Size size, RedirectAttributes redirectAttributes) {
         service.save(size);
+        redirectAttributes.addFlashAttribute("successMessage", "Thêm màu sắc thành công!");
         return "redirect:/admin/size/list";
     }
 

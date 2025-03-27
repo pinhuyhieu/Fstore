@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -146,8 +147,9 @@ public class SanPhamController {
 
 
     @PostMapping("/admin/add")
-    public String addSanPham(SanPham sanPham){
+    public String addSanPham(@ModelAttribute SanPham sanPham, RedirectAttributes redirectAttributes){
         sanPhamRepository.save(sanPham);
+        redirectAttributes.addFlashAttribute("successMessage", "Thêm sản phẩm thành công!");
         return "redirect:/sanpham/admin/add";
     }
 
@@ -167,7 +169,7 @@ public class SanPhamController {
     @GetMapping("/admin/delete")
     public String deleteSanPham(@RequestParam("id") Integer id){
         sanPhamService.delete(id);
-        return "redirect:/sanpham/admin/add";
+        return "redirect:/sanpham/admin/list";
     }
     @GetMapping("/admin/edit/{id}")
     public String suaSanPham(@PathVariable("id") Integer id, Model model) {

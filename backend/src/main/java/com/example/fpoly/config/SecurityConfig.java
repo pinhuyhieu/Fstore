@@ -57,7 +57,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)) // Sử dụng session
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/register", "/doLogin", "/doRegister", "/cart/**", "/sanphamchitiet/**","/api/cart/detail/").permitAll()
+                        .requestMatchers("/login", "/register", "/doLogin", "/doRegister", "/sanpham/**", "/admin/**", "/cart/**", "/sanphamchitiet/**","/api/cart/detail/").permitAll()
                         .requestMatchers("/WEB-INF/views/**").permitAll() // Cho phép truy cập JSP
                         .requestMatchers("/css/**", "/js/**", "/uploads/**").permitAll()
                         .requestMatchers("/api/payment/vnpay-return").permitAll()

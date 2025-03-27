@@ -103,6 +103,7 @@ public class SanPhamChiTietController {
         }
 
         sanPhamChiTiet.setSanPham(sanPham);
+        redirectAttributes.addFlashAttribute("successMessage", "Thêm sản phẩm chi tiết thành công!");
         sanPhamChiTietService.save(sanPhamChiTiet);
 
         return "redirect:/sanphamchitiet/list/" + sanPhamId;
