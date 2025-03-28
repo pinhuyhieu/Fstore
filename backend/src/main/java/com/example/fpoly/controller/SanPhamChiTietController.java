@@ -76,6 +76,9 @@ public class SanPhamChiTietController {
                 existingChiTiet.setGia(sanPhamChiTiet.getGia());
                 existingChiTiet.setSoLuongTon(sanPhamChiTiet.getSoLuongTon());
                 sanPhamChiTietService.save(existingChiTiet);
+
+                // Thông báo cập nhật thành công
+                redirectAttributes.addFlashAttribute("successMessage", "Cập nhật sản phẩm chi tiết thành công!");
             }
             return "redirect:/sanphamchitiet/list/" + existingChiTiet.getSanPham().getId();
         }

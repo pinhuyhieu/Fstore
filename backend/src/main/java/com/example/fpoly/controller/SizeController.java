@@ -39,8 +39,14 @@ public class SizeController {
 
     @PostMapping ("/save")
     public String saveSize(@ModelAttribute Size size, RedirectAttributes redirectAttributes) {
+        boolean isUpdate = size.getId() != null; // Kiểm tra xem có ID hay không
         service.save(size);
-        redirectAttributes.addFlashAttribute("successMessage", "Thêm màu sắc thành công!");
+
+        if (isUpdate) {
+            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật size thành công!");
+        } else {
+            redirectAttributes.addFlashAttribute("successMessage", "Thêm size thành công!");
+        }
         return "redirect:/admin/size/list";
     }
 

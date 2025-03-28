@@ -23,8 +23,14 @@ public class DanhMucController {
 
     @PostMapping("/save")
     public String saveDanhMuc(@ModelAttribute DanhMuc danhMuc, RedirectAttributes redirectAttributes) {
+        boolean isUpdate = danhMuc.getId() != null; // Kiểm tra xem có ID hay không
         danhMucService.save(danhMuc);
-        redirectAttributes.addFlashAttribute("successMessage", "Thêm danh mục thành công!");
+
+        if (isUpdate) {
+            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật danh mục thành công!");
+        } else {
+            redirectAttributes.addFlashAttribute("successMessage", "Thêm danh mục thành công!");
+        }
         return "redirect:/admin/danhmuc/list";
     }
 
