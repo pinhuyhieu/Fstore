@@ -148,8 +148,14 @@ public class SanPhamController {
 
     @PostMapping("/admin/add")
     public String addSanPham(@ModelAttribute SanPham sanPham, RedirectAttributes redirectAttributes){
-        sanPhamRepository.save(sanPham);
-        redirectAttributes.addFlashAttribute("successMessage", "Thêm sản phẩm thành công!");
+        boolean isUpdate = sanPham.getId() != null; // Kiểm tra xem có ID hay không
+        sanPhamService.save(sanPham);
+
+        if (isUpdate) {
+            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật sản phẩm thành công!");
+        } else {
+            redirectAttributes.addFlashAttribute("successMessage", "Thêm sản phẩm thành công!");
+        }
         return "redirect:/sanpham/admin/add";
     }
 

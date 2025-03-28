@@ -34,6 +34,7 @@
 </head>
 <body>
 <div class="container">
+
     <!-- 🟢 Hiển thị thông báo nếu có -->
     <c:if test="${not empty successMessage}">
         <div id="success-alert" class="alert alert-success">
@@ -42,7 +43,7 @@
     </c:if>
 
     <h2 class="text-center mb-4">Danh Sách Đơn Hàng</h2>
-
+    <a href="${pageContext.request.contextPath}/admin/home" class="btn btn-primary" style="margin -bottom: 10px">Quay lại</a>
     <div class="row">
         <!-- 🔍 Bộ lọc bên trái -->
         <div class="col-md-3">

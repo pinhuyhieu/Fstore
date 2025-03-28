@@ -52,7 +52,7 @@
         </div>
 
         <div class="text-center mt-4">
-            <a href="/" class="btn btn-custom">🏠 Quay về trang chủ</a>
+            <a href="${pageContext.request.contextPath}/sanpham/list" class="btn btn-custom">🏠 Quay về trang sản phẩm</a>
         </div>
     </div>
 </div>

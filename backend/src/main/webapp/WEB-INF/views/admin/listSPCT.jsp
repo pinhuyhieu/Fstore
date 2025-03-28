@@ -90,7 +90,7 @@
     <a href="${pageContext.request.contextPath}/sanpham/admin/list" class="btn btn-primary btn-lg">Quay lại danh sách sản phẩm</a>
 
     <!-- Form Thêm / Cập Nhật Chi Tiết Sản Phẩm -->
-    <h3 class="text-center text-success mt-4">Thêm / Cập nhật Chi tiết Sản phẩm</h3>
+    <h3 class="text-center text-success mt-4">Thêm / Sửa Chi tiết Sản phẩm</h3>
     <c:if test="${not empty successMessage}">
         <div class="alert alert-success alert-dismissible fade show" role="alert">
                 ${successMessage}

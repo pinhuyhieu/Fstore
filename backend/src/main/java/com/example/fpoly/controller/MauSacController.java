@@ -37,8 +37,14 @@ public class MauSacController {
 
     @PostMapping("/save")
     public String saveMS(@ModelAttribute MauSac mausac, RedirectAttributes redirectAttributes) {
+        boolean isUpdate = mausac.getId() != null; // Kiểm tra xem có ID hay không
         service.save(mausac);
-        redirectAttributes.addFlashAttribute("successMessage", "Thêm màu sắc thành công!");
+
+        if (isUpdate) {
+            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật màu sắc thành công!");
+        } else {
+            redirectAttributes.addFlashAttribute("successMessage", "Thêm màu sắc thành công!");
+        }
         return "redirect:/admin/mausac/list";
     }
 
