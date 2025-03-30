@@ -8,6 +8,7 @@ import com.example.fpoly.enums.TrangThaiDonHang;
 import com.example.fpoly.enums.TrangThaiThanhToan;
 import com.example.fpoly.service.*;
 import com.example.fpoly.util.TrangThaiValidator;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -78,6 +79,7 @@ public class DonHangController {
     public String datHang(@AuthenticationPrincipal UserDetails userDetails,
                           @RequestParam Integer phuongThucThanhToanId,
                           @ModelAttribute DonHang donHang,
+                          HttpSession session,
                           RedirectAttributes redirectAttributes) {
 
         // 🔐 Lấy thông tin user
@@ -106,11 +108,10 @@ public class DonHangController {
             return ct;
         }).toList();
 
-        // Gán đơn hàng cho từng chi tiết (liên kết 2 chiều)
         chiTietList.forEach(ct -> ct.setDonHang(donHang));
         donHang.setChiTietDonHangList(chiTietList);
 
-        // 💰 Tính tổng tiền
+        // 💰 Tính tổng tiền hàng
         double tongTien = chiTietList.stream()
                 .mapToDouble(ct -> ct.getGiaBan().doubleValue() * ct.getSoLuong())
                 .sum();
@@ -127,15 +128,14 @@ public class DonHangController {
 
         int phiShip = ghnService.tinhTienShipTheoSoLuong(tongSoLuong, toDistrictId, donHang.getPhuongXa(), (int) tongTien);
 
-        // 📝 Gán thêm thông tin cho đơn hàng
+        // 📝 Gán thông tin đơn hàng
         donHang.setUser(user);
         donHang.setPhuongThucThanhToan(phuongThucThanhToan);
         donHang.setTrangThai(TrangThaiDonHang.CHO_XAC_NHAN);
-        donHang.setTongTien(tongTien);
         donHang.setPhiShip(phiShip);
 
-        // 💾 Lưu đơn hàng + chi tiết
-        DonHang newOrder = donHangService.tienHanhDatHang(user, donHang);
+        // 💾 Lưu đơn hàng và chi tiết
+        DonHang newOrder = donHangService.tienHanhDatHang(user, donHang, session);
         lichSuTrangThaiService.ghiLichSu(newOrder, TrangThaiDonHang.CHO_XAC_NHAN, "Khởi tạo đơn hàng");
 
         // 💳 Tạo thanh toán
@@ -144,9 +144,12 @@ public class DonHangController {
         thanhToan.setPhuongThucThanhToan(phuongThucThanhToan);
         thanhToan.setSoTien(newOrder.getTongTien());
         thanhToan.setTrangThaiThanhToan(TrangThaiThanhToan.CHUA_THANH_TOAN);
+        System.out.println("🎯 Đã set mã giảm giá: " + donHang.getMaGiamGia());
+        System.out.println("🎯 ID mã giảm giá: " +
+                (donHang.getMaGiamGia() != null ? donHang.getMaGiamGia().getId() : "null"));
         thanhToanService.save(thanhToan);
 
-        // 🌐 Thanh toán VNPAY
+        // 🌐 Nếu chọn VNPay thì chuyển hướng
         if (phuongThucThanhToan.getPhuongThucCode() == PhuongThucCode.VNPAY) {
             try {
                 String url = vnPayConfig.createPaymentUrl(
@@ -161,12 +164,15 @@ public class DonHangController {
             }
         }
 
-        // 📧 Gửi email + thông báo
+        // ✅ Xoá mã giảm giá khỏi session sau khi đặt hàng
+        session.removeAttribute("maGiamGiaNguoiDung");
+        session.removeAttribute("soTienGiam");
+
+        // 📧 Gửi thông báo
         emailService.sendOrderConfirmationEmail(user.getEmail(), newOrder.getId().toString());
         redirectAttributes.addFlashAttribute("successMessage", "✅ Đặt hàng thành công!");
         return "redirect:/api/donhang/xac-nhan?id=" + newOrder.getId();
     }
-
 
 
 

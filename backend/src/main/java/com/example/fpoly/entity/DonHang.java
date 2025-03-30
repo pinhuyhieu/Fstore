@@ -70,4 +70,9 @@ public class DonHang {
 @OneToMany(mappedBy = "donHang", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 @JsonManagedReference
 private List<ChiTietDonHang> chiTietDonHangList= new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ma_giam_gia_id")
+    private MaGiamGia maGiamGia;
+
+
 }

@@ -185,6 +185,19 @@
     </style>
 </head>
 <body>
+<c:if test="${not empty successMessage}">
+    <div class="alert alert-success">${successMessage}</div>
+</c:if>
+
+<c:if test="${not empty error}">
+    <div class="alert alert-danger">${error}</div>
+</c:if>
+<c:if test="${not empty sessionScope.maGiamGiaNguoiDung}">
+    <div class="alert alert-info">
+        ✅ Đã áp dụng mã: ${sessionScope.maGiamGiaNguoiDung.maGiamGia.ma}
+    </div>
+</c:if>
+
 <div class="container">
     <h2>🛒 Giỏ hàng của bạn</h2>
 
@@ -229,8 +242,23 @@
                 <span id="total-price" data-tong="${tongTien}">
         <fmt:formatNumber value="${tongTien}" type="number" maxFractionDigits="0" />
         ₫
-    </span>
             </h3>
+            <div class="form-group">
+                <label for="maGiamGiaInput">Mã giảm giá:</label>
+                <input type="text" class="form-control" id="maGiamGiaInput" name="maGiamGia" placeholder="Nhập mã giảm giá">
+                <button type="button" class="btn btn-primary mt-2" id="applyCouponBtn">Áp dụng mã</button>
+                <button id="cancelCouponBtn" class="btn btn-danger btn-sm">❌ Hủy mã</button>
+
+            </div>
+
+            <div id="discountRow" style="display: none;">
+                <p class="text-success">
+                    ✅ Giảm giá:
+                    <span id="discountAmount" data-giam="0">-0 ₫</span>
+                </p>
+            </div>
+
+
 
 
         </c:when>
@@ -299,12 +327,12 @@
 
                 <div class="form-group">
                     <label>Phí vận chuyển:</label>
-                    <p class="font-weight-bold"><span id="shippingFee">0</span> ₫</p>
+                    <p class="font-weight-bold"><span id="shippingFee">0</span> </p>
                 </div>
 
                 <div class="form-group">
                     <label>Tổng cộng:</label>
-                    <p class="font-weight-bold"><span id="finalAmount">0</span> ₫</p>
+                    <p class="font-weight-bold"><span id="finalAmount">0</span> </p>
                 </div>
                 <button type="submit" class="btn btn-checkout">🛒 Xác nhận đặt hàng</button>
             </form>
@@ -314,7 +342,16 @@
 </div>
 
 <script>
+    function tinhTongThanhToan() {
+        const tienHang = parseInt($("#total-price").data("tong")) || 0;
+        const soTienGiam = parseInt($("#discountAmount").data("giam")) || 0;
+        const phiShip = parseInt($("#shippingFee").text().replace(/[^\d]/g, "")) || 0;
 
+        let tong = tienHang - soTienGiam + phiShip;
+        if (tong < 0) tong = 0;
+
+        $("#finalAmount").text(tong.toLocaleString("vi-VN") + " ₫");
+    }
 
 
     $(document).ready(function () {
@@ -322,6 +359,10 @@
 
         // Hiển thị tổng tiền ngay khi trang được tải
         updateTotalPrice();
+
+
+
+
 
         // Cập nhật tổng tiền khi chọn/bỏ chọn sản phẩm
         $(".product-checkbox").change(function () {
@@ -370,6 +411,7 @@
 
                     // ✅ Cập nhật tổng giỏ hàng
                     updateTotalPrice();
+                    tinhTongThanhToan(); // thêm dòng này
 
                     // ✅ Lưu lại số lượng cũ nếu cần dùng
                     quantityElem.data("old", newQuantity);
@@ -549,7 +591,10 @@
                             tongTien += gia * qty;
                             soLuong += qty;
                         }
+
                     });
+                    $("#total-price").data("tong", tongTien); // 🔧 cập nhật lại DOM để mã giảm giá dùng giá mới
+
 
                     $.ajax({
                         url: "/api/ghn/api/ghn/calculate-fee",
@@ -561,9 +606,13 @@
                             tongTien: tongTien
                         },
                         success: function (phi) {
-                            $("#shippingFee").text(phi.toLocaleString() + " ₫");
-                            $("#finalAmount").text((tongTien + phi).toLocaleString() + " ₫");
+                            $("#shippingFee")
+                                .text(phi.toLocaleString("vi-VN") + " ₫")
+                                .data("ship", phi); // Cập nhật giá trị ship cho hàm tính tổng
+
+                            tinhTongThanhToan(); // Gọi lại để hiển thị tổng mới
                         },
+
                         error: function () {
                             alert("Lỗi khi tính phí vận chuyển.");
                         }
@@ -592,6 +641,54 @@
             });
         });
 
+    });
+    $("#applyCouponBtn").click(function () {
+        const ma = $("#maGiamGiaInput").val().trim();
+
+        $.ajax({
+            url: "/api/ma-giam-gia/apply",
+            method: "POST",
+            data: { ma },
+            success: function (res) {
+                alert(res.message || "✅ Mã đã áp dụng");
+
+                // Gọi thêm /check để lấy số tiền giảm:
+                $.ajax({
+                    url: "/api/ma-giam-gia/check",
+                    method: "GET",
+                    data: {
+                        ma: ma,
+                        tongTien: parseInt($("#total-price").data("tong"))
+                    },
+                    success: function (data) {
+                        $("#discountAmount")
+                            .text("-" + data.soTienGiam.toLocaleString("vi-VN") + " ₫")
+                            .data("giam", data.soTienGiam);
+                        $("#discountRow").show();
+                        tinhTongThanhToan();
+                    }
+                });
+            },
+            error: function (xhr) {
+                alert(xhr.responseText || "❌ Mã không hợp lệ");
+            }
+        });
+    });
+
+    $("#cancelCouponBtn").click(function () {
+        $.ajax({
+            url: "/api/ma-giam-gia/cancel",
+            method: "GET",
+            success: function () {
+                $("#discountRow").hide();
+                $("#discountAmount").data("giam", 0);
+                tinhTongThanhToan();
+                alert("❌ Mã giảm giá đã được hủy");
+            },
+            error: function () {
+                alert("Lỗi khi hủy mã giảm giá.");
+            }
+        });
     });
 
 

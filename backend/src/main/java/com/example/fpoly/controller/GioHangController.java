@@ -52,6 +52,16 @@ public class GioHangController {
         } else {
             model.addAttribute("gioHang", gioHang);
         }
+        double tongTien = gioHang.getGioHangChiTietList().stream()
+                .mapToDouble(ct -> ct.getGiaTaiThoiDiemThem().doubleValue() * ct.getSoLuong())
+                .sum();
+        int phiShip = 30000; // hoặc dùng ghnService.tinhTienShipTheoSoLuong(...)
+        model.addAttribute("phiShip", phiShip);
+
+        double tongThanhToan = tongTien + phiShip;
+        model.addAttribute("tongThanhToan", tongThanhToan);
+
+        model.addAttribute("tongTien", tongTien);
         List<PhuongThucThanhToan> list = phuongThucThanhToanService.getAllPaymentMethods();
         model.addAttribute("dsPhuongThuc", list);
 
