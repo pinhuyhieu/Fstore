@@ -42,4 +42,11 @@ public class DanhMucServiceImpl implements DanhMucService {
     public void delete(Integer id) {
         danhMucRepository.deleteById(id);
     }
+
+
+    // VALIDATE
+    @Override
+    public boolean existsByTenDanhMuc(String tenDanhMuc) {
+        return danhMucRepository.findByTenDanhMuc(tenDanhMuc) != null;
+    }
 }

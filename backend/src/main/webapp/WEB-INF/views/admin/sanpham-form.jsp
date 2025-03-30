@@ -54,6 +54,12 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </c:if>
+    <c:if test="${not empty errorMessage}">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                ${errorMessage}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </c:if>
     <!-- Form Thêm hoặc Cập Nhật -->
     <form id="sanphamForm" action="${pageContext.request.contextPath}/sanpham/admin/add" method="post" class="p-3 border rounded bg-light needs-validation" novalidate>
         <input type="hidden" name="id" value="${sanPham.id}" />
@@ -96,19 +102,40 @@
     </div>
 </div>
 <script>
-    (function() {
-        'use strict';
-        var forms = document.querySelectorAll('.needs-validation');
-        Array.prototype.slice.call(forms).forEach(function(form) {
-            form.addEventListener('submit', function(event) {
-                if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-                form.classList.add('was-validated');
-            }, false);
+    // (function() {
+    //     'use strict';
+    //     var forms = document.querySelectorAll('.needs-validation');
+    //     Array.prototype.slice.call(forms).forEach(function(form) {
+    //         form.addEventListener('submit', function(event) {
+    //             if (!form.checkValidity()) {
+    //                 event.preventDefault();
+    //                 event.stopPropagation();
+    //             }
+    //             form.classList.add('was-validated');
+    //         }, false);
+    //     });
+    // })();
+    document.addEventListener("DOMContentLoaded", function () {
+        var form = document.getElementById("sanphamForm");
+        var tenSanPhamInput = form.querySelector("input[name='tenSanPham']");
+
+        form.addEventListener("submit", function (event) {
+            var tenSanPham = tenSanPhamInput.value.trim();
+            var regex = /^[a-zA-Z0-9\sÀ-ỹ]+$/;
+
+            if (tenSanPham.length < 3 || tenSanPham.length > 50) {
+                alert("Tên sản phẩm phải từ 3 đến 50 ký tự.");
+                event.preventDefault();
+                return;
+            }
+
+            if (!regex.test(tenSanPham)) {
+                alert("Tên sản phẩm không được chứa ký tự đặc biệt.");
+                event.preventDefault();
+            }
         });
-    })();
+    });
+
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

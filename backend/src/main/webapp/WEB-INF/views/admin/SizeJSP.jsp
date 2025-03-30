@@ -21,6 +21,12 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </c:if>
+    <c:if test="${not empty errorMessage}">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                ${errorMessage}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </c:if>
     <!-- Form Thêm/Sửa Size -->
     <div class="form-section">
         <form method="POST" action="${pageContext.request.contextPath}/admin/size/save" class="needs-validation" novalidate>
@@ -28,7 +34,9 @@
 
             <div class="mb-3">
                 <label for="tenSize" class="form-label">Tên Size:</label>
-                <input type="text" class="form-control" id="tenSize" name="tenSize" value="${size.tenSize}" required>
+                <input type="text" class="form-control" id="tenSize" name="tenSize"
+                       value="${size.tenSize}" required minlength="1" maxlength="5"
+                       pattern="^[a-zA-ZÀ-ỹ0-9 ]+$" oninput="validateInput()">
                 <div class="invalid-feedback">Màu sắc không được để trống.</div>
             </div>
 
@@ -72,19 +80,16 @@
     </table>
 </div>
 <script>
-    (function() {
-        'use strict';
-        var forms = document.querySelectorAll('.needs-validation');
-        Array.prototype.slice.call(forms).forEach(function(form) {
-            form.addEventListener('submit', function(event) {
-                if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-                form.classList.add('was-validated');
-            }, false);
-        });
-    })();
+    function validateInput() {
+        let input = document.getElementById("tenDanhMuc");
+        let regex = /^[a-zA-ZÀ-ỹ0-9 ]+$/;
+        if (!regex.test(input.value)) {
+            input.setCustomValidity("Tên danh mục không được chứa ký tự đặc biệt.");
+        } else {
+            input.setCustomValidity("");
+        }
+    }
+
 </script>
 </body>
 </html>

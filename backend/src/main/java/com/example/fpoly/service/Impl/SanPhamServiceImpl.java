@@ -42,5 +42,11 @@ public class SanPhamServiceImpl implements SanPhamService {
     public void delete(Integer id) {
         sanPhamRepository.deleteById(id);
     }
+
+    // VALIDATE
+    @Override
+    public boolean existsByTenSanPham(String tenSanPham) {
+        return sanPhamRepository.findByTenSanPham(tenSanPham) != null;
+    }
 }
 

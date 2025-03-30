@@ -8,4 +8,7 @@ public interface SanPhamService {
     SanPham save(SanPham sanPham);
     SanPham update(Integer id, SanPham sanPham);
     void delete(Integer id);
+
+    // VALIDATE
+    boolean existsByTenSanPham(String tenSanPham);
 }
