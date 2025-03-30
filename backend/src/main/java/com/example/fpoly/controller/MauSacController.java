@@ -38,6 +38,33 @@ public class MauSacController {
     @PostMapping("/save")
     public String saveMS(@ModelAttribute MauSac mausac, RedirectAttributes redirectAttributes) {
         boolean isUpdate = mausac.getId() != null; // Kiểm tra xem có ID hay không
+
+        // VALIDATE
+        // Kiểm tra rỗng
+        if (mausac.getTenMauSac() == null || mausac.getTenMauSac().trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Tên màu sắc không được để trống.");
+            return "redirect:/admin/mausac/list";
+        }
+
+        // Kiểm tra độ dài
+        if (mausac.getTenMauSac().length() < 2 || mausac.getTenMauSac().length() > 30) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Tên màu sắc phải từ 2 - 30 ký tự.");
+            return "redirect:/admin/mausac/list";
+        }
+
+        // Kiểm tra ký tự đặc biệt (chỉ cho phép chữ, số, khoảng trắng, dấu tiếng Việt)
+        if (!mausac.getTenMauSac().matches("^[a-zA-ZÀ-ỹ0-9 ]+$")) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Tên màu sắc không được chứa ký tự đặc biệt.");
+            return "redirect:/admin/mausac/list";
+        }
+
+        // Kiểm tra trùng lặp nếu đang tạo mới
+        if (!isUpdate && service.existsByTenMauSac(mausac.getTenMauSac())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Tên màu sắc đã tồn tại.");
+            return "redirect:/admin/mausac/list";
+        }
+
+
         service.save(mausac);
 
         if (isUpdate) {

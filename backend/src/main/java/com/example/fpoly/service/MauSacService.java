@@ -11,4 +11,7 @@ public interface MauSacService {
     MauSac update(Integer id, MauSac mauSac);
     void delete(Integer id);
     List<MauSac> getAvailableColorsBySanPhamId(Integer sanPhamId) ;
+
+    // VALIDATE
+    boolean existsByTenMauSac(String tenMauSac);
 }

@@ -10,4 +10,7 @@ import java.util.List;
 public interface MauSacRepository extends JpaRepository<MauSac,Integer> {
     @Query("SELECT DISTINCT ct.mauSac FROM SanPhamChiTiet ct WHERE ct.sanPham.id = :sanPhamId")
     List<MauSac> findAvailableColorsBySanPhamId(@Param("sanPhamId") Integer sanPhamId);
+
+    //Validate
+    MauSac findByTenMauSac(String tenMauSac);
 }

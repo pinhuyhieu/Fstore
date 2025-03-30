@@ -45,4 +45,10 @@ public class SizeServiceImpl implements SizeService {
     public List<Size> getAvailableSizesBySanPhamId(Integer sanPhamId) {
         return sizeRepository.findAvailableSizesBySanPhamId(sanPhamId);
     }
+
+    // VALIDATE
+    @Override
+    public boolean existsByTenSize(String tenSize) {
+        return sizeRepository.findByTenSize(tenSize) != null;
+    }
 }

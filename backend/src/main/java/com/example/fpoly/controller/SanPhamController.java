@@ -149,6 +149,25 @@ public class SanPhamController {
     @PostMapping("/admin/add")
     public String addSanPham(@ModelAttribute SanPham sanPham, RedirectAttributes redirectAttributes){
         boolean isUpdate = sanPham.getId() != null; // Kiểm tra xem có ID hay không
+
+        // Kiểm tra độ dài
+        if (sanPham.getTenSanPham().length() < 2 || sanPham.getTenSanPham().length() > 20) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Tên sản phẩm phải từ 2 đến 20 ký tự.");
+            return "redirect:/sanpham/admin/add";
+        }
+
+        // Kiểm tra ký tự đặc biệt
+        if (!sanPham.getTenSanPham().matches("^[a-zA-Z0-9\\sÀ-ỹ]+$")) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Tên sản phẩm không được chứa ký tự đặc biệt.");
+            return "redirect:/sanpham/admin/add";
+        }
+
+        // Kiểm tra trùng lặp tên sản phẩm (trừ trường hợp cập nhật)
+        if (sanPham.getId() == null && sanPhamService.existsByTenSanPham(sanPham.getTenSanPham())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Tên sản phẩm đã tồn tại, vui lòng chọn tên khác.");
+            return "redirect:/sanpham/admin/add";
+        }
+
         sanPhamService.save(sanPham);
 
         if (isUpdate) {
