@@ -2,9 +2,13 @@ package com.example.fpoly.controller;
 
 import com.example.fpoly.entity.*;
 import com.example.fpoly.repository.DanhMucRepository;
+import com.example.fpoly.repository.SanPhamChiTietRepository;
 import com.example.fpoly.repository.SanPhamRepository;
 import com.example.fpoly.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -37,7 +41,8 @@ public class SanPhamController {
     private MauSacService mauSacService;
     @Autowired
     private SizeService sizeService;
-
+    @Autowired
+    private SanPhamChiTietRepository sanPhamChiTietRepository;
 
     @GetMapping("/index")
     public String index(Model model) {
@@ -47,18 +52,29 @@ public class SanPhamController {
     }
 
 
+    @GetMapping("/list/search")
+    public String timKiemSanPham(@RequestParam(value = "name", required = false) String name,
+                                 @RequestParam(value = "minPrice", required = false) BigDecimal minPrice,
+                                 @RequestParam(value = "maxPrice", required = false) BigDecimal maxPrice,
+                                 Model model) {
+        List<SanPham> dsSanPham;
 
+        if (name != null && !name.isEmpty()) {
+            dsSanPham = sanPhamService.searchByName(name);
+        } else if (minPrice != null && maxPrice != null) {
+            List<SanPhamChiTiet> chiTietList = sanPhamChiTietRepository.findByGiaBetween(minPrice, maxPrice);
+            dsSanPham = chiTietList.stream().map(SanPhamChiTiet::getSanPham).distinct().toList();
+        } else {
+            dsSanPham = sanPhamService.getAll();
+        }
 
-    @GetMapping("/list")
-    public String listSanPham(Model model){
-        List<SanPham> dssp = sanPhamRepository.findAll();
         List<DanhMuc> dsdm = danhMucRepository.findAll();
+        model.addAttribute("danhmuc", dsdm);
 
         Map<Integer, String> giaSanPhamMap = new HashMap<>();
-
         NumberFormat formatVND = NumberFormat.getInstance(new Locale("vi", "VN"));
 
-        for (SanPham sp : dssp) {
+        for (SanPham sp : dsSanPham) {
             List<HinhAnhSanPham> hinhAnhs = hinhAnhSanPhamService.getImagesBySanPhamId(sp.getId());
             sp.setHinhAnhs(hinhAnhs);
 
@@ -69,18 +85,52 @@ public class SanPhamController {
             String giaMinStr = formatVND.format(minGia);
             String giaMaxStr = formatVND.format(maxGia);
 
-            String giaHienThi = minGia.equals(maxGia)
-                    ? "Giá: " + giaMinStr + "₫"
-                    : "Giá: " + giaMinStr + "₫ – " + giaMaxStr + "₫";
+            String giaHienThi = minGia.equals(maxGia) ? "Giá: " + giaMinStr + "₫" : "Giá: " + giaMinStr + "₫ – " + giaMaxStr + "₫";
+            giaSanPhamMap.put(sp.getId(), giaHienThi);
+        }
+
+        model.addAttribute("dsSanPham", dsSanPham);
+        model.addAttribute("giaMap", giaSanPhamMap);
+
+        return "sanpham/list";
+    }
+
+
+    @GetMapping("/list")
+    public String listSanPham(@RequestParam(value = "page", defaultValue = "1") int page, Model model) {
+        int pageSize = 15; // Mỗi trang có 15 sản phẩm
+        Pageable pageable = PageRequest.of(page - 1, pageSize);
+        Page<SanPham> pageSanPham = sanPhamService.getAll(pageable);
+
+        List<DanhMuc> dsdm = danhMucRepository.findAll();
+        Map<Integer, String> giaSanPhamMap = new HashMap<>();
+        NumberFormat formatVND = NumberFormat.getInstance(new Locale("vi", "VN"));
+
+        for (SanPham sp : pageSanPham.getContent()) {
+            List<HinhAnhSanPham> hinhAnhs = hinhAnhSanPhamService.getImagesBySanPhamId(sp.getId());
+            sp.setHinhAnhs(hinhAnhs);
+
+            List<SanPhamChiTiet> chiTiets = sanPhamCTService.findBySanPhamId(sp.getId());
+            BigDecimal minGia = chiTiets.stream().map(SanPhamChiTiet::getGia).min(BigDecimal::compareTo).orElse(BigDecimal.ZERO);
+            BigDecimal maxGia = chiTiets.stream().map(SanPhamChiTiet::getGia).max(BigDecimal::compareTo).orElse(BigDecimal.ZERO);
+
+            String giaMinStr = formatVND.format(minGia);
+            String giaMaxStr = formatVND.format(maxGia);
+            String giaHienThi = minGia.equals(maxGia) ? "Giá: " + giaMinStr + "₫" : "Giá: " + giaMinStr + "₫ – " + giaMaxStr + "₫";
 
             giaSanPhamMap.put(sp.getId(), giaHienThi);
         }
 
-        model.addAttribute("dsSanPham", dssp);
+        model.addAttribute("dsSanPham", pageSanPham.getContent());
         model.addAttribute("danhmuc", dsdm);
-        model.addAttribute("giaMap", giaSanPhamMap); // Truyền giá
+        model.addAttribute("giaMap", giaSanPhamMap);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", pageSanPham.getTotalPages());
+
         return "/sanpham/list";
     }
+
+
     @GetMapping("/detail/{id}")
     public String detailSanPham(@PathVariable("id") Integer id, Model model) {
         // Lấy thông tin sản phẩm
@@ -192,7 +242,4 @@ public class SanPhamController {
         }
         return ResponseEntity.ok(sanPhamChiTietId);
     }
-
-
-
 }
