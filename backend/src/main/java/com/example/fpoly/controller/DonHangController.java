@@ -8,6 +8,7 @@ import com.example.fpoly.enums.TrangThaiDonHang;
 import com.example.fpoly.enums.TrangThaiThanhToan;
 import com.example.fpoly.service.*;
 import com.example.fpoly.util.TrangThaiValidator;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,11 @@ public class DonHangController {
     private VNPayConfig vnPayConfig;
     @Autowired
     private SanPhamCTService sanPhamCTService;
+    @Autowired
+    private DiaChiNguoiDungService diaChiNguoiDungService;
+    @Autowired
+    private MaGiamGiaService maGiamGiaService;
+
 
     // 🔹 Lấy danh sách đơn hàng của user
     @GetMapping
@@ -115,6 +121,37 @@ public class DonHangController {
         double tongTien = chiTietList.stream()
                 .mapToDouble(ct -> ct.getGiaBan().doubleValue() * ct.getSoLuong())
                 .sum();
+        // 🔻 Tính số tiền giảm nếu có mã
+        Float soTienGiam = 0f;
+
+        MaGiamGia maGiamGia = donHang.getMaGiamGia();
+        System.out.println("🔍 DonHang gửi lên có maGiamGia: " + donHang.getMaGiamGia());
+        System.out.println("🔍 maGiamGia ID: " + (donHang.getMaGiamGia() != null ? donHang.getMaGiamGia().getId() : "null"));
+        if (maGiamGia != null) {
+            // Truy vấn lại từ DB để đảm bảo thông tin cập nhật
+            maGiamGia = maGiamGiaService.findById(maGiamGia.getId()).orElse(null);
+
+
+            if (maGiamGia != null) {
+                boolean hopLe = (Boolean.TRUE.equals(maGiamGia.getKichHoat())) &&
+                        (maGiamGia.getNgayBatDau().isBefore(LocalDate.now())) &&
+                        (maGiamGia.getNgayKetThuc().isAfter(LocalDate.now())) &&
+                        (maGiamGia.getSoLuong() == null || maGiamGia.getSoLuong() > 0) &&
+                        (maGiamGia.getGiaTriToiThieu() == null || tongTien >= maGiamGia.getGiaTriToiThieu());
+
+                if (hopLe) {
+                    if (maGiamGia.getSoTienGiam() != null) {
+                        soTienGiam = maGiamGia.getSoTienGiam();
+                    } else if (maGiamGia.getPhanTramGiam() != null) {
+                        soTienGiam = (float) (tongTien * maGiamGia.getPhanTramGiam() / 100.0);
+                    }
+                }
+            }
+        }
+
+// 📝 Gán vào đơn hàng
+        donHang.setSoTienGiam(soTienGiam);
+
 
         // 🚚 Tính phí ship
         int tongSoLuong = chiTietList.stream().mapToInt(ChiTietDonHang::getSoLuong).sum();
@@ -133,6 +170,8 @@ public class DonHangController {
         donHang.setPhuongThucThanhToan(phuongThucThanhToan);
         donHang.setTrangThai(TrangThaiDonHang.CHO_XAC_NHAN);
         donHang.setPhiShip(phiShip);
+        donHang.setSoTienGiam(soTienGiam); // ⚠️ GỌI LẠI ở đây — để đảm bảo chắc chắn
+
 
         // 💾 Lưu đơn hàng và chi tiết
         DonHang newOrder = donHangService.tienHanhDatHang(user, donHang, session);
@@ -163,6 +202,13 @@ public class DonHangController {
                 return "redirect:/sanpham/list";
             }
         }
+        System.out.println("🧾 Tổng tiền hàng: " + tongTien);
+        System.out.println("🎁 Giảm giá: " + soTienGiam);
+        System.out.println("🚚 Phí ship: " + phiShip);
+        System.out.println("💵 DonHang.soTienGiam = " + donHang.getSoTienGiam());
+
+
+
 
         // ✅ Xoá mã giảm giá khỏi session sau khi đặt hàng
         session.removeAttribute("maGiamGiaNguoiDung");
@@ -238,7 +284,7 @@ public class DonHangController {
     private GHNService ghnService;
 
     @GetMapping("/chi-tiet/{id}")
-    public String chiTietDonHang(@PathVariable Integer id, Model model) {
+    public String chiTietDonHang(@PathVariable Integer id, Model model, HttpServletRequest request) {
         // 🔹 Tìm đơn hàng theo ID từ database
         DonHang donHang = donHangService.getOrderById(id)
                 .orElseThrow(() -> new RuntimeException("❌ Đơn hàng không tồn tại."));
@@ -268,6 +314,8 @@ public class DonHangController {
         // 🟢 Truyền vào view
         model.addAttribute("donHang", donHang);
         model.addAttribute("lichSuTrangThai", lichSu);
+        model.addAttribute("backUrl", request.isUserInRole("ADMIN") ? "/api/donhang/admin/list" : "/api/donhang/danh-sach");
+
         return "chi-tiet-don-hang"; // Trả về trang JSP
     }
 

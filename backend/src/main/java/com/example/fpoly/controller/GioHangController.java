@@ -1,13 +1,7 @@
 package com.example.fpoly.controller;
 
-import com.example.fpoly.entity.GioHang;
-import com.example.fpoly.entity.GioHangChiTiet;
-import com.example.fpoly.entity.PhuongThucThanhToan;
-import com.example.fpoly.entity.User;
-import com.example.fpoly.service.GioHangChiTietService;
-import com.example.fpoly.service.GioHangService;
-import com.example.fpoly.service.PhuongThucThanhToanService;
-import com.example.fpoly.service.UserService;
+import com.example.fpoly.entity.*;
+import com.example.fpoly.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,6 +21,7 @@ public class GioHangController {
     private final UserService userService;
     private final GioHangChiTietService gioHangChiTietService;
     private final PhuongThucThanhToanService phuongThucThanhToanService;
+    private final DiaChiNguoiDungService diaChiNguoiDungService;
 
     // 🛒 Lấy giỏ hàng theo user
 
@@ -64,6 +59,13 @@ public class GioHangController {
         model.addAttribute("tongTien", tongTien);
         List<PhuongThucThanhToan> list = phuongThucThanhToanService.getAllPaymentMethods();
         model.addAttribute("dsPhuongThuc", list);
+
+        DiaChiNguoiDung diaChi = diaChiNguoiDungService.getDiaChiMacDinh(user).orElse(null);
+
+        model.addAttribute("user", user);
+        model.addAttribute("diaChi", diaChi);
+
+// 👉 Chính dòng này khiến JSP dùng ${diaChi...} được
 
         return "cart"; // Trả về JSP hiển thị giỏ hàng
     }

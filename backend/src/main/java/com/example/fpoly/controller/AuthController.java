@@ -1,6 +1,8 @@
 package com.example.fpoly.controller;
 
+import com.example.fpoly.entity.DiaChiNguoiDung;
 import com.example.fpoly.entity.User;
+import com.example.fpoly.service.DiaChiNguoiDungService;
 import com.example.fpoly.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,6 +21,8 @@ import java.util.Optional;
 public class AuthController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final DiaChiNguoiDungService diaChiNguoiDungService;
+
 
     @GetMapping("/login")
     public String loginPage(@RequestParam(value = "error", required = false) String error,
@@ -51,7 +55,7 @@ public class AuthController {
     }
 
     @PostMapping("/doRegister")
-    public String register(@ModelAttribute User user, Model model) {
+    public String register(@ModelAttribute User user,HttpServletRequest request, Model model) {
         if (userService.findByUsername(user.getTenDangNhap()).isPresent()) {
             model.addAttribute("error", "Tên đăng nhập đã tồn tại!");
             return "register";
@@ -60,10 +64,41 @@ public class AuthController {
             model.addAttribute("error", "Email đã được sử dụng!");
             return "register";
         }
+        if (user.getHoTen() == null || user.getHoTen().trim().isEmpty()
+                || user.getTenDangNhap() == null || user.getTenDangNhap().trim().isEmpty()
+                || user.getEmail() == null || user.getEmail().trim().isEmpty()
+                || user.getMatKhau() == null || user.getMatKhau().trim().isEmpty()
+                || request.getParameter("soDienThoai") == null || request.getParameter("soDienThoai").trim().isEmpty()
+                || request.getParameter("tenTinhThanh") == null || request.getParameter("tenTinhThanh").trim().isEmpty()
+                || request.getParameter("tenQuanHuyen") == null || request.getParameter("tenQuanHuyen").trim().isEmpty()
+                || request.getParameter("tenPhuongXa") == null || request.getParameter("tenPhuongXa").trim().isEmpty()
+                || request.getParameter("diaChiChiTiet") == null || request.getParameter("diaChiChiTiet").trim().isEmpty()) {
+
+            model.addAttribute("error", "Vui lòng điền đầy đủ thông tin!");
+            return "register";
+        }
 
 
         user.setNgayTao(LocalDateTime.now());
         userService.saveUser(user);
+        String soDienThoai = request.getParameter("soDienThoai");
+        String tenTinhThanh = request.getParameter("tenTinhThanh");
+        String tenQuanHuyen = request.getParameter("tenQuanHuyen");
+        String tenPhuongXa = request.getParameter("tenPhuongXa");
+        String diaChiChiTiet = request.getParameter("diaChiChiTiet");
+
+        // Tạo đối tượng địa chỉ người dùng
+        DiaChiNguoiDung diaChi = new DiaChiNguoiDung();
+        diaChi.setUser(user);
+        diaChi.setSoDienThoai(soDienThoai);
+        diaChi.setTenTinhThanh(tenTinhThanh);
+        diaChi.setTenQuanHuyen(tenQuanHuyen);
+        diaChi.setTenPhuongXa(tenPhuongXa);
+        diaChi.setDiaChiChiTiet(diaChiChiTiet);
+        diaChi.setMacDinh(true); // ✅ Đánh dấu là địa chỉ mặc định
+
+        // Lưu địa chỉ
+        diaChiNguoiDungService.save(diaChi);
 
         return "redirect:/login?registerSuccess=true";
     }
