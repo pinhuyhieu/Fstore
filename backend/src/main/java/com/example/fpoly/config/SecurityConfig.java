@@ -25,6 +25,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -58,7 +59,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)) // Sử dụng session
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/register", "/doLogin", "/doRegister", "/cart/**", "/sanphamchitiet/**","/api/cart/detail/").permitAll()
-                        .requestMatchers("/WEB-INF/views/**").permitAll() // Cho phép truy cập JSP
+                        .requestMatchers("/WEB-INF/views/**","/api/ghn/wards/**","/api/ghn/districts/**","/api/ghn/provinces/**").permitAll() // Cho phép truy cập JSP
                         .requestMatchers("/css/**", "/js/**", "/uploads/**").permitAll()
                         .requestMatchers("/api/payment/vnpay-return").permitAll()
                         .requestMatchers("/user/**").hasRole("USER")
@@ -121,16 +122,18 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
-        configuration.setAllowCredentials(true);
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true); // 🔥 BẮT BUỘC
+        config.setAllowedOriginPatterns(List.of("http://localhost:3000")); // hoặc domain FE của bạn
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*")); // nên để rộng
+        config.setExposedHeaders(List.of("Set-Cookie")); // giúp client thấy cookie nếu cần
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/**", config);
         return source;
     }
+
 
     @Bean
     public AccessDeniedHandler accessDeniedHandler() {

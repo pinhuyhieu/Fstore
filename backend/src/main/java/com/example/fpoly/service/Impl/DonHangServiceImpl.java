@@ -50,7 +50,7 @@ public class DonHangServiceImpl implements DonHangService {
         GioHang gioHang = gioHangRepository.findByUser(user)
                 .orElseThrow(() -> new RuntimeException("❌ Giỏ hàng không tồn tại."));
 
-        // Gán thông tin đơn hàng
+        // Gán thông tin cơ bản
         donHang.setUser(user);
         donHang.setNgayDatHang(LocalDateTime.now());
         donHang.setTrangThai(TrangThaiDonHang.CHO_XAC_NHAN);
@@ -72,6 +72,7 @@ public class DonHangServiceImpl implements DonHangService {
 
         if (mggNguoiDung != null) {
             MaGiamGia ma = mggNguoiDung.getMaGiamGia();
+
             if (ma.getSoTienGiam() != null) {
                 soTienGiam = ma.getSoTienGiam();
             } else if (ma.getPhanTramGiam() != null) {
@@ -79,26 +80,35 @@ public class DonHangServiceImpl implements DonHangService {
             }
 
             if (tongTien >= ma.getGiaTriToiThieu()) {
+                donHang.setMaGiamGia(ma);
+                donHang.setSoTienGiam((float) soTienGiam);
                 tongTien -= soTienGiam;
                 if (tongTien < 0) tongTien = 0;
-                donHang.setMaGiamGia(ma); // Gán mã vào đơn hàng
             }
+        } else {
+            donHang.setSoTienGiam(0f); // ✅ nếu không có mã thì vẫn phải set
         }
 
-        // 💾 Gán tổng tiền sau khi giảm
-        donHang.setTongTien(tongTien + donHang.getPhiShip());
+        // 🛠 Tránh lỗi nếu phiShip chưa được set
+        int phiShip = donHang.getPhiShip() != null ? donHang.getPhiShip() : 0;
+        donHang.setPhiShip(phiShip); // đảm bảo có giá trị
 
+        // ✅ Gán tổng tiền sau khi giảm + phí ship
+        donHang.setTongTien(tongTien + phiShip);
+
+        // Lưu đơn hàng
         DonHang savedOrder = donHangRepository.save(donHang);
 
         // ✅ Xóa giỏ hàng
         gioHangRepository.deleteById(gioHang.getId());
 
-        // ✅ Dọn mã khỏi session
+        // ✅ Dọn session
         session.removeAttribute("maGiamGiaNguoiDung");
         session.removeAttribute("soTienGiam");
 
         return savedOrder;
     }
+
 
 
     @Override

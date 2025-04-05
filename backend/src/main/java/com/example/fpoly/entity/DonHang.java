@@ -73,6 +73,9 @@ private List<ChiTietDonHang> chiTietDonHangList= new ArrayList<>();
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ma_giam_gia_id")
     private MaGiamGia maGiamGia;
+    @Column(name = "so_tien_giam")
+    private Float soTienGiam;
+
 
 
 }

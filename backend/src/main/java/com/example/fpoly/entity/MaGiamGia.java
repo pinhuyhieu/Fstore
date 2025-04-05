@@ -5,7 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 @AllArgsConstructor
@@ -25,9 +27,11 @@ public class MaGiamGia {
     private Float phanTramGiam;
     private Float soTienGiam;
 
-    private LocalDateTime ngayBatDau;
-    private LocalDateTime ngayKetThuc;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate ngayBatDau;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate ngayKetThuc;
     private Integer soLuong;
     private Float giaTriToiThieu;
 
