@@ -19,4 +19,6 @@ public interface SanPhamService {
 
     List<SanPham> layDanhSachSanPham(Integer danhMucId);
     Page<SanPham> convertToPage(List<SanPham> sanPhams, Pageable pageable); // Thêm convertToPage
+    // VALIDATE
+    boolean existsByTenSanPham(String tenSanPham);
 }

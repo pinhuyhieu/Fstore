@@ -90,8 +90,14 @@
     <a href="${pageContext.request.contextPath}/sanpham/admin/list" class="btn btn-primary btn-lg">Quay lại danh sách sản phẩm</a>
 
     <!-- Form Thêm / Cập Nhật Chi Tiết Sản Phẩm -->
-    <h3 class="text-center text-success mt-4">Thêm / Cập nhật Chi tiết Sản phẩm</h3>
-    <form action="/sanphamchitiet/save" method="post" class="p-3 border rounded bg-light mt-3">
+    <h3 class="text-center text-success mt-4">Thêm / Sửa Chi tiết Sản phẩm</h3>
+    <c:if test="${not empty successMessage}">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                ${successMessage}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </c:if>
+    <form action="/sanphamchitiet/save" method="post" class="p-3 border rounded bg-light mt-3 needs-validation" novalidate>
         <input type="hidden" name="id" value="${id}">
         <input type="hidden" name="sanPhamId" value="${sanPhamId}" />
 
@@ -102,6 +108,7 @@
                     <option value="${size.id}" ${size.id == sanPhamChiTiet.size.id ? 'selected' : ''}>${size.tenSize}</option>
                 </c:forEach>
             </select>
+            <div class="invalid-feedback">Vui lòng chọn size.</div>
         </div>
 
         <div class="mb-3">
@@ -111,16 +118,26 @@
                     <option value="${mau.id}" ${mau.id == sanPhamChiTiet.mauSac.id ? 'selected' : ''}>${mau.tenMauSac}</option>
                 </c:forEach>
             </select>
+            <div class="invalid-feedback">Vui lòng chọn màu sắc.</div>
         </div>
 
+<%--        <div class="mb-3">--%>
+<%--            <label class="form-label">Giá:</label>--%>
+<%--            <input type="number" name="gia" class="form-control" value="${sanPhamChiTiet.gia}" required oninput="formatCurrency(this)" min="1" />--%>
+<%--            <div class="invalid-feedback">Giá không được để trống và phải lớn hơn 0.</div>--%>
+<%--        </div>--%>
         <div class="mb-3">
             <label class="form-label">Giá:</label>
-            <input type="number" name="gia" class="form-control" value="${sanPhamChiTiet.gia}" required />
+            <input type="text" id="gia" name="gia" class="form-control"
+                   value="${sanPhamChiTiet.gia}" required
+                   oninput="formatCurrency(this)" />
+            <div class="invalid-feedback">Giá tiền phải từ 1.000 đến 10 triệu VND.</div>
         </div>
 
         <div class="mb-3">
             <label class="form-label">Số lượng tồn:</label>
-            <input type="number" name="soLuongTon" class="form-control" value="${sanPhamChiTiet.soLuongTon}" required />
+            <input type="number" name="soLuongTon" class="form-control" value="${sanPhamChiTiet.soLuongTon}" required min="1" />
+            <div class="invalid-feedback">Số lượng tồn không được để trống và phải lớn hơn 0.</div>
         </div>
 
         <div class="text-center">
@@ -135,7 +152,67 @@
 
 
 </div>
+<script>
+    (function() {
+        'use strict';
+        var forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
 
+    // function formatCurrency(input) {
+    //     // Lấy giá trị nhập vào, loại bỏ ký tự không phải số
+    //     let value = input.value.replace(/\D/g, '');
+    //
+    //     // Chuyển thành số nguyên
+    //     let numericValue = parseInt(value, 10);
+    //
+    //     // Kiểm tra nếu giá trị nhỏ hơn 1, đặt về 1
+    //     if (isNaN(numericValue) || numericValue < 1) {
+    //         numericValue = 1;
+    //     }
+    //
+    //     // // Định dạng số tiền (thêm dấu . phân tách hàng nghìn)
+    //     // input.value = numericValue.toLocaleString('vi-VN');
+    // }
+    function formatCurrency(input) {
+        let value = input.value.replace(/\D/g, ''); // Loại bỏ ký tự không phải số
+        let numericValue = parseInt(value, 10);
+
+        // Lấy thẻ thông báo lỗi và class input
+        let errorElement = input.nextElementSibling;
+
+        if (isNaN(numericValue) || numericValue < 1000) {
+            numericValue = 1000;
+            errorElement.innerText = "Giá tiền phải lớn hơn hoặc bằng 1.000 VND";
+            input.classList.add("is-invalid");
+        } else if (numericValue > 10000000) {
+            numericValue = 10000000;
+            errorElement.innerText = "Giá tiền không được vượt quá 10 triệu VND";
+            input.classList.add("is-invalid");
+        } else {
+            errorElement.innerText = ""; // Xóa lỗi nếu hợp lệ
+            input.classList.remove("is-invalid");
+        }
+
+        // Định dạng số tiền theo chuẩn Việt Nam
+        input.value = numericValue.toLocaleString('vi-VN');
+    }
+
+    // Xóa dấu chấm khi submit form
+    document.querySelector("form").addEventListener("submit", function (event) {
+        let priceInput = document.getElementById("gia");
+        priceInput.value = priceInput.value.replace(/\./g, '');
+    });
+
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

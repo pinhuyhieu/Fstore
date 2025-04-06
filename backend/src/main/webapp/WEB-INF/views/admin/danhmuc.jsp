@@ -15,15 +15,30 @@
 
 <div class="container">
     <h2 class="text-center mb-4">Quản Lý Danh Mục</h2>
+    <c:if test="${not empty successMessage}">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                ${successMessage}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </c:if>
+    <c:if test="${not empty errorMessage}">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                ${errorMessage}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </c:if>
 
     <!-- Form Thêm/Sửa Danh Mục -->
     <div class="form-section">
-        <form method="POST" action="${pageContext.request.contextPath}/admin/danhmuc/save">
+        <form method="POST" action="${pageContext.request.contextPath}/admin/danhmuc/save" class="needs-validation" novalidate>
             <input type="hidden" name="id" value="${danhmuc.id}" />
 
             <div class="mb-3">
                 <label for="tenDanhMuc" class="form-label">Tên Danh Mục:</label>
-                <input type="text" class="form-control" id="tenDanhMuc" name="tenDanhMuc" value="${danhmuc.tenDanhMuc}" required>
+                <input type="text" class="form-control" id="tenDanhMuc" name="tenDanhMuc"
+                       value="${danhmuc.tenDanhMuc}" required minlength="2" maxlength="30"
+                       pattern="^[a-zA-ZÀ-ỹ0-9 ]+$" oninput="validateInput()">
+                <div class="invalid-feedback">Danh mục không được để trống.</div>
             </div>
 
             <button type="submit" class="btn btn-success">
@@ -65,6 +80,16 @@
         </tbody>
     </table>
 </div>
-
+<script>
+    function validateInput() {
+        let input = document.getElementById("tenDanhMuc");
+        let regex = /^[a-zA-ZÀ-ỹ0-9 ]+$/;
+        if (!regex.test(input.value)) {
+            input.setCustomValidity("Tên danh mục không được chứa ký tự đặc biệt.");
+        } else {
+            input.setCustomValidity("");
+        }
+    }
+</script>
 </body>
 </html>

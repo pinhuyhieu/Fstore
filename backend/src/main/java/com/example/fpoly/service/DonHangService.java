@@ -2,6 +2,7 @@ package com.example.fpoly.service;
 
 import com.example.fpoly.entity.DonHang;
 import com.example.fpoly.entity.User;
+import jakarta.servlet.http.HttpSession;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +17,6 @@ public interface DonHangService {
     public DonHang updateOrder(DonHang donHang) ;
 
     // 🆕 Tiến hành đặt hàng
-    DonHang tienHanhDatHang(User user, DonHang donHang);
+    public DonHang tienHanhDatHang(User user, DonHang donHang, HttpSession session);
 
 }

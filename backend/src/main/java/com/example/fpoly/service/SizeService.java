@@ -13,4 +13,8 @@ public interface SizeService {
     Size update(Integer id, Size size);
     void delete(Integer id);
     public List<Size> getAvailableSizesBySanPhamId(Integer sanPhamId);
+
+    // VALIDATE
+    boolean existsByTenSize(String tenSize);
+
 }

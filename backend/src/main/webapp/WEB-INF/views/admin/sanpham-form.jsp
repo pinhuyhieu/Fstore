@@ -42,24 +42,38 @@
             color: #fff;
         }
     </style>
+
 </head>
 <body>
 
 <div class="container">
     <h2 class="text-center text-primary mb-4">Quản Lý Sản Phẩm</h2>
-
+    <c:if test="${not empty successMessage}">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                ${successMessage}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </c:if>
+    <c:if test="${not empty errorMessage}">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                ${errorMessage}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </c:if>
     <!-- Form Thêm hoặc Cập Nhật -->
-    <form action="${pageContext.request.contextPath}/sanpham/admin/add" method="post" class="p-3 border rounded bg-light">
+    <form id="sanphamForm" action="${pageContext.request.contextPath}/sanpham/admin/add" method="post" class="p-3 border rounded bg-light needs-validation" novalidate>
         <input type="hidden" name="id" value="${sanPham.id}" />
 
         <div class="mb-3">
             <label class="form-label">Tên sản phẩm</label>
             <input type="text" name="tenSanPham" class="form-control" placeholder="Nhập tên sản phẩm" value="${sanPham.tenSanPham}" required>
+            <div class="invalid-feedback">Tên sản phẩm không được để trống.</div>
         </div>
 
         <div class="mb-3">
             <label class="form-label">Mô tả</label>
             <textarea name="moTa" class="form-control" rows="2" placeholder="Nhập mô tả sản phẩm" required>${sanPham.moTa}</textarea>
+            <div class="invalid-feedback">Mô tả không được để trống.</div>
         </div>
 
         <div class="mb-3">
@@ -69,6 +83,7 @@
                     <option value="${item.id}" ${item.id == sanPham.danhMuc.id ? 'selected' : ''}>${item.tenDanhMuc}</option>
                 </c:forEach>
             </select>
+            <div class="invalid-feedback">Vui lòng chọn danh mục.</div>
         </div>
 
         <div class="text-center">
@@ -86,7 +101,42 @@
         <a href="${pageContext.request.contextPath}/sanpham/admin/list" class="btn btn-primary btn-lg">Xem danh sách sản phẩm</a>
     </div>
 </div>
+<script>
+    // (function() {
+    //     'use strict';
+    //     var forms = document.querySelectorAll('.needs-validation');
+    //     Array.prototype.slice.call(forms).forEach(function(form) {
+    //         form.addEventListener('submit', function(event) {
+    //             if (!form.checkValidity()) {
+    //                 event.preventDefault();
+    //                 event.stopPropagation();
+    //             }
+    //             form.classList.add('was-validated');
+    //         }, false);
+    //     });
+    // })();
+    document.addEventListener("DOMContentLoaded", function () {
+        var form = document.getElementById("sanphamForm");
+        var tenSanPhamInput = form.querySelector("input[name='tenSanPham']");
 
+        form.addEventListener("submit", function (event) {
+            var tenSanPham = tenSanPhamInput.value.trim();
+            var regex = /^[a-zA-Z0-9\sÀ-ỹ]+$/;
+
+            if (tenSanPham.length < 3 || tenSanPham.length > 50) {
+                alert("Tên sản phẩm phải từ 3 đến 50 ký tự.");
+                event.preventDefault();
+                return;
+            }
+
+            if (!regex.test(tenSanPham)) {
+                alert("Tên sản phẩm không được chứa ký tự đặc biệt.");
+                event.preventDefault();
+            }
+        });
+    });
+
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

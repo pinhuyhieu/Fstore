@@ -10,4 +10,7 @@ import java.util.List;
 public interface SizeRepository extends JpaRepository<Size,Integer> {
     @Query("SELECT DISTINCT ct.size FROM SanPhamChiTiet ct WHERE ct.sanPham.id = :sanPhamId")
     List<Size> findAvailableSizesBySanPhamId(@Param("sanPhamId") Integer sanPhamId);
+
+    // VALIDATE
+    Size findByTenSize(String tenSize);
 }

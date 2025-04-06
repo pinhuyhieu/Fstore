@@ -1,5 +1,6 @@
 package com.example.fpoly.repository;
 
+import com.example.fpoly.entity.MauSac;
 import com.example.fpoly.entity.SanPham;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,7 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
 
         @Query("SELECT sp FROM SanPham sp WHERE LOWER(sp.tenSanPham) LIKE LOWER(CONCAT('%', :name, '%'))")
         Page<SanPham> searchByName(@Param("name") String name, Pageable pageable);
+        SanPham findByTenSanPham(String tenSanPham);
 }
 
 

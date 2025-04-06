@@ -12,4 +12,7 @@ public interface DanhMucService {
     DanhMuc save(DanhMuc danhMuc);
     DanhMuc update(Integer id, DanhMuc danhMuc);
     void delete(Integer id);
+
+    // VALIDATE
+    boolean existsByTenDanhMuc(String tenDanhMuc);
 }

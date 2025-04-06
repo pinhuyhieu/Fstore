@@ -6,6 +6,7 @@ import com.example.fpoly.repository.ChiTietDonHangRepository;
 import com.example.fpoly.repository.DonHangRepository;
 import com.example.fpoly.repository.GioHangRepository;
 import com.example.fpoly.service.DonHangService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -45,36 +46,70 @@ public class DonHangServiceImpl implements DonHangService {
 
     // 🆕 Tiến hành đặt hàng
     @Override
-    public DonHang tienHanhDatHang(User user, DonHang donHang) {
+    public DonHang tienHanhDatHang(User user, DonHang donHang, HttpSession session) {
         GioHang gioHang = gioHangRepository.findByUser(user)
                 .orElseThrow(() -> new RuntimeException("❌ Giỏ hàng không tồn tại."));
 
-        // 👉 Nếu bạn đã tính tổng tiền ở Controller thì đoạn này có thể bỏ:
-        double tongTien = donHang.getChiTietDonHangList().stream()
-                .mapToDouble(item -> item.getGiaBan().doubleValue() * item.getSoLuong())
-                .sum();
-        donHang.setTongTien(tongTien); // Optional
-
-        // Thiết lập thông tin đơn hàng
+        // Gán thông tin cơ bản
         donHang.setUser(user);
         donHang.setNgayDatHang(LocalDateTime.now());
         donHang.setTrangThai(TrangThaiDonHang.CHO_XAC_NHAN);
 
-        // 🔗 Gán lại đơn hàng cho từng chi tiết để đảm bảo liên kết hai chiều
+        // Gán lại đơn hàng cho từng chi tiết
         if (donHang.getChiTietDonHangList() != null) {
             for (ChiTietDonHang ct : donHang.getChiTietDonHangList()) {
                 ct.setDonHang(donHang);
             }
         }
 
-        // 💾 Lưu đơn hàng → sẽ cascade luôn chi tiết đơn hàng
+        // 💥 XỬ LÝ MÃ GIẢM GIÁ
+        double tongTien = donHang.getChiTietDonHangList().stream()
+                .mapToDouble(item -> item.getGiaBan().doubleValue() * item.getSoLuong())
+                .sum();
+
+        MaGiamGiaNguoiDung mggNguoiDung = (MaGiamGiaNguoiDung) session.getAttribute("maGiamGiaNguoiDung");
+        double soTienGiam = 0;
+
+        if (mggNguoiDung != null) {
+            MaGiamGia ma = mggNguoiDung.getMaGiamGia();
+
+            if (ma.getSoTienGiam() != null) {
+                soTienGiam = ma.getSoTienGiam();
+            } else if (ma.getPhanTramGiam() != null) {
+                soTienGiam = tongTien * ma.getPhanTramGiam() / 100;
+            }
+
+            if (tongTien >= ma.getGiaTriToiThieu()) {
+                donHang.setMaGiamGia(ma);
+                donHang.setSoTienGiam((float) soTienGiam);
+                tongTien -= soTienGiam;
+                if (tongTien < 0) tongTien = 0;
+            }
+        } else {
+            donHang.setSoTienGiam(0f); // ✅ nếu không có mã thì vẫn phải set
+        }
+
+        // 🛠 Tránh lỗi nếu phiShip chưa được set
+        int phiShip = donHang.getPhiShip() != null ? donHang.getPhiShip() : 0;
+        donHang.setPhiShip(phiShip); // đảm bảo có giá trị
+
+        // ✅ Gán tổng tiền sau khi giảm + phí ship
+        donHang.setTongTien(tongTien + phiShip);
+
+        // Lưu đơn hàng
         DonHang savedOrder = donHangRepository.save(donHang);
 
-        // ✅ Xoá giỏ hàng
+        // ✅ Xóa giỏ hàng
         gioHangRepository.deleteById(gioHang.getId());
+
+        // ✅ Dọn session
+        session.removeAttribute("maGiamGiaNguoiDung");
+        session.removeAttribute("soTienGiam");
 
         return savedOrder;
     }
+
+
 
     @Override
     public List<DonHang> getAllOrders() {

@@ -45,4 +45,10 @@ public class MauSacServiceImpl implements MauSacService {
     public List<MauSac> getAvailableColorsBySanPhamId(Integer sanPhamId) {
         return mauSacRepository.findAvailableColorsBySanPhamId(sanPhamId);
     }
+
+    // VALIDATE
+    @Override
+    public boolean existsByTenMauSac(String tenMauSac) {
+        return mauSacRepository.findByTenMauSac(tenMauSac) != null;
+    }
 }

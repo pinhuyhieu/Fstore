@@ -6,315 +6,240 @@
 <html>
 <head>
     <title>🛒 Giỏ hàng</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         body {
             background: linear-gradient(135deg, #74b9ff, #0984e3);
-            margin: 0;
-            padding: 20px 0;
             color: #333;
             font-family: Arial, sans-serif;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            background-color: rgba(255, 255, 255, 0.95);
+        .content-wrapper {
+            background-color: rgba(255, 255, 255, 0.97);
             padding: 30px;
             border-radius: 16px;
             box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease;
-        }
-
-        .container.mt-5 {
-            display: block;
-        }
-
-
-        .container:hover {
-            transform: translateY(-5px);
+            margin-top: 40px;
         }
 
         h2, h3 {
             color: #333;
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-
-        table th, table td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-
-        table th {
+        .table th {
             background-color: #0984e3;
-            color: #fff;
-            font-weight: bold;
+            color: white;
         }
 
-        table tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
-        .quantity-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .quantity-btn {
-            background-color: #0984e3;
-            color: #fff;
-            border: none;
-            padding: 8px 12px;
-            margin: 0;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            font-size: 16px;
-            line-height: 1;
-        }
-
-        .quantity-btn:hover {
-            background-color: #74b9ff;
-            transform: translateY(-2px);
+        .quantity-container button {
+            padding: 5px 10px;
         }
 
         .quantity-input {
-            width: 50px;
-            height: 40px;
+            width: 60px;
             text-align: center;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            margin: 0;
-            font-size: 16px;
-            outline: none;
         }
 
-        .btn-remove {
-            background-color: #e74c3c;
-            color: #fff;
-            border: none;
-            padding: 8px 12px;
+        .form-control, .btn {
             border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-remove:hover {
-            background-color: #c0392b;
         }
 
         .btn-checkout {
             background-color: #28a745;
             color: white;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            margin: 20px auto;
-            display: block;
-            font-size: 17px;
             font-weight: bold;
-            transition: background-color 0.3s ease, transform 0.2s ease;
+            width: 100%;
+            padding: 12px;
         }
 
         .btn-checkout:hover {
             background-color: #218838;
-            transform: translateY(-3px);
         }
 
-        .empty-cart {
-            text-align: center;
-            color: #888;
-            margin: 20px 0;
+        .alert {
+            font-size: 14px;
         }
 
-        .form-group label {
+        #discountRow {
             font-weight: bold;
-            color: #555;
+            margin-bottom: 1rem;
         }
-
-        .form-control {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 15px;
-            outline: none;
-            transition: box-shadow 0.3s ease, border-color 0.3s ease;
-        }
-
-        .form-control:hover {
-            border-color: #0984e3;
-            box-shadow: 0px 4px 8px rgba(9, 132, 227, 0.2);
-        }
-
-        .form-control:focus {
-            border-color: #0984e3;
-            box-shadow: 0px 4px 12px rgba(9, 132, 227, 0.4);
-        }
-
-        .btn-success {
-            background-color: #0984e3;
-            color: white;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            margin: 20px 0;
-            font-size: 17px;
-            font-weight: bold;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-success:hover {
-            background-color: #74b9ff;
-        }
-
     </style>
 </head>
 <body>
-<div class="container">
-    <h2>🛒 Giỏ hàng của bạn</h2>
-
-    <c:choose>
-        <c:when test="${gioHang != null and not empty gioHang.gioHangChiTietList}">
-            <table>
-                <tr>
-                    <th>Chọn</th>
-                    <th>Sản phẩm</th>
-                    <th>Size</th>
-                    <th>Màu sắc</th>
-                    <th>Số lượng</th>
-                    <th>Giá</th>
-                    <th>Hành động</th>
-                </tr>
-                <c:forEach var="item" items="${gioHang.gioHangChiTietList}">
-                    <tr id="row-${item.id}">
-                        <td>
-                            <input type="checkbox" class="product-checkbox" data-id="${item.id}" checked>
-                        </td>
-                        <td>${item.sanPhamChiTiet.sanPham.tenSanPham}</td>
-                        <td>${item.sanPhamChiTiet.size.tenSize}</td>
-                        <td>${item.sanPhamChiTiet.mauSac.tenMauSac}</td>
-                        <td class="quantity-container">
-                            <button class="quantity-btn btn-decrease" data-id="${item.id}">-</button>
-                            <input type="text" id="quantity-${item.id}" class="quantity-input" value="${item.soLuong}" >
-                            <button class="quantity-btn btn-increase" data-id="${item.id}">+</button>
-                        </td>
-                        <td>
-                          <span id="gia-${item.id}" data-gia="${item.sanPhamChiTiet.gia}">
-                            <fmt:formatNumber value="${item.sanPhamChiTiet.gia}" type="number" maxFractionDigits="0"/>
-                          </span>
-                        </td>
-
-                        <td>
-                            <button class="btn btn-remove" data-id="${item.id}">❌ Xóa</button>
-                        </td>
-                    </tr>
-                </c:forEach>
-            </table>
-            <h3>💰 Tổng tiền:
-                <span id="total-price" data-tong="${tongTien}">
-        <fmt:formatNumber value="${tongTien}" type="number" maxFractionDigits="0" />
-        ₫
-    </span>
-            </h3>
-
-
-        </c:when>
-        <c:otherwise>
-            <p class="empty-cart">🛒 Giỏ hàng của bạn đang trống.</p>
-        </c:otherwise>
-    </c:choose>
-
-    <div style="text-align: center; margin: 15px 0;">
-        <a href="${pageContext.request.contextPath}/sanpham/list"
-           class="btn btn-success"
-           style="text-decoration: none;">🔙 Quay lại trang sản phẩm</a>
-    </div>
-
-
-
-    <c:if test="${gioHang != null and not empty gioHang.gioHangChiTietList}">
-        <div class="container mt-5">
-            <h2 class="text-center">Xác nhận đặt hàng</h2>
-            <form action="/api/donhang/dat-hang" method="post"  onsubmit="return confirm('Bạn có chắc chắn muốn đặt hàng không?')">
-            <div class="form-group">
-                    <label>Tên người nhận:</label>
-                    <input type="text" class="form-control" name="tenNguoiNhan" placeholder="Nhập tên người nhận" required>
-                </div>
-                <div class="form-group">
-                    <label>Số điện thoại người nhận:</label>
-                    <input type="text" class="form-control" name="soDienThoaiNguoiNhan" placeholder="Nhập số điện thoại" required>
-                </div>
-                <div class="form-group">
-                    <label>Địa chỉ giao hàng:</label>
-                    <input type="text" class="form-control" name="diaChiGiaoHang" placeholder="Nhập địa chỉ" required>
-                </div>
-                <div class="form-group">
-                    <label for="tinhThanh">Tỉnh/Thành phố:</label>
-                    <select class="form-control" id="tinhThanh" name="tinhThanh" required >
-                        <option value="">Chọn Tỉnh/Thành phố</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="quanHuyen">Quận/Huyện:</label>
-                    <select class="form-control" id="quanHuyen" name="quanHuyen" required>
-                        <option value="">Chọn Quận/Huyện</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="phuongXa">Phường/Xã:</label>
-                    <select class="form-control" id="phuongXa" name="phuongXa" required >
-                        <option value="">Chọn Phường/Xã</option>
-                    </select>
-                </div>
-
-
-
-
-                <div class="form-group">
-                    <label>Phương thức thanh toán:</label>
-                    <select class="form-control" name="phuongThucThanhToanId" required>
-                        <c:forEach var="pt" items="${dsPhuongThuc}">
-                            <option value="${pt.id}">${pt.tenPhuongThuc}</option>
-                        </c:forEach>
-                    </select>
-
-                </div>
-
-                <div class="form-group">
-                    <label>Phí vận chuyển:</label>
-                    <p class="font-weight-bold"><span id="shippingFee">0</span> ₫</p>
-                </div>
-
-                <div class="form-group">
-                    <label>Tổng cộng:</label>
-                    <p class="font-weight-bold"><span id="finalAmount">0</span> ₫</p>
-                </div>
-                <button type="submit" class="btn btn-checkout">🛒 Xác nhận đặt hàng</button>
-            </form>
+<div class="container content-wrapper">
+    <c:if test="${not empty successMessage}">
+        <div class="alert alert-success">${successMessage}</div>
+    </c:if>
+    <c:if test="${not empty error}">
+        <div class="alert alert-danger">${error}</div>
+    </c:if>
+    <c:if test="${not empty sessionScope.maGiamGiaNguoiDung}">
+        <div class="alert alert-info">
+            ✅ Đã áp dụng mã: ${sessionScope.maGiamGiaNguoiDung.maGiamGia.ma}
         </div>
     </c:if>
 
-</div>
+    <div class="container mt-4">
+        <input type="hidden" name="maGiamGia.id" value="${maGiamGia.id}" />
 
-<script>
+        <div class="row">
+            <!-- 🧾 Cột trái: Giỏ hàng -->
+            <div class="col-md-7">
+                <h3 class="mb-3">🛒 Giỏ hàng của bạn</h3>
 
+                <c:choose>
+                    <c:when test="${gioHang != null and not empty gioHang.gioHangChiTietList}">
+                        <table class="table table-bordered table-hover">
+                            <thead class="thead-dark">
+                            <tr>
+                                <th>Chọn</th>
+                                <th>Sản phẩm</th>
+                                <th>Size</th>
+                                <th>Màu</th>
+                                <th>Số lượng</th>
+                                <th>Giá</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <c:forEach var="item" items="${gioHang.gioHangChiTietList}">
+                                <tr id="row-${item.id}">
+                                    <td><input type="checkbox" class="product-checkbox" data-id="${item.id}" checked></td>
+                                    <td>${item.sanPhamChiTiet.sanPham.tenSanPham}</td>
+                                    <td>${item.sanPhamChiTiet.size.tenSize}</td>
+                                    <td>${item.sanPhamChiTiet.mauSac.tenMauSac}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <button class="btn btn-sm btn-outline-secondary btn-decrease" data-id="${item.id}">-</button>
+                                            <input type="text" class="form-control mx-1 text-center quantity-input" id="quantity-${item.id}" value="${item.soLuong}" style="width: 60px;">
+                                            <button class="btn btn-sm btn-outline-secondary btn-increase" data-id="${item.id}">+</button>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span id="gia-${item.id}" data-gia="${item.sanPhamChiTiet.gia}">
+                                            <fmt:formatNumber value="${item.sanPhamChiTiet.gia}" type="number" maxFractionDigits="0"/> ₫
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-danger btn-remove" data-id="${item.id}">❌</button>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                            </tbody>
+                        </table>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="alert alert-info">🛒 Giỏ hàng của bạn đang trống.</div>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+
+            <!-- 🧾 Cột phải: Thông tin đặt hàng -->
+            <div class="col-md-5">
+                <h3 class="mb-3">📦 Thông tin đặt hàng</h3>
+
+                <!-- Thông báo -->
+                <c:if test="${not empty successMessage}">
+                    <div class="alert alert-success">${successMessage}</div>
+                </c:if>
+                <c:if test="${not empty error}">
+                    <div class="alert alert-danger">${error}</div>
+                </c:if>
+
+                <!-- Mã giảm giá -->
+                <div class="form-group">
+                    <label for="maGiamGiaInput">Mã giảm giá:</label>
+                    <div class="d-flex">
+                        <input type="text" class="form-control" id="maGiamGiaInput" placeholder="Nhập mã">
+                        <button type="button" class="btn btn-primary ml-2" id="applyCouponBtn">Áp dụng</button>
+                        <button type="button" class="btn btn-danger ml-2" id="cancelCouponBtn">Hủy</button>
+                    </div>
+                </div>
+
+                <div id="discountRow" style="display: none;">
+                    <p class="text-success">✅ Giảm giá: <span id="discountAmount" data-giam="0">-0 ₫</span></p>
+                </div>
+
+                <!-- Tổng tiền -->
+                <div class="form-group mt-3">
+                    <label>Tạm tính:</label>
+                    <h5><span id="total-price" data-tong="${tongTien}">
+                    <fmt:formatNumber value="${tongTien}" type="number" maxFractionDigits="0"/> ₫
+                </span></h5>
+                </div>
+
+                <!-- Form đặt hàng -->
+                <form action="/api/donhang/dat-hang" method="post" onsubmit="return confirm('Bạn chắc chắn muốn đặt hàng?')">
+                    <div class="form-group">
+                        <label>Tên người nhận:</label>
+                        <input type="text" class="form-control" name="tenNguoiNhan" value="${user.hoTen}" required >
+                    </div>
+                    <div class="form-group">
+                        <label>SĐT người nhận:</label>
+                        <input type="text" class="form-control" name="soDienThoaiNguoiNhan" value="${user.soDienThoai}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Địa chỉ giao hàng:</label>
+                        <input type="text" class="form-control" name="diaChiGiaoHang" value="${diaChi.diaChiChiTiet}" required>
+                    </div>
+
+                    <!-- Địa chỉ -->
+                    <div class="form-group">
+                        <label>Tỉnh/Thành phố:</label>
+                        <select class="form-control" id="tinhThanh" name="tinhThanh" value="${diaChi.tenTinhThanh}" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Quận/Huyện:</label>
+                        <select class="form-control" id="quanHuyen" name="quanHuyen" value="${diaChi.tenQuanHuyen}" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Phường/Xã:</label>
+                        <select class="form-control" id="phuongXa" name="phuongXa" value="${diaChi.tenPhuongXa}" required></select>
+                    </div>
+
+                    <!-- Thanh toán -->
+                    <div class="form-group">
+                        <label>Phương thức thanh toán:</label>
+                        <select class="form-control" name="phuongThucThanhToanId" required>
+                            <c:forEach var="pt" items="${dsPhuongThuc}">
+                                <option value="${pt.id}">${pt.tenPhuongThuc}</option>
+                            </c:forEach>
+                        </select>
+                    </div>
+
+                    <!-- Phí ship & tổng cộng -->
+                    <div class="form-group">
+                        <label>Phí vận chuyển:</label>
+                        <p><strong><span id="shippingFee">0</span> ₫</strong></p>
+                    </div>
+                    <div class="form-group">
+                        <label>Tổng cộng:</label>
+                        <p><strong><span id="finalAmount">0</span> ₫</strong></p>
+                    </div>
+
+                    <button type="submit" class="btn btn-warning btn-block">🛒 Đặt hàng</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script><script>
+    function tinhTongThanhToan() {
+        const tienHang = parseInt($("#total-price").data("tong")) || 0;
+        const soTienGiam = parseInt($("#discountAmount").data("giam")) || 0;
+        const phiShip = parseInt($("#shippingFee").text().replace(/[^\d]/g, "")) || 0;
+
+        let tong = tienHang - soTienGiam + phiShip;
+        if (tong < 0) tong = 0;
+
+        $("#finalAmount").text(tong.toLocaleString("vi-VN") + " ₫");
+    }
 
 
     $(document).ready(function () {
@@ -322,6 +247,10 @@
 
         // Hiển thị tổng tiền ngay khi trang được tải
         updateTotalPrice();
+
+
+
+
 
         // Cập nhật tổng tiền khi chọn/bỏ chọn sản phẩm
         $(".product-checkbox").change(function () {
@@ -370,6 +299,7 @@
 
                     // ✅ Cập nhật tổng giỏ hàng
                     updateTotalPrice();
+                    tinhTongThanhToan(); // thêm dòng này
 
                     // ✅ Lưu lại số lượng cũ nếu cần dùng
                     quantityElem.data("old", newQuantity);
@@ -448,6 +378,13 @@
             }
         });
         $(document).ready(function () {
+            const defaultTinhThanh = "${diaChi.tenTinhThanh}";
+            const defaultQuanHuyen = "${diaChi.tenQuanHuyen}";
+            const defaultPhuongXa  = "${diaChi.tenPhuongXa}";
+
+            console.log("✅ Tỉnh mặc định:", defaultTinhThanh);
+            console.log("✅ Quận mặc định:", defaultQuanHuyen);
+            console.log("✅ Phường mặc định:", defaultPhuongXa);
             // Lấy Tỉnh/Thành phố khi trang được tải
             $.ajax({
                 url: '/api/ghn/provinces',  // API lấy danh sách Tỉnh/Thành phố
@@ -463,6 +400,10 @@
                         data.data.forEach(function (province) {
                             tinhThanhSelect.append('<option value="' + province.ProvinceID  + '">' + province.ProvinceName  + '</option>');
                         });
+                        if (defaultTinhThanh) {
+                            $('#tinhThanh').val(defaultTinhThanh).trigger('change');
+                        }
+
                     } else {
                         alert("Không có dữ liệu tỉnh/thành phố.");
                     }
@@ -495,6 +436,9 @@
                         data.data.forEach(function (district) {
                             quanHuyenSelect.append('<option value="' + district.DistrictID + '">' + district.DistrictName + '</option>');
                         });
+                        if (defaultQuanHuyen) {
+                            $('#quanHuyen').val(defaultQuanHuyen).trigger('change');
+                        }
                     },
                     error: function () {
                         alert("Lỗi khi lấy danh sách quận/huyện.");
@@ -524,6 +468,9 @@
                         data.data.forEach(function (ward) {
                             phuongXaSelect.append('<option value="' + ward.WardCode + '">' + ward.WardName + '</option>');
                         });
+                        if (defaultPhuongXa) {
+                            $('#phuongXa').val(defaultPhuongXa).trigger('change');
+                        }
                     },
                     error: function () {
                         alert("Lỗi khi lấy danh sách phường/xã.");
@@ -549,7 +496,10 @@
                             tongTien += gia * qty;
                             soLuong += qty;
                         }
+
                     });
+                    $("#total-price").data("tong", tongTien); // 🔧 cập nhật lại DOM để mã giảm giá dùng giá mới
+
 
                     $.ajax({
                         url: "/api/ghn/api/ghn/calculate-fee",
@@ -561,9 +511,13 @@
                             tongTien: tongTien
                         },
                         success: function (phi) {
-                            $("#shippingFee").text(phi.toLocaleString() + " ₫");
-                            $("#finalAmount").text((tongTien + phi).toLocaleString() + " ₫");
+                            $("#shippingFee")
+                                .text(phi.toLocaleString("vi-VN") + " ₫")
+                                .data("ship", phi); // Cập nhật giá trị ship cho hàm tính tổng
+
+                            tinhTongThanhToan(); // Gọi lại để hiển thị tổng mới
                         },
+
                         error: function () {
                             alert("Lỗi khi tính phí vận chuyển.");
                         }
@@ -592,6 +546,54 @@
             });
         });
 
+    });
+    $("#applyCouponBtn").click(function () {
+        const ma = $("#maGiamGiaInput").val().trim();
+
+        $.ajax({
+            url: "/api/ma-giam-gia/apply",
+            method: "POST",
+            data: { ma },
+            success: function (res) {
+                alert(res.message || "✅ Mã đã áp dụng");
+
+                // Gọi thêm /check để lấy số tiền giảm:
+                $.ajax({
+                    url: "/api/ma-giam-gia/check",
+                    method: "GET",
+                    data: {
+                        ma: ma,
+                        tongTien: parseInt($("#total-price").data("tong"))
+                    },
+                    success: function (data) {
+                        $("#discountAmount")
+                            .text("-" + data.soTienGiam.toLocaleString("vi-VN") + " ₫")
+                            .data("giam", data.soTienGiam);
+                        $("#discountRow").show();
+                        tinhTongThanhToan();
+                    }
+                });
+            },
+            error: function (xhr) {
+                alert(xhr.responseText || "❌ Mã không hợp lệ");
+            }
+        });
+    });
+
+    $("#cancelCouponBtn").click(function () {
+        $.ajax({
+            url: "/api/ma-giam-gia/cancel",
+            method: "GET",
+            success: function () {
+                $("#discountRow").hide();
+                $("#discountAmount").data("giam", 0);
+                tinhTongThanhToan();
+                alert("❌ Mã giảm giá đã được hủy");
+            },
+            error: function () {
+                alert("Lỗi khi hủy mã giảm giá.");
+            }
+        });
     });
 
 

@@ -99,9 +99,29 @@
             </tr>
         </c:forEach>
         </tbody>
+        <!-- thêm sau bảng sản phẩm -->
+        <tfoot>
+        <tr>
+            <td colspan="5" class="text-end"><strong>Phí vận chuyển:</strong></td>
+            <td><fmt:formatNumber value="${donHang.phiShip}" type="number" maxFractionDigits="0"/> ₫</td>
+        </tr>
+
+            <tr>
+                <td colspan="5" class="text-end"><strong>Giảm giá:</strong></td>
+                <td>-<fmt:formatNumber value="${donHang.soTienGiam}" type="number" maxFractionDigits="0"/> ₫</td>
+            </tr>
+
+        <tr>
+            <td colspan="5" class="text-end"><strong>Tổng thanh toán:</strong></td>
+            <td>
+                <fmt:formatNumber value="${donHang.thanhToan.soTien}" type="number" maxFractionDigits="0"/> ₫
+            </td>
+        </tr>
+        </tfoot>
+
     </table>
 
-    <a href="/donhang/danh-sach" class="btn btn-primary btn-back">⬅ Quay lại danh sách đơn hàng</a>
+    <a href="${backUrl}" class="btn btn-primary btn-back">⬅ Quay lại danh sách đơn hàng</a>
 </div>
 
 </body>

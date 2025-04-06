@@ -89,7 +89,7 @@
                 <a href="${pageContext.request.contextPath}/sanpham/admin/add" class="text-decoration-none">
                     <div class="card">
                         <i class="fa-solid fa-square-plus text-primary"></i>
-                        <h4>ADD PRODUCT</h4>
+                        <h4>SẢN PHẨM</h4>
                     </div>
                 </a>
             </div>
@@ -98,7 +98,7 @@
                 <a href="${pageContext.request.contextPath}/admin/danhmuc/list" class="text-decoration-none">
                     <div class="card">
                         <i class="fa-solid fa-list text-warning"></i>
-                        <h4>ADD CATEGORY</h4>
+                        <h4>DANH MỤC</h4>
                     </div>
                 </a>
             </div>
@@ -107,7 +107,7 @@
                 <a href="${pageContext.request.contextPath}/admin/mausac/list" class="text-decoration-none">
                     <div class="card">
                         <i class="fa-solid fa-table-list text-success"></i>
-                        <h4>ADD COLOR </h4>
+                        <h4>MÀU SẮC</h4>
                     </div>
                 </a>
             </div>
@@ -116,7 +116,7 @@
                 <a href="${pageContext.request.contextPath}/admin/size/list" class="text-decoration-none">
                     <div class="card">
                         <i class="fa-solid fa-box-open text-warning"></i>
-                        <h4>ADD SIZE</h4>
+                        <h4>KÍCH THƯỚC </h4>
                     </div>
                 </a>
             </div>
@@ -125,16 +125,16 @@
                 <a href="${pageContext.request.contextPath}/api/donhang/admin/list" class="text-decoration-none">
                     <div class="card">
                         <i class="fa-solid fa-circle-user text-primary"></i>
-                        <h4>Users</h4>
+                        <h4>ĐƠN HÀNG</h4>
                     </div>
                 </a>
             </div>
 
             <div class="col-md-4">
-                <a href="${pageContext.request.contextPath}/admin/add-admin" class="text-decoration-none">
+                <a href="${pageContext.request.contextPath}/admin/ma-giam-gia" class="text-decoration-none">
                     <div class="card">
                         <i class="fa-solid fa-user-plus text-primary"></i>
-                        <h4>Add Admin</h4>
+                        <h4>MÃ GIẢM GIÁ</h4>
                     </div>
                 </a>
             </div>

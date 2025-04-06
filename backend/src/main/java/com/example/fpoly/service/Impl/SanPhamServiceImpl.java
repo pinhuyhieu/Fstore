@@ -1,8 +1,9 @@
-package com.example.fpoly.service.impl;
+package com.example.fpoly.service.Impl;
 
 import com.example.fpoly.entity.SanPham;
 import com.example.fpoly.repository.SanPhamRepository;
 import com.example.fpoly.service.SanPhamService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -14,11 +15,9 @@ import java.util.Optional;
 @Service
 public class SanPhamServiceImpl implements SanPhamService {
 
-    private final SanPhamRepository sanPhamRepository;
+    @Autowired
+    private SanPhamRepository sanPhamRepository;
 
-    public SanPhamServiceImpl(SanPhamRepository sanPhamRepository) {
-        this.sanPhamRepository = sanPhamRepository;
-    }
 
     @Override
     public List<SanPham> getAll() {
@@ -59,6 +58,12 @@ public class SanPhamServiceImpl implements SanPhamService {
     public void delete(Integer id) {
         sanPhamRepository.deleteById(id);
     }
+    // VALIDATE
+    @Override
+    public boolean existsByTenSanPham(String tenSanPham) {
+        return sanPhamRepository.findByTenSanPham(tenSanPham) != null;
+    }
+
 
     @Override
     public List<SanPham> layDanhSachSanPham(Integer danhMucId) {
