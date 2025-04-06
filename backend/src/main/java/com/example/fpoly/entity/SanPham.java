@@ -37,8 +37,9 @@ public class SanPham {
     // có thể thêm @PrePersist.
     @Column(name = "ngay_tao")
     private LocalDateTime ngayTao;
+
     @OneToMany(mappedBy = "sanPham", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<HinhAnhSanPham> hinhAnhs;
-
-
+    @OneToMany(mappedBy = "sanPham", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<SanPhamChiTiet> sanPhamChiTiets;
 }
