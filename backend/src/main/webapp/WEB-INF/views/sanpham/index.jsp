@@ -7,6 +7,10 @@
     <title>Danh sách sản phẩm - Fstore</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <!-- AOS CSS (Animate On Scroll) -->
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
     <style>
         body {
             background: linear-gradient(135deg, #74b9ff, #0984e3);
@@ -34,7 +38,19 @@
             overflow: visible;
         }
 
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
         .banner-content {
+            animation: slideIn 1s ease-out;
             text-align: center;
             background-color: rgba(0, 0, 0, 0.5);
             padding: 20px;
@@ -48,11 +64,6 @@
 
         .banner p {
             font-size: 1.5rem;
-        }
-
-        .banner img {
-            width: 100%;
-            height: auto;
         }
 
         .btn-primary {
@@ -73,7 +84,8 @@
         }
 
         .service-item img {
-            width: 80px;
+            width: 60px; /* Thay đổi từ 80px thành 60px hoặc giá trị nhỏ hơn tùy ý */
+            height: auto;
             margin-bottom: 10px;
         }
 
@@ -91,6 +103,16 @@
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
             text-align: center;
             margin-bottom: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
     </style>
 </head>
@@ -111,20 +133,20 @@
 <div class="container service-section text-center">
     <h2 class="mb-4">Dịch vụ của Fstore</h2>
     <div class="row">
-        <div class="col-md-4 service-item">
-            <img src="https://via.placeholder.com/80" alt="Miễn phí vận chuyển">
-            <h4>Miễn phí vận chuyển</h4>
+        <div class="col-md-4 service-item" data-aos="fade-up">
+            <img src="${pageContext.request.contextPath}/images/service-1.png" alt="Miễn phí vận chuyển">
+            <h4>Miễn phí giao hàng</h4>
             <p>Miễn phí vận chuyển toàn quốc cho đơn hàng trên 1,500,000₫</p>
         </div>
-        <div class="col-md-4 service-item">
-            <img src="https://via.placeholder.com/80" alt="Sản phẩm chính hãng">
-            <h4>Sản phẩm chính hãng</h4>
-            <p>Bảo hành 6 tháng cho tất cả sản phẩm</p>
+        <div class="col-md-4 service-item" data-aos="fade-up" data-aos-delay="200">
+            <img src="${pageContext.request.contextPath}/images/service-4.png" alt="Sản phẩm chính hãng">
+            <h4>Cam kết chính hãng</h4>
+            <p>Cam kết chính hãng, phát hiện fake đền x10 giá sản phẩm</p>
         </div>
-        <div class="col-md-4 service-item">
-            <img src="https://via.placeholder.com/80" alt="Vệ sinh miễn phí">
-            <h4>Vệ sinh miễn phí</h4>
-            <p>Vệ sinh giày miễn phí trong 3 tháng đầu tiên</p>
+        <div class="col-md-4 service-item" data-aos="fade-up" data-aos-delay="400">
+            <img src="${pageContext.request.contextPath}/images/service-2.png" alt="Vệ sinh miễn phí">
+            <h4>30 ngày đổi sản phẩm</h4>
+            <p>Đổi sản phẩm trong vòng 30 ngày</p>
         </div>
     </div>
 </div>
@@ -134,11 +156,18 @@
     <h2 class="text-center mb-4">Sản phẩm</h2>
     <div class="row">
         <c:forEach var="sp" items="${dsSanPham}">
-            <div class="col-md-3">
+            <div class="col-md-3" data-aos="fade-up">
                 <div class="product-card">
-                    <img src="${pageContext.request.contextPath}/${sp.hinhAnhs[0].duongDan}" alt="${sp.tenSanPham}">
+                    <c:choose>
+                        <c:when test="${not empty sp.hinhAnhs}">
+                            <img src="${pageContext.request.contextPath}/${sp.hinhAnhs[0].duongDan}" alt="${sp.tenSanPham}">
+                        </c:when>
+                        <c:otherwise>
+                            <img src="${pageContext.request.contextPath}/images/default.jpg" alt="Hình ảnh mặc định">
+                        </c:otherwise>
+                    </c:choose>
                     <h5>${sp.tenSanPham}</h5>
-                    <p>Giá: <b>${sp.giaBan} ₫</b></p>
+                    <p>${giaMap[sp.id]}</p>
                     <a href="${pageContext.request.contextPath}/sanpham/detail/${sp.id}" class="btn btn-primary">Xem chi tiết</a>
                 </div>
             </div>
@@ -150,5 +179,10 @@
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- AOS JS (Animate On Scroll) -->
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+    AOS.init();
+</script>
 </body>
 </html>

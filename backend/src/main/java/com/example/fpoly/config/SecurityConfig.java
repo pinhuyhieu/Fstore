@@ -111,7 +111,7 @@ public class SecurityConfig {
                     if (grantedAuthority.getAuthority().equals("ROLE_ADMIN")) {
                         response.sendRedirect("/admin/home"); // 🔹 Chuyển hướng admin
                     } else {
-                        response.sendRedirect("/sanpham/list"); // 🔹 Chuyển hướng user thường
+                        response.sendRedirect("/sanpham/index"); // 🔹 Chuyển hướng user thường
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

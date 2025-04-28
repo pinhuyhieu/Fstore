@@ -67,6 +67,83 @@
             font-weight: bold;
             margin-bottom: 1rem;
         }
+
+        /* Tổng thể card */
+        .col-md-5 {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            transition: box-shadow 0.3s ease;
+        }
+
+        /* Header */
+        .col-md-5 h3 {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        /* Form input và select */
+        .col-md-5 .form-control {
+            border-radius: 10px;
+            border: 1px solid #ced4da;
+            transition: box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        .col-md-5 .form-control:hover,
+        .col-md-5 .form-control:focus {
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.4);
+            border-color: #007bff;
+        }
+
+        /* Nút bấm */
+        .col-md-5 .btn {
+            border-radius: 10px;
+            transition: box-shadow 0.3s ease, transform 0.2s ease;
+        }
+
+        .col-md-5 .btn:hover {
+            box-shadow: 0 0 12px rgba(0, 123, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Tổng giá và phần giảm giá */
+        #total-price, #finalAmount, #discountAmount, #shippingFee {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        /* Phần hiển thị giảm giá */
+        #discountRow {
+            margin-top: 10px;
+        }
+
+        .btn-back {
+            display: inline-block;
+            background: linear-gradient(135deg, #4d9fef, #007bff);
+            color: #fff;
+            border: none;
+            padding: 12px 28px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 10px;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            box-shadow: 0 6px 18px rgba(0, 123, 255, 0.35);
+            transform: translateY(-2px);
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .btn-back:active {
+            transform: scale(0.98);
+            box-shadow: 0 3px 10px rgba(0, 123, 255, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -136,6 +213,8 @@
                         <div class="alert alert-info">🛒 Giỏ hàng của bạn đang trống.</div>
                     </c:otherwise>
                 </c:choose>
+
+                <a href="${pageContext.request.contextPath}/sanpham/list" class="btn btn-back">Quay lại</a>
             </div>
 
             <!-- 🧾 Cột phải: Thông tin đặt hàng -->

@@ -52,6 +52,16 @@ public class SanPhamController {
         return "/sanpham/index"; // Trả về trang index.jsp
     }
 
+    @GetMapping("/introduce")
+    public String introduce() {
+        return "sanpham/introduce";
+    }
+
+    @GetMapping("/contact")
+    public String contactPage() {
+        return "sanpham/contact";
+    }
+
 
     @GetMapping("/list/search")
     public String timKiemSanPham(@RequestParam(value = "name", required = false) String name,

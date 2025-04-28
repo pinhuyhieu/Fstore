@@ -19,9 +19,9 @@
         .container {
             background-color: rgba(255, 255, 255, 0.95);
             padding: 40px 30px;
-            border-radius: 16px;
+            border-radius: 30px;
             box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
-            width: 380px;
+            width: 340px;
             text-align: center;
             transition: transform 0.3s ease;
         }
