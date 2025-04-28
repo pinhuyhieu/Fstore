@@ -52,12 +52,12 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/about">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/sanpham/introduce">
                         ℹ️ Giới Thiệu
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/contact">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/sanpham/contact">
                         📞 Liên Hệ
                     </a>
                 </li>

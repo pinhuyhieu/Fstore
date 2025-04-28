@@ -73,7 +73,8 @@
         }
 
         .service-item img {
-            width: 80px;
+            width: 60px; /* Thay đổi từ 80px thành 60px hoặc giá trị nhỏ hơn tùy ý */
+            height: auto;
             margin-bottom: 10px;
         }
 
@@ -112,19 +113,19 @@
     <h2 class="mb-4">Dịch vụ của Fstore</h2>
     <div class="row">
         <div class="col-md-4 service-item">
-            <img src="https://via.placeholder.com/80" alt="Miễn phí vận chuyển">
-            <h4>Miễn phí vận chuyển</h4>
+            <img src="${pageContext.request.contextPath}/images/service-1.png" alt="Miễn phí vận chuyển">
+            <h4>Miễn phí giao hàng</h4>
             <p>Miễn phí vận chuyển toàn quốc cho đơn hàng trên 1,500,000₫</p>
         </div>
         <div class="col-md-4 service-item">
-            <img src="https://via.placeholder.com/80" alt="Sản phẩm chính hãng">
-            <h4>Sản phẩm chính hãng</h4>
-            <p>Bảo hành 6 tháng cho tất cả sản phẩm</p>
+            <img src="${pageContext.request.contextPath}/images/service-4.png" alt="Sản phẩm chính hãng">
+            <h4>Cam kết chính hãng</h4>
+            <p>Cam kết chính hãng, phát hiện fake đền x10 giá sản phẩm</p>
         </div>
         <div class="col-md-4 service-item">
-            <img src="https://via.placeholder.com/80" alt="Vệ sinh miễn phí">
-            <h4>Vệ sinh miễn phí</h4>
-            <p>Vệ sinh giày miễn phí trong 3 tháng đầu tiên</p>
+            <img src="${pageContext.request.contextPath}/images/service-2.png" alt="Vệ sinh miễn phí">
+            <h4>30 ngày đổi sản phẩm</h4>
+            <p>Đổi sản phẩm trong vòng 30 ngày</p>
         </div>
     </div>
 </div>
@@ -136,9 +137,16 @@
         <c:forEach var="sp" items="${dsSanPham}">
             <div class="col-md-3">
                 <div class="product-card">
-                    <img src="${pageContext.request.contextPath}/${sp.hinhAnhs[0].duongDan}" alt="${sp.tenSanPham}">
+                    <c:choose>
+                        <c:when test="${not empty sp.hinhAnhs}">
+                            <img src="${pageContext.request.contextPath}/${sp.hinhAnhs[0].duongDan}" alt="${sp.tenSanPham}">
+                        </c:when>
+                        <c:otherwise>
+                            <img src="${pageContext.request.contextPath}/images/default.jpg" alt="Hình ảnh mặc định">
+                        </c:otherwise>
+                    </c:choose>
                     <h5>${sp.tenSanPham}</h5>
-                    <p>Giá: <b>${sp.giaBan} ₫</b></p>
+                    <p>${giaMap[sp.id]}</p>
                     <a href="${pageContext.request.contextPath}/sanpham/detail/${sp.id}" class="btn btn-primary">Xem chi tiết</a>
                 </div>
             </div>
