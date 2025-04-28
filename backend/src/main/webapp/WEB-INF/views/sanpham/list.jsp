@@ -176,19 +176,6 @@
                     </c:forEach>
                 </ul>
             </div>
-            <div class="sidebar" data-aos="fade-left">
-                <h4>Tìm theo giá</h4>
-                <form action="${pageContext.request.contextPath}/sanpham/list/search" method="GET">
-                    <div class="range-container">
-                        <div class="range-input">
-                            <input type="number" name="minPrice" min="0" value="${param.minPrice}" placeholder="Từ (VND)">
-                            <span>-</span>
-                            <input type="number" name="maxPrice" max="${maxGia}" value="${param.maxPrice}" placeholder="Đến (VND)">
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100 mt-2">Tìm kiếm</button>
-                </form>
-            </div>
         </div>
 
         <!-- Product list -->

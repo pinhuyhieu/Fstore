@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<footer class="bg-white text-dark text-center text-lg-start mt-4">
+<footer class="bg-white text-dark text-center text-lg-start mt-4" style="box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);">
     <div class="container p-4">
         <!-- Footer Content -->
         <div class="row">
