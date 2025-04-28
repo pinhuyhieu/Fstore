@@ -7,6 +7,10 @@
     <title>Danh sách sản phẩm - Fstore</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <!-- AOS CSS (Animate On Scroll) -->
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
     <style>
         body {
             background: linear-gradient(135deg, #74b9ff, #0984e3);
@@ -34,7 +38,19 @@
             overflow: visible;
         }
 
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
         .banner-content {
+            animation: slideIn 1s ease-out;
             text-align: center;
             background-color: rgba(0, 0, 0, 0.5);
             padding: 20px;
@@ -48,11 +64,6 @@
 
         .banner p {
             font-size: 1.5rem;
-        }
-
-        .banner img {
-            width: 100%;
-            height: auto;
         }
 
         .btn-primary {
@@ -92,6 +103,16 @@
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
             text-align: center;
             margin-bottom: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
     </style>
 </head>
@@ -112,17 +133,17 @@
 <div class="container service-section text-center">
     <h2 class="mb-4">Dịch vụ của Fstore</h2>
     <div class="row">
-        <div class="col-md-4 service-item">
+        <div class="col-md-4 service-item" data-aos="fade-up">
             <img src="${pageContext.request.contextPath}/images/service-1.png" alt="Miễn phí vận chuyển">
             <h4>Miễn phí giao hàng</h4>
             <p>Miễn phí vận chuyển toàn quốc cho đơn hàng trên 1,500,000₫</p>
         </div>
-        <div class="col-md-4 service-item">
+        <div class="col-md-4 service-item" data-aos="fade-up" data-aos-delay="200">
             <img src="${pageContext.request.contextPath}/images/service-4.png" alt="Sản phẩm chính hãng">
             <h4>Cam kết chính hãng</h4>
             <p>Cam kết chính hãng, phát hiện fake đền x10 giá sản phẩm</p>
         </div>
-        <div class="col-md-4 service-item">
+        <div class="col-md-4 service-item" data-aos="fade-up" data-aos-delay="400">
             <img src="${pageContext.request.contextPath}/images/service-2.png" alt="Vệ sinh miễn phí">
             <h4>30 ngày đổi sản phẩm</h4>
             <p>Đổi sản phẩm trong vòng 30 ngày</p>
@@ -135,7 +156,7 @@
     <h2 class="text-center mb-4">Sản phẩm</h2>
     <div class="row">
         <c:forEach var="sp" items="${dsSanPham}">
-            <div class="col-md-3">
+            <div class="col-md-3" data-aos="fade-up">
                 <div class="product-card">
                     <c:choose>
                         <c:when test="${not empty sp.hinhAnhs}">
@@ -158,5 +179,10 @@
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- AOS JS (Animate On Scroll) -->
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+    AOS.init();
+</script>
 </body>
 </html>
