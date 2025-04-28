@@ -1,16 +1,21 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <c:if test="${not empty errorMessage}">
     <script>
         alert("${errorMessage}");
     </script>
 </c:if>
+
 <!DOCTYPE html>
 <html>
 <head>
     <title>Danh sách sản phẩm - Fstore</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- Thêm AOS CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
     <style>
         body {
             background: linear-gradient(135deg, #74b9ff, #0984e3);
@@ -146,6 +151,10 @@
             position: relative;
             bottom: 0;
         }
+
+        html {
+            scroll-behavior: smooth;
+        }
     </style>
 </head>
 <body>
@@ -156,7 +165,7 @@
     <div class="row">
         <!-- Sidebar -->
         <div class="col-lg-3">
-            <div class="sidebar">
+            <div class="sidebar" data-aos="fade-right">
                 <h4>Danh mục sản phẩm</h4>
                 <ul class="list-group">
                     <c:forEach var="dm" items="${danhmuc}">
@@ -167,7 +176,7 @@
                     </c:forEach>
                 </ul>
             </div>
-            <div class="sidebar">
+            <div class="sidebar" data-aos="fade-left">
                 <h4>Tìm theo giá</h4>
                 <form action="${pageContext.request.contextPath}/sanpham/list/search" method="GET">
                     <div class="range-container">
@@ -184,7 +193,7 @@
 
         <!-- Product list -->
         <div class="col-lg-9">
-            <div class="header-container d-flex align-items-center justify-content-between">
+            <div class="header-container d-flex align-items-center justify-content-between" data-aos="fade-up">
                 <h1 class="mb-4">Danh sách sản phẩm</h1>
                 <form action="${pageContext.request.contextPath}/sanpham/list/search" method="GET" class="d-flex mb-3">
                     <input type="text" name="name" class="form-control me-2"
@@ -196,10 +205,9 @@
             </div>
 
             <!-- Danh sách sản phẩm -->
-            <!-- Danh sách sản phẩm -->
             <div class="row" style="margin-top: 20px">
                 <c:forEach var="sp" items="${dsSanPham}">
-                    <div class="col-md-4 mb-4">
+                    <div class="col-md-4 mb-4" data-aos="zoom-in">
                         <div class="product-card" onclick="window.location.href='${pageContext.request.contextPath}/sanpham/detail/${sp.id}'">
                             <c:choose>
                                 <c:when test="${not empty sp.hinhAnhs}">
@@ -243,6 +251,16 @@
 </div>
 
 <%@ include file="../include/footer.jsp" %>
+
+<!-- Thêm AOS JS -->
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+    AOS.init({
+        duration: 1200,
+        easing: 'ease-in-out',
+        once: true
+    });
+</script>
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
