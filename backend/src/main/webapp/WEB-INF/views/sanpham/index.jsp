@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Danh sách sản phẩm - Fstore</title>
+    <title>Trang chủ Fstore</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 
@@ -66,19 +66,6 @@
             font-size: 1.5rem;
         }
 
-        .btn-primary {
-            margin-top: 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-
         .service-section, .product-section {
             padding: 40px 0;
         }
@@ -114,6 +101,33 @@
         html {
             scroll-behavior: smooth;
         }
+
+        .btn-back {
+            display: inline-block;
+            background: linear-gradient(135deg, #4d9fef, #007bff);
+            color: #fff;
+            border: none;
+            padding: 11px 18px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 10px;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            box-shadow: 0 6px 18px rgba(0, 123, 255, 0.35);
+            transform: translateY(-2px);
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .btn-back:active {
+            transform: scale(0.98);
+            box-shadow: 0 3px 10px rgba(0, 123, 255, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -125,7 +139,7 @@
     <div class="banner-content">
         <h1>Chào mừng đến với Fstore</h1>
         <p>Thế giới thời trang tốt nhất cho bạn</p>
-        <a href="/sanpham/list" class="btn btn-primary">Mua ngay</a>
+        <a href="/sanpham/list" class="btn btn-back">Mua ngay</a>
     </div>
 </div>
 
@@ -168,7 +182,7 @@
                     </c:choose>
                     <h5>${sp.tenSanPham}</h5>
                     <p>${giaMap[sp.id]}</p>
-                    <a href="${pageContext.request.contextPath}/sanpham/detail/${sp.id}" class="btn btn-primary">Xem chi tiết</a>
+                    <a href="${pageContext.request.contextPath}/sanpham/detail/${sp.id}" class="btn btn-back">Xem chi tiết</a>
                 </div>
             </div>
         </c:forEach>

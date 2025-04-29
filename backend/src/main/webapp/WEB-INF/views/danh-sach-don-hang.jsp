@@ -8,6 +8,52 @@
 <head>
     <title>Danh Sách Đơn Hàng</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .btn-back {
+            display: inline-block;
+            background: linear-gradient(135deg, #4d9fef, #007bff);
+            color: #fff;
+            border: none;
+            padding: 11px 18px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 10px;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            box-shadow: 0 6px 18px rgba(0, 123, 255, 0.35);
+            transform: translateY(-2px);
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .btn-back:active {
+            transform: scale(0.98);
+            box-shadow: 0 3px 10px rgba(0, 123, 255, 0.3);
+        }
+
+        .search-input {
+            padding: 10px 16px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            width: 250px;
+            margin-right: 10px;
+        }
+
+        .search-input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+        }
+
+
+    </style>
 </head>
 <body>
 <div class="container mt-4">
@@ -15,9 +61,9 @@
 
     <!-- 🔍 Form tìm kiếm -->
     <form method="get" class="form-inline mb-3">
-        <input type="text" name="keyword" class="form-control mr-2"
+        <input type="text" name="keyword" class="search-input"
                placeholder="Nhập mã đơn hàng..." value="${keyword}">
-        <button type="submit" class="btn btn-outline-primary">🔍 Tìm kiếm</button>
+        <button type="submit" class="btn btn-back">🔍 Tìm kiếm</button>
     </form>
 
     <!-- 🧾 Bảng đơn hàng -->
@@ -57,19 +103,20 @@
                 </td>
                 <td>${donHang.phuongThucThanhToan.tenPhuongThuc}</td>
                 <td>
-                    <a href="/api/donhang/chi-tiet/${donHang.id}" class="btn btn-sm btn-primary">Xem</a>
+                    <a href="/api/donhang/chi-tiet/${donHang.id}" class="btn btn-back">Xem</a>
                 </td>
             </tr>
         </c:forEach>
         </tbody>
     </table>
 
+    <a href="${pageContext.request.contextPath}/sanpham/list" class="btn btn-back">Quay lại</a>
     <!-- 🔁 Phân trang -->
     <nav>
         <ul class="pagination justify-content-center">
             <c:forEach begin="1" end="${totalPages}" var="i">
                 <li class="page-item ${i == currentPage ? 'active' : ''}">
-                    <a class="page-link" href="?page=${i}&keyword=${keyword}">${i}</a>
+                    <a class="page-link btn-back" href="?page=${i}&keyword=${keyword}">${i}</a>
                 </li>
             </c:forEach>
         </ul>
