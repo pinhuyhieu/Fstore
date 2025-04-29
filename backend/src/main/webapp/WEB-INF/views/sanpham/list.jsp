@@ -32,10 +32,6 @@
             margin-bottom: 20px;
         }
 
-        .search-bar {
-            display: flex;
-            gap: 10px;
-        }
 
         .search-bar input {
             padding: 8px;
@@ -107,16 +103,6 @@
             text-align: center;
         }
 
-        .range-container {
-            padding: 10px;
-            text-align: center;
-        }
-
-        .range-input {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
 
         .range-input input {
             width: 45%;
@@ -155,6 +141,49 @@
         html {
             scroll-behavior: smooth;
         }
+
+        .btn-back {
+            display: inline-block;
+            background: linear-gradient(135deg, #4d9fef, #007bff);
+            color: #fff;
+            border: none;
+            padding: 11px 18px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 10px;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            box-shadow: 0 6px 18px rgba(0, 123, 255, 0.35);
+            transform: translateY(-2px);
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .btn-back:active {
+            transform: scale(0.98);
+            box-shadow: 0 3px 10px rgba(0, 123, 255, 0.3);
+        }
+
+        .search-input {
+            padding: 10px 16px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            width: 250px;
+            margin-right: 10px;
+        }
+
+        .search-input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -183,11 +212,10 @@
             <div class="header-container d-flex align-items-center justify-content-between" data-aos="fade-up">
                 <h1 class="mb-4">Danh sách sản phẩm</h1>
                 <form action="${pageContext.request.contextPath}/sanpham/list/search" method="GET" class="d-flex mb-3">
-                    <input type="text" name="name" class="form-control me-2"
+                    <input type="text" name="name" class="search-input"
                            style="width: 200px; height: 35px; font-size: 14px;"
                            placeholder="Nhập tên sản phẩm..." value="${param.name}">
-                    <button type="submit" class="btn btn-primary"
-                            style="height: 35px; font-size: 14px;">Tìm</button>
+                    <button type="submit" class="btn btn-back" style="color: white">Tìm</button>
                 </form>
             </div>
 

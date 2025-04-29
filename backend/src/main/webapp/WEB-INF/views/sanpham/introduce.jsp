@@ -89,17 +89,36 @@
             margin-bottom: 20px;
         }
 
-        .btn-primary {
-            background-color: #0d6efd;
-            border: none;
-            padding: 12px 30px;
-            font-size: 1.1rem;
-            border-radius: 8px;
-            transition: background-color 0.3s ease;
+        .img-fluid {
+            max-width: 95%;
+            height: auto;
         }
 
-        .btn-primary:hover {
-            background-color: #0056b3;
+        .btn-back {
+            display: inline-block;
+            background: linear-gradient(135deg, #4d9fef, #007bff);
+            color: #fff;
+            border: none;
+            padding: 11px 18px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 10px;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            box-shadow: 0 6px 18px rgba(0, 123, 255, 0.35);
+            transform: translateY(-2px);
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .btn-back:active {
+            transform: scale(0.98);
+            box-shadow: 0 3px 10px rgba(0, 123, 255, 0.3);
         }
     </style>
 </head>
@@ -125,7 +144,7 @@
             <p>Với đội ngũ nhân viên chuyên nghiệp và nhiệt huyết, Fstore cam kết mang lại trải nghiệm mua sắm online tuyệt vời, an toàn và tiện lợi nhất cho khách hàng trên toàn quốc.</p>
         </div>
         <div class="col-md-6" data-aos="fade-left">
-            <img src="${pageContext.request.contextPath}/images/about-us.jpg" alt="Giới thiệu Fstore" class="img-fluid rounded shadow-lg">
+            <img src="${pageContext.request.contextPath}/images/banner2.png" alt="Giới thiệu Fstore" class="img-fluid rounded shadow-lg">
         </div>
     </div>
 
@@ -134,7 +153,7 @@
             <h2>Giá trị cốt lõi của chúng tôi</h2>
             <p><b>Chất lượng</b> - <b>Uy tín</b> - <b>Đổi mới</b> - <b>Khách hàng là trung tâm</b></p>
             <p>Fstore không ngừng nỗ lực để trở thành sự lựa chọn số một của bạn trong hành trình tìm kiếm phong cách thời trang riêng biệt.</p>
-            <a href="${pageContext.request.contextPath}/sanpham/list" class="btn btn-primary mt-3">Khám phá sản phẩm</a>
+            <a href="${pageContext.request.contextPath}/sanpham/list" class="btn btn-back">Khám phá sản phẩm</a>
         </div>
     </div>
 </div>
