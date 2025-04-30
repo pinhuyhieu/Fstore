@@ -1,5 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -75,7 +77,7 @@
                 <td>${item.id}</td>
                 <td>${item.mauSac.tenMauSac}</td>
                 <td>${item.size.tenSize}</td>
-                <td><b>${item.gia} VNĐ</b></td>
+                <td><b><fmt:formatNumber value="${item.gia}" type="number" groupingUsed="true"/> đ</b></td>
                 <td>${item.soLuongTon}</td>
                 <td>
                     <a href="/sanphamchitiet/edit/${item.id}?sanPhamId=${item.sanPham.id}" class="btn btn-warning btn-sm btn-custom">Sửa</a>
@@ -130,8 +132,9 @@
             <label class="form-label">Giá:</label>
             <input type="text" id="gia" name="gia" class="form-control"
                    value="${sanPhamChiTiet.gia}" required
-                   oninput="formatCurrency(this)" />
+                   oninput="formatLiveCurrency(this)" onblur="validateCurrency(this)" />
             <div class="invalid-feedback">Giá tiền phải từ 1.000 đến 10 triệu VND.</div>
+
         </div>
 
         <div class="mb-3">
@@ -153,64 +156,57 @@
 
 </div>
 <script>
-    (function() {
+    (function () {
         'use strict';
         var forms = document.querySelectorAll('.needs-validation');
-        Array.prototype.slice.call(forms).forEach(function(form) {
-            form.addEventListener('submit', function(event) {
-                if (!form.checkValidity()) {
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                let priceInput = document.getElementById("gia");
+
+                // Xóa dấu chấm trước khi submit
+                priceInput.value = priceInput.value.replace(/\D/g, '');
+
+                // Validate giá lần cuối
+                const valid = validateCurrency(priceInput);
+                if (!form.checkValidity() || !valid) {
                     event.preventDefault();
                     event.stopPropagation();
                 }
+
                 form.classList.add('was-validated');
             }, false);
         });
     })();
 
-    // function formatCurrency(input) {
-    //     // Lấy giá trị nhập vào, loại bỏ ký tự không phải số
-    //     let value = input.value.replace(/\D/g, '');
-    //
-    //     // Chuyển thành số nguyên
-    //     let numericValue = parseInt(value, 10);
-    //
-    //     // Kiểm tra nếu giá trị nhỏ hơn 1, đặt về 1
-    //     if (isNaN(numericValue) || numericValue < 1) {
-    //         numericValue = 1;
-    //     }
-    //
-    //     // // Định dạng số tiền (thêm dấu . phân tách hàng nghìn)
-    //     // input.value = numericValue.toLocaleString('vi-VN');
-    // }
-    function formatCurrency(input) {
-        let value = input.value.replace(/\D/g, ''); // Loại bỏ ký tự không phải số
-        let numericValue = parseInt(value, 10);
+    // 🔁 Định dạng trong lúc gõ (nhẹ, không validate)
+    function formatLiveCurrency(input) {
+        let value = input.value.replace(/\D/g, '');
+        if (value === '') return;
+        input.value = Number(value).toLocaleString('vi-VN');
+    }
 
-        // Lấy thẻ thông báo lỗi và class input
+    // ✅ Kiểm tra giới hạn khi người dùng rời khỏi ô input
+    function validateCurrency(input) {
+        let value = input.value.replace(/\D/g, '');
+        let numericValue = parseInt(value, 10);
         let errorElement = input.nextElementSibling;
 
         if (isNaN(numericValue) || numericValue < 1000) {
-            numericValue = 1000;
+            input.classList.add("is-invalid");
             errorElement.innerText = "Giá tiền phải lớn hơn hoặc bằng 1.000 VND";
-            input.classList.add("is-invalid");
-        } else if (numericValue > 10000000) {
-            numericValue = 10000000;
-            errorElement.innerText = "Giá tiền không được vượt quá 10 triệu VND";
-            input.classList.add("is-invalid");
-        } else {
-            errorElement.innerText = ""; // Xóa lỗi nếu hợp lệ
-            input.classList.remove("is-invalid");
+            return false;
         }
 
-        // Định dạng số tiền theo chuẩn Việt Nam
-        input.value = numericValue.toLocaleString('vi-VN');
-    }
+        if (numericValue > 10000000) {
+            input.classList.add("is-invalid");
+            errorElement.innerText = "Giá tiền không được vượt quá 10 triệu VND";
+            return false;
+        }
 
-    // Xóa dấu chấm khi submit form
-    document.querySelector("form").addEventListener("submit", function (event) {
-        let priceInput = document.getElementById("gia");
-        priceInput.value = priceInput.value.replace(/\./g, '');
-    });
+        input.classList.remove("is-invalid");
+        errorElement.innerText = "";
+        return true;
+    }
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
