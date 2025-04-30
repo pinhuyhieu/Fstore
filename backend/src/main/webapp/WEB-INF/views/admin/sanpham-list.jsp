@@ -50,11 +50,30 @@
         .btn:hover {
             opacity: 0.85;
         }
+        .pagination .page-link {
+            color: #0d6efd;
+        }
+        .pagination .active .page-link {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+            color: white;
+        }
+
     </style>
 </head>
 <body>
 <div class="container">
     <h2 class="text-center text-primary mb-4">Danh Sách Sản Phẩm</h2>
+    <!-- Form tìm kiếm -->
+    <form method="get" action="${pageContext.request.contextPath}/admin/list" class="row g-3 mb-3">
+        <div class="col-md-8">
+            <input type="text" name="keyword" value="${keyword}" class="form-control" placeholder="Tìm theo tên sản phẩm...">
+        </div>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
+        </div>
+    </form>
+
     <a href="${pageContext.request.contextPath}/sanpham/admin/add" class="btn btn-secondary ">Quay lại thêm sản phẩm</a>
     <!-- Bảng Danh Sách Sản Phẩm -->
     <table class="table table-bordered table-striped mt-3">
@@ -104,6 +123,17 @@
         </c:forEach>
         </tbody>
     </table>
+    <!-- Phân trang -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <c:forEach begin="1" end="${totalPages}" var="i">
+                <li class="page-item ${i == currentPage ? 'active' : ''}">
+                    <a class="page-link" href="?page=${i}&keyword=${keyword}">${i}</a>
+                </li>
+            </c:forEach>
+        </ul>
+    </nav>
+
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

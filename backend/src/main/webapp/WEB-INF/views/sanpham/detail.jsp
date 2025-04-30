@@ -187,12 +187,30 @@
                     <c:forEach items="${mauSacList}" var="mau">
                         <label class="d-flex align-items-center m-2">
                             <input type="radio" name="mauSac" value="${mau.id}" class="color-radio d-none">
-                            <span class="color-box" style="background-color: ${mau.tenMauSac};"></span>
-                            <span class="ms-2">${mau.tenMauSac}  </span>
+                            <span class="color-box"
+                                  style="background-color:
+                                  <c:choose>
+                                  <c:when test="${mau.tenMauSac == 'Đỏ'}">#FF0000</c:when>
+                                  <c:when test="${mau.tenMauSac == 'Xanh dương'}">#0000FF</c:when>
+                                  <c:when test="${mau.tenMauSac == 'Vàng'}">#FFFF00</c:when>
+                                  <c:when test="${mau.tenMauSac == 'Trắng'}">#FFFFFF</c:when>
+                                  <c:when test="${mau.tenMauSac == 'Đen'}">#000000</c:when>
+                                  <c:when test="${mau.tenMauSac == 'Xanh navy'}">#000080</c:when>
+                                  <c:when test="${mau.tenMauSac == 'Xám'}">#808080</c:when>
+                                  <c:when test="${mau.tenMauSac == 'Hồng'}">#FF69B4</c:when>
+                                  <c:when test="${mau.tenMauSac == 'Tím'}">#800080</c:when>
+                                  <c:when test="${mau.tenMauSac == 'Be'}">#F5F5DC</c:when>
+                                  <c:when test="${mau.tenMauSac == 'Xanh lá'}">#008000</c:when>
+                                  <c:otherwise>#000000</c:otherwise>
+                                  </c:choose>;">
+                </span>
+                            <span class="ms-2">${mau.tenMauSac}</span>
                         </label>
                     </c:forEach>
                 </div>
             </div>
+
+
 
             <!-- Chọn kích thước -->
             <div class="mb-3">

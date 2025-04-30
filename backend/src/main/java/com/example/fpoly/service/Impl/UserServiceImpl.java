@@ -9,7 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -59,6 +62,23 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByTenDangNhap(username)
                 .map(User::getId)
                 .orElse(null);
+    }
+    @Override
+    public void updateUserRoles(Integer userId, Integer roleId) {
+        // Tìm người dùng theo userId
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+
+        // Tìm vai trò theo roleId
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new RuntimeException("Vai trò không tồn tại"));
+
+        // Cập nhật vai trò cho người dùng
+        Set<Role> roles = new HashSet<>();
+        roles.add(role); // Thêm vai trò mới cho người dùng
+        user.setRoles(roles);
+
+        userRepository.save(user); // Lưu người dùng với vai trò mới
     }
 
 }
