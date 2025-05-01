@@ -58,18 +58,7 @@
             margin-bottom: 20px;
         }
 
-        .message {
-            margin-bottom: 15px;
-            font-size: 14px;
-        }
 
-        .message.error {
-            color: red;
-        }
-
-        .message.success {
-            color: green;
-        }
 
         label {
             font-weight: 600;
@@ -131,6 +120,48 @@
         a:hover {
             text-decoration: underline;
         }
+
+        .custom-alert {
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .custom-alert .alert-icon {
+            font-size: 16px;
+            margin-right: 8px;
+        }
+
+        .custom-alert .alert-text {
+            flex: 1;
+        }
+
+        .custom-alert-success {
+            background-color: #e8f5e9;
+            border: 1px solid #55efc4;
+            color: #00b894;
+            box-shadow: 0 4px 8px rgba(85, 239, 196, 0.2);
+        }
+
+        .custom-alert-error {
+            background-color: #ffe8e6;
+            border: 1px solid #ff7675;
+            color: #d63031;
+            box-shadow: 0 4px 8px rgba(255, 118, 117, 0.2);
+        }
+
+        .custom-alert-info {
+            background-color: #e3f2fd;
+            border: 1px solid #90caf9;
+            color: #1565c0;
+            box-shadow: 0 4px 8px rgba(144, 202, 249, 0.2);
+        }
+
     </style>
     <script>
         function validateForm() {
@@ -138,22 +169,47 @@
             const password = document.getElementById("password").value.trim();
 
             if (username === "" || password === "") {
-                alert("Tên đăng nhập và mật khẩu không được bỏ trống!");
+                // Sử dụng URL parameter để hiển thị lỗi
+                const currentUrl = window.location.href.split('?')[0];
+                const newUrl = currentUrl + "?clientError=empty";
+                window.location.href = newUrl;
                 return false;
             }
             return true;
         }
+
     </script>
 </head>
 <body>
 <div class="container">
     <div class="logo">Fstore</div>
     <h1>Đăng Nhập</h1>
-    <c:if test="${param.error != null}">
-        <p class="message error">Sai tên đăng nhập hoặc mật khẩu!</p>
+
+    <c:if test="${not empty clientError}">
+        <div class="custom-alert custom-alert-error">
+            <span class="alert-icon">⚠</span>
+            <span class="alert-text">${clientError}</span>
+        </div>
     </c:if>
-    <c:if test="${param.logout != null}">
-        <p class="message success">Bạn đã đăng xuất thành công.</p>
+    <c:if test="${not empty error}">
+        <div class="custom-alert custom-alert-error">
+            <span class="alert-icon">⚠</span>
+            <span class="alert-text">${error}</span>
+        </div>
+    </c:if>
+
+    <c:if test="${not empty message}">
+        <div class="custom-alert custom-alert-info">
+            <span class="alert-icon">ℹ</span>
+            <span class="alert-text">${message}</span>
+        </div>
+    </c:if>
+
+    <c:if test="${not empty successMessage}">
+        <div class="custom-alert custom-alert-success">
+            <span class="alert-icon">✔</span>
+            <span class="alert-text">${successMessage}</span>
+        </div>
     </c:if>
     <form action="/doLogin" method="post" onsubmit="return validateForm();">
         <label for="username">Tên đăng nhập:</label>

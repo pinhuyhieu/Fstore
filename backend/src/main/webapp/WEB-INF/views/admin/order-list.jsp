@@ -8,48 +8,87 @@
 <html>
 <head>
     <title>Quản lý đơn hàng</title>
+    <!-- Bootstrap & AOS CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        .container { margin-top: 30px; }
-        .alert { text-align: center; }
-        .table { margin-top: 20px; }
-        .table thead { background-color: #007bff; color: #fff; }
-        .table th { text-align: center; padding: 12px; }
+        body {
+            background-color: #f2f6fc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-        select { padding: 5px; border-radius: 5px; }
-        .btn-sm { padding: 5px 10px; font-size: 14px; }
-        .hidden { display: none; }
+        .container {
+            margin-top: 50px;
+        }
+
+        .alert {
+            text-align: center;
+        }
+
+        h2 {
+            color: #0d6efd;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .btn-primary {
+            margin-bottom: 15px;
+        }
+
+        .table th {
+            background-color: #0d6efd;
+            color: white;
+            text-align: center;
+        }
+
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h5 {
+            font-weight: 600;
+        }
+
+        .form-select, .form-control {
+            border-radius: 10px;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+
+        .hidden {
+            display: none;
+        }
     </style>
-
-    <script>
-        // Ẩn thông báo sau 3 giây
-        setTimeout(function() {
-            var alertBox = document.getElementById("success-alert");
-            if (alertBox) {
-                alertBox.classList.add("hidden");
-            }
-        }, 3000);
-    </script>
 </head>
 <body>
-<div class="container">
 
-    <!-- 🟢 Hiển thị thông báo nếu có -->
+<div class="container">
+    <!-- ✅ Hiển thị thông báo -->
     <c:if test="${not empty successMessage}">
-        <div id="success-alert" class="alert alert-success">
+        <div id="success-alert" class="alert alert-success" data-aos="fade-down">
                 ${successMessage}
         </div>
     </c:if>
 
-    <h2 class="text-center mb-4">Danh Sách Đơn Hàng</h2>
-    <a href="${pageContext.request.contextPath}/admin/home" class="btn btn-primary" style="margin -bottom: 10px">Quay lại</a>
-    <div class="row">
-        <!-- 🔍 Bộ lọc bên trái -->
-        <div class="col-md-3">
-            <div class="card p-3 mb-4 shadow-sm rounded-3">
-                <h5 class="fw-bold text-primary">Bộ lọc</h5>
+    <h2 data-aos="fade-down">Danh Sách Đơn Hàng</h2>
+
+    <a href="${pageContext.request.contextPath}/admin/home" class="btn btn-primary" data-aos="fade-right">
+        <i class="fa-solid fa-arrow-left"></i> Quay lại
+    </a>
+
+    <div class="row mt-3">
+        <!-- 🔍 Bộ lọc -->
+        <div class="col-md-3" data-aos="fade-right">
+            <div class="card p-3 shadow-sm">
+                <h5 class="text-primary">Bộ lọc</h5>
                 <form method="get" action="/api/donhang/admin/list">
                     <div class="mb-2">
                         <label class="form-label">Từ ngày:</label>
@@ -76,7 +115,6 @@
                             <option value="CHUA_THANH_TOAN" ${trangThaiThanhToan == 'CHUA_THANH_TOAN' ? 'selected' : ''}>Chưa thanh toán</option>
                         </select>
                     </div>
-
                     <div class="mb-2">
                         <label class="form-label">Giá từ:</label>
                         <input type="number" name="minGia" class="form-control" step="1000" value="${minGia}" />
@@ -94,18 +132,18 @@
             </div>
         </div>
 
-        <!-- 📦 Danh sách đơn hàng bên phải -->
-        <div class="col-md-9">
-            <table class="table table-bordered table-striped table-hover">
-                <thead class="table-dark">
+        <!-- 📦 Danh sách -->
+        <div class="col-md-9" data-aos="fade-left">
+            <table class="table table-bordered table-hover mt-3">
+                <thead>
                 <tr>
                     <th>ID</th>
                     <th>Người Đặt</th>
-                    <th>Số Điện Thoại</th>
+                    <th>Số ĐT</th>
                     <th>Ngày Đặt</th>
                     <th>Tổng Tiền</th>
                     <th>Trạng Thái</th>
-                    <th>Thanh toán</th>
+                    <th>Thanh Toán</th>
                     <th>Hành Động</th>
                 </tr>
                 </thead>
@@ -115,12 +153,8 @@
                         <td>${donHang.id}</td>
                         <td>
                             <c:choose>
-                                <c:when test="${not empty donHang.user.hoTen}">
-                                    ${donHang.user.hoTen}
-                                </c:when>
-                                <c:otherwise>
-                                    <span class="text-danger">Không có thông tin</span>
-                                </c:otherwise>
+                                <c:when test="${not empty donHang.user.hoTen}">${donHang.user.hoTen}</c:when>
+                                <c:otherwise><span class="text-danger">Không có thông tin</span></c:otherwise>
                             </c:choose>
                         </td>
                         <td>${donHang.soDienThoaiNguoiNhan}</td>
@@ -133,13 +167,9 @@
                                 </c:when>
                                 <c:otherwise>
                                     <form action="/api/donhang/admin/update-status/${donHang.id}" method="POST">
-                                        <select name="trangThai"
-                                                class="form-select form-select-sm"
-                                                onchange="confirmChange(this)">
+                                        <select name="trangThai" class="form-select form-select-sm" onchange="confirmChange(this)">
                                             <c:forEach var="tt" items="${dsTrangThai}">
-                                                <option value="${tt.name()}" ${tt == donHang.trangThai ? 'selected' : ''}>
-                                                        ${tt.hienThi}
-                                                </option>
+                                                <option value="${tt.name()}" ${tt == donHang.trangThai ? 'selected' : ''}>${tt.hienThi}</option>
                                             </c:forEach>
                                         </select>
                                     </form>
@@ -149,31 +179,30 @@
                         <td>
                             <c:choose>
                                 <c:when test="${donHang.thanhToan.trangThaiThanhToan == 'DA_THANH_TOAN'}">
-                                    <span style="color:green;font-weight:bold;">Đã thanh toán</span>
+                                    <span class="text-success fw-bold">Đã thanh toán</span>
                                 </c:when>
                                 <c:otherwise>
-                                    <span style="color:red;font-weight:bold;">Chưa thanh toán</span>
+                                    <span class="text-danger fw-bold">Chưa thanh toán</span>
                                 </c:otherwise>
                             </c:choose>
                         </td>
                         <td class="text-center">
-                            <a href="/api/donhang/chi-tiet/${donHang.id}" class="btn btn-primary btn-sm">🔍 Xem</a>
+                            <a href="/api/donhang/chi-tiet/${donHang.id}" class="btn btn-sm btn-outline-primary">🔍 Xem</a>
                         </td>
                     </tr>
                 </c:forEach>
                 </tbody>
             </table>
 
+            <!-- 🔁 Phân trang -->
             <nav>
                 <ul class="pagination justify-content-center">
                     <c:forEach begin="1" end="${totalPages}" var="i">
                         <li class="page-item ${i == currentPage ? 'active' : ''}">
                             <a class="page-link"
-                               href="?page=${i}&keyword=${keyword}&tuNgay=${tuNgay}&denNgay=${denNgay}
-         &trangThai=${trangThai}&minGia=${minGia}&maxGia=${maxGia}&trangThaiThanhToan=${trangThaiThanhToan}">
+                               href="?page=${i}&keyword=${keyword}&tuNgay=${tuNgay}&denNgay=${denNgay}&trangThai=${trangThai}&minGia=${minGia}&maxGia=${maxGia}&trangThaiThanhToan=${trangThaiThanhToan}">
                                     ${i}
                             </a>
-
                         </li>
                     </c:forEach>
                 </ul>
@@ -182,22 +211,29 @@
     </div>
 </div>
 
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
 <script>
+    AOS.init({ duration: 1000, once: true });
+
+    // Ẩn alert sau 3s
+    setTimeout(function () {
+        const alertBox = document.getElementById("success-alert");
+        if (alertBox) alertBox.classList.add("hidden");
+    }, 3000);
+
     function confirmChange(selectElement) {
         const form = selectElement.form;
-        const selectedOption = selectElement.options[selectElement.selectedIndex];
-        const trangThai = selectedOption.text;
-
-        const xacNhan = confirm("Bạn có chắc muốn chuyển trạng thái đơn hàng sang \"" + trangThai + "\"?");
+        const selectedText = selectElement.options[selectElement.selectedIndex].text;
+        const xacNhan = confirm("Bạn có chắc muốn đổi trạng thái đơn hàng thành: " + selectedText + "?");
         if (xacNhan) {
             form.submit();
         } else {
-            // Quay lại lựa chọn cũ nếu hủy
             form.reset();
         }
     }
 </script>
-
 
 </body>
 </html>
