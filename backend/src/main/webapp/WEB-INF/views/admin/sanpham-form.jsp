@@ -7,135 +7,130 @@
     <meta charset="UTF-8">
     <title>Quản Lý Sản Phẩm</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
         body {
-            background-color: #f4f6f9;
-            font-family: Arial, sans-serif;
+            background-color: #f1f4f9;
+            font-family: 'Segoe UI', sans-serif;
         }
         .container {
             max-width: 900px;
             margin-top: 40px;
-            background: #fff;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
-        }
-        .table th, .table td {
-            text-align: center;
-            vertical-align: middle;
-        }
-        .btn {
-            margin: 3px;
-            font-size: 14px;
-        }
-        .btn:hover {
-            opacity: 0.85;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.07);
         }
         .form-label {
-            font-weight: bold;
+            font-weight: 600;
         }
         .form-control, .form-select {
             border-radius: 8px;
         }
-        .table thead {
-            background-color: #343a40;
-            color: #fff;
+        .btn {
+            font-size: 15px;
+            margin: 5px 3px;
+        }
+        .btn i {
+            margin-right: 4px;
+        }
+        .alert {
+            font-size: 15px;
+        }
+        .form-title {
+            font-weight: bold;
+            color: #0d6efd;
         }
     </style>
-
 </head>
 <body>
 
 <div class="container">
-    <h2 class="text-center text-primary mb-4">Quản Lý Sản Phẩm</h2>
+    <h2 class="text-center form-title mb-4"><i class="bi bi-box-seam-fill"></i> Quản Lý Sản Phẩm</h2>
+
+    <!-- Thông báo thành công/thất bại -->
     <c:if test="${not empty successMessage}">
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-                ${successMessage}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <i class="bi bi-check-circle-fill"></i> ${successMessage}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
         </div>
     </c:if>
     <c:if test="${not empty errorMessage}">
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                ${errorMessage}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <i class="bi bi-exclamation-triangle-fill"></i> ${errorMessage}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
         </div>
     </c:if>
+
     <!-- Form Thêm hoặc Cập Nhật -->
-    <form id="sanphamForm" action="${pageContext.request.contextPath}/sanpham/admin/add" method="post" class="p-3 border rounded bg-light needs-validation" novalidate>
+    <form id="sanphamForm" action="${pageContext.request.contextPath}/sanpham/admin/add" method="post" class="needs-validation" novalidate>
         <input type="hidden" name="id" value="${sanPham.id}" />
 
         <div class="mb-3">
             <label class="form-label">Tên sản phẩm</label>
-            <input type="text" name="tenSanPham" class="form-control" placeholder="Nhập tên sản phẩm" value="${sanPham.tenSanPham}" required>
-            <div class="invalid-feedback">Tên sản phẩm không được để trống.</div>
+            <input type="text" name="tenSanPham" class="form-control" placeholder="Nhập tên sản phẩm"
+                   value="${sanPham.tenSanPham}" required minlength="3" maxlength="50"
+                   pattern="^[a-zA-Z0-9\sÀ-ỹ]+$">
+            <div class="invalid-feedback">Tên sản phẩm từ 3–50 ký tự, không chứa ký tự đặc biệt.</div>
         </div>
 
         <div class="mb-3">
             <label class="form-label">Mô tả</label>
-            <textarea name="moTa" class="form-control" rows="2" placeholder="Nhập mô tả sản phẩm" required>${sanPham.moTa}</textarea>
+            <textarea name="moTa" class="form-control" rows="3" placeholder="Nhập mô tả sản phẩm" required>${sanPham.moTa}</textarea>
             <div class="invalid-feedback">Mô tả không được để trống.</div>
         </div>
 
         <div class="mb-3">
             <label class="form-label">Danh mục</label>
-            <select name="danhMuc" class="form-select">
+            <select name="danhMuc" class="form-select" required>
                 <c:forEach items="${listDanhMuc}" var="item">
-                    <option value="${item.id}" ${item.id == sanPham.danhMuc.id ? 'selected' : ''}>${item.tenDanhMuc}</option>
+                    <option value="${item.id}" ${item.id == sanPham.danhMuc.id ? 'selected' : ''}>
+                            ${item.tenDanhMuc}
+                    </option>
                 </c:forEach>
             </select>
             <div class="invalid-feedback">Vui lòng chọn danh mục.</div>
         </div>
 
-        <div class="text-center">
-            <button type="submit" class="btn btn-success btn-lg">
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-save-fill"></i>
                 <c:choose>
-                    <c:when test="${empty sanPham.id}">Thêm</c:when>
+                    <c:when test="${empty sanPham.id}">Thêm sản phẩm</c:when>
                     <c:otherwise>Cập nhật</c:otherwise>
                 </c:choose>
             </button>
-            <a href="${pageContext.request.contextPath}/sanpham/admin/add" class="btn btn-secondary btn-lg">Hủy</a>
+            <a href="${pageContext.request.contextPath}/sanpham/admin/add" class="btn btn-secondary">
+                <i class="bi bi-arrow-repeat"></i> Hủy
+            </a>
         </div>
     </form>
-    <div style="text-align: center; margin-top: 10px">
-        <a href="${pageContext.request.contextPath}/admin/home" class="btn btn-primary btn-lg">Quay lại trang chủ</a>
-        <a href="${pageContext.request.contextPath}/sanpham/admin/list" class="btn btn-primary btn-lg">Xem danh sách sản phẩm</a>
+
+    <div class="text-center mt-4">
+        <a href="${pageContext.request.contextPath}/admin/home" class="btn btn-primary">
+            <i class="bi bi-house-door-fill"></i> Trang chủ
+        </a>
+        <a href="${pageContext.request.contextPath}/sanpham/admin/list" class="btn btn-primary">
+            <i class="bi bi-card-list"></i> Danh sách sản phẩm
+        </a>
     </div>
 </div>
+
+<!-- JavaScript -->
 <script>
-    // (function() {
-    //     'use strict';
-    //     var forms = document.querySelectorAll('.needs-validation');
-    //     Array.prototype.slice.call(forms).forEach(function(form) {
-    //         form.addEventListener('submit', function(event) {
-    //             if (!form.checkValidity()) {
-    //                 event.preventDefault();
-    //                 event.stopPropagation();
-    //             }
-    //             form.classList.add('was-validated');
-    //         }, false);
-    //     });
-    // })();
-    document.addEventListener("DOMContentLoaded", function () {
-        var form = document.getElementById("sanphamForm");
-        var tenSanPhamInput = form.querySelector("input[name='tenSanPham']");
-
-        form.addEventListener("submit", function (event) {
-            var tenSanPham = tenSanPhamInput.value.trim();
-            var regex = /^[a-zA-Z0-9\sÀ-ỹ]+$/;
-
-            if (tenSanPham.length < 3 || tenSanPham.length > 50) {
-                alert("Tên sản phẩm phải từ 3 đến 50 ký tự.");
-                event.preventDefault();
-                return;
-            }
-
-            if (!regex.test(tenSanPham)) {
-                alert("Tên sản phẩm không được chứa ký tự đặc biệt.");
-                event.preventDefault();
-            }
+    (() => {
+        'use strict';
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
         });
-    });
-
+    })();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
