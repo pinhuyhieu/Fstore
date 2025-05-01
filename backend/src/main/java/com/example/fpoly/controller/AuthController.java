@@ -12,9 +12,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Controller
 @RequiredArgsConstructor
@@ -27,12 +29,20 @@ public class AuthController {
     @GetMapping("/login")
     public String loginPage(@RequestParam(value = "error", required = false) String error,
                             @RequestParam(value = "logout", required = false) String logout,
+                            @RequestParam(value = "registerSuccess", required = false) String registerSuccess,
+                            @RequestParam(value = "clientError", required = false) String clientError,
                             Model model) {
         if (error != null) {
             model.addAttribute("error", "Sai tên đăng nhập hoặc mật khẩu!");
         }
         if (logout != null) {
             model.addAttribute("message", "Đăng xuất thành công!");
+        }
+        if (registerSuccess != null) {
+            model.addAttribute("successMessage", "Đăng ký thành công! Bạn có thể đăng nhập ngay.");
+        }
+        if ("empty".equals(clientError)) {
+            model.addAttribute("clientError", "Tên đăng nhập và mật khẩu không được bỏ trống!");
         }
         return "login";
     }
@@ -49,13 +59,22 @@ public class AuthController {
     }
 
     @GetMapping("/register")
-    public String registerPage(Model model) {
+    public String registerPage(Model model, @ModelAttribute("successMessage") String successMessage) {
         model.addAttribute("user", new User());
+        if (successMessage != null && !successMessage.isEmpty()) {
+            model.addAttribute("successMessage", successMessage);
+        }
         return "register";
     }
 
     @PostMapping("/doRegister")
-    public String register(@ModelAttribute User user,HttpServletRequest request, Model model) {
+    public String register(@ModelAttribute User user,HttpServletRequest request, Model model, RedirectAttributes redirectAttributes) {
+        String soDienThoai = request.getParameter("soDienThoai").replaceAll("\\D", ""); // Loại bỏ ký tự không phải số
+        String tenTinhThanh = request.getParameter("tenTinhThanh");
+        String tenQuanHuyen = request.getParameter("tenQuanHuyen");
+        String tenPhuongXa = request.getParameter("tenPhuongXa");
+        String diaChiChiTiet = request.getParameter("diaChiChiTiet");
+
         if (userService.findByUsername(user.getTenDangNhap()).isPresent()) {
             model.addAttribute("error", "Tên đăng nhập đã tồn tại!");
             return "register";
@@ -64,6 +83,7 @@ public class AuthController {
             model.addAttribute("error", "Email đã được sử dụng!");
             return "register";
         }
+
         if (user.getHoTen() == null || user.getHoTen().trim().isEmpty()
                 || user.getTenDangNhap() == null || user.getTenDangNhap().trim().isEmpty()
                 || user.getEmail() == null || user.getEmail().trim().isEmpty()
@@ -78,14 +98,25 @@ public class AuthController {
             return "register";
         }
 
+        // ✅ Validate định dạng email
+        Pattern emailPattern = Pattern.compile("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$");
+        if (!emailPattern.matcher(user.getEmail()).matches()) {
+            model.addAttribute("error", "Email không hợp lệ! Vui lòng nhập đúng định dạng.");
+            return "register";
+        }
 
+        // ✅ Validate định dạng số điện thoại: 10 hoặc 11 chữ số
+        Pattern phonePattern = Pattern.compile("^\\d{10,11}$");
+        if (!phonePattern.matcher(soDienThoai).matches()) {
+            model.addAttribute("error", "Số điện thoại không hợp lệ! Vui lòng nhập 10-11 chữ số.");
+            return "register";
+        }
+
+
+        // Nếu không có lỗi, lưu thông tin người dùng
         user.setNgayTao(LocalDateTime.now());
         userService.saveUser(user);
-        String soDienThoai = request.getParameter("soDienThoai");
-        String tenTinhThanh = request.getParameter("tenTinhThanh");
-        String tenQuanHuyen = request.getParameter("tenQuanHuyen");
-        String tenPhuongXa = request.getParameter("tenPhuongXa");
-        String diaChiChiTiet = request.getParameter("diaChiChiTiet");
+
 
         // Tạo đối tượng địa chỉ người dùng
         DiaChiNguoiDung diaChi = new DiaChiNguoiDung();
@@ -99,7 +130,6 @@ public class AuthController {
 
         // Lưu địa chỉ
         diaChiNguoiDungService.save(diaChi);
-
         return "redirect:/login?registerSuccess=true";
     }
     @GetMapping("/auth/access-denied")

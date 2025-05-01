@@ -158,6 +158,57 @@
         .form-bottom .form-group {
             width: 100%;
         }
+        .custom-alert {
+            background-color: #ffe8e6;
+            border: 1px solid #ff7675;
+            color: #d63031;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 8px rgba(255, 118, 117, 0.2);
+        }
+
+        .custom-alert .alert-icon {
+            font-size: 16px;
+            margin-right: 8px;
+        }
+
+        .custom-alert .alert-text {
+            flex: 1;
+        }
+        input[type="text"], input[type="email"], input[type="password"], input[type="tel"], select {
+            width: 100%;
+            padding: 6px;
+            margin: 3px 0 6px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 12px;
+            outline: none;
+        }
+
+        input[type="tel"]:hover, input[type="text"]:hover, input[type="password"]:hover, input[type="email"]:hover {
+            border-color: #0984e3;
+            box-shadow: 0px 4px 8px rgba(9, 132, 227, 0.2), -4px -4px 8px rgba(9, 132, 227, 0.1);
+        }
+
+        input[type="tel"]:focus, input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus {
+            border-color: #0984e3;
+            box-shadow: 0px 4px 12px rgba(9, 132, 227, 0.4), -4px -4px 12px rgba(9, 132, 227, 0.2);
+        }
+
+        select:hover, select:focus {
+            border-color: #0984e3;
+            box-shadow: 0px 4px 8px rgba(9, 132, 227, 0.2), -4px -4px 8px rgba(9, 132, 227, 0.1);
+        }
+
+        select:focus {
+            box-shadow: 0px 4px 12px rgba(9, 132, 227, 0.4), -4px -4px 12px rgba(9, 132, 227, 0.2);
+        }
     </style>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -200,8 +251,12 @@
     <h2>Đăng Ký Tài Khoản</h2>
 
     <c:if test="${not empty error}">
-        <div class="alert alert-danger">${error}</div>
+        <div class="custom-alert">
+            <span class="alert-icon">⚠</span>
+            <span class="alert-text">${error}</span>
+        </div>
     </c:if>
+
 
     <form action="/doRegister" method="post" onsubmit="return validateForm();" novalidate>
         <div class="form-container">
@@ -224,7 +279,7 @@
 
                 <div class="form-group">
                     <label for="soDienThoai">Số điện thoại:</label>
-                    <input type="text" id="soDienThoai" name="soDienThoai">
+                    <input type="tel" id="soDienThoai" name="soDienThoai" pattern="[0-9]{10,11}" oninput="this.value=this.value.replace(/[^0-9]/g, '')" maxlength="11">
                 </div>
             </div>
 
