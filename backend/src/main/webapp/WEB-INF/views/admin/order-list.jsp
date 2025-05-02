@@ -16,7 +16,7 @@
 
     <style>
         body {
-            background-color: #f2f6fc;
+            background-color: #f1f4f9;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
@@ -29,29 +29,31 @@
         }
 
         h2 {
-            color: #0d6efd;
+            color: #2c3e50;
             font-weight: 700;
             text-align: center;
             margin-bottom: 30px;
         }
 
-        .btn-primary {
+        .btn-success {
             margin-bottom: 15px;
         }
 
         .table th {
-            background-color: #0d6efd;
+            background-color: #343a40;
             color: white;
             text-align: center;
         }
 
         .card {
-            border-radius: 15px;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+            border: none;
         }
 
         .card h5 {
             font-weight: 600;
+            color: #2c3e50;
         }
 
         .form-select, .form-control {
@@ -59,14 +61,20 @@
         }
 
         .pagination .page-item.active .page-link {
-            background-color: #0d6efd;
-            border-color: #0d6efd;
+            background-color: #198754;
+            border-color: #198754;
         }
 
         .hidden {
             display: none;
         }
+
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+            transition: background-color 0.3s;
+        }
     </style>
+
 </head>
 <body>
 

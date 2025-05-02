@@ -6,6 +6,7 @@
     <title>Quản Lý Màu Sắc</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css"/>
     <style>
         body {
             background-color: #f1f4f9;
@@ -45,24 +46,24 @@
 </head>
 <body>
 
-<div class="container">
+<div class="container" data-aos="fade-up">
     <h2 class="text-center mb-4 fw-bold">Quản Lý Màu Sắc</h2>
 
     <c:if test="${not empty successMessage}">
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <div class="alert alert-success alert-dismissible fade show" role="alert" data-aos="fade-down">
             <i class="bi bi-check-circle-fill"></i> ${successMessage}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </c:if>
     <c:if test="${not empty errorMessage}">
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" data-aos="fade-down">
             <i class="bi bi-exclamation-triangle-fill"></i> ${errorMessage}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </c:if>
 
     <!-- Form -->
-    <div class="card p-4 mb-4">
+    <div class="card p-4 mb-4" data-aos="fade-up">
         <form method="POST" action="${pageContext.request.contextPath}/admin/mausac/save" class="needs-validation" novalidate>
             <input type="hidden" name="id" value="${mausac.id}" />
 
@@ -88,7 +89,7 @@
     </div>
 
     <!-- Bảng Danh Sách Màu Sắc -->
-    <div class="card p-4">
+    <div class="card p-4" data-aos="fade-right">
         <h4 class="fw-bold mb-3">Danh Sách Màu Sắc</h4>
         <table class="table table-hover table-bordered align-middle">
             <thead class="table-dark text-center">
@@ -100,7 +101,7 @@
             </thead>
             <tbody>
             <c:forEach var="s" items="${mausacs}">
-                <tr class="text-center">
+                <tr class="text-center" data-aos="zoom-in-up">
                     <td>${s.id}</td>
                     <td>${s.tenMauSac}</td>
                     <td>
@@ -123,7 +124,7 @@
 <script>
     function validateInput() {
         let input = document.getElementById("tenMauSac");
-        let regex = /^[a-zA-ZÀ-ỹ ]+$/;  // Chỉ cho phép chữ cái và khoảng trắng
+        let regex = /^[a-zA-ZÀ-ỹ ]+$/;
         if (!regex.test(input.value)) {
             input.setCustomValidity("Tên màu sắc không được chứa ký tự đặc biệt.");
         } else {
@@ -131,7 +132,6 @@
         }
     }
 
-    // Bootstrap validation
     (() => {
         'use strict';
         window.addEventListener('load', () => {
@@ -150,5 +150,13 @@
     })();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script>
+    AOS.init({
+        duration: 1000, // Thời gian hiệu ứng (ms)
+        easing: 'ease-in-out',
+        once: true // Chỉ chạy 1 lần khi cuộn
+    });
+</script>
 </body>
 </html>
