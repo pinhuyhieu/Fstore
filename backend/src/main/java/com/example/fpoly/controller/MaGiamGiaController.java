@@ -18,6 +18,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -33,55 +35,57 @@ public class MaGiamGiaController {
     public ResponseEntity<?> checkMa(
             @RequestParam String ma,
             @RequestParam double tongTien,
-            @AuthenticationPrincipal UserDetails userDetails
-    ) {
+            @AuthenticationPrincipal UserDetails userDetails,
+            RedirectAttributes redirectAttributes) {
+
         User user = userService.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("❌ Không tìm thấy user"));
 
         Optional<MaGiamGiaNguoiDung> opt = maGiamGiaService.findForUser(user, ma.trim());
 
         if (opt.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "❌ Mã không áp dụng cho bạn hoặc không tồn tại.");
             return ResponseEntity.badRequest().body("❌ Mã không áp dụng cho bạn hoặc không tồn tại.");
         }
 
         MaGiamGia giamGia = opt.get().getMaGiamGia();
 
-        // ❌ Hết số lượng
+        // Các điều kiện kiểm tra khác...
         if (giamGia.getSoLuong() == null || giamGia.getSoLuong() <= 0) {
+            redirectAttributes.addFlashAttribute("error", "❌ Mã giảm giá đã hết lượt sử dụng.");
             return ResponseEntity.badRequest().body("❌ Mã giảm giá đã hết lượt sử dụng.");
         }
 
-        // ❌ Không kích hoạt
-        if (giamGia.getKichHoat() == null || !giamGia.getKichHoat()) {
+        if (!giamGia.getKichHoat()) {
+            redirectAttributes.addFlashAttribute("error", "❌ Mã chưa được kích hoạt.");
             return ResponseEntity.badRequest().body("❌ Mã chưa được kích hoạt.");
         }
 
-        // ❌ Chưa đến ngày
-        if (giamGia.getNgayBatDau() != null && giamGia.getNgayBatDau().isAfter(LocalDate.now())) {
+        if (giamGia.getNgayBatDau().isAfter(LocalDate.now())) {
+            redirectAttributes.addFlashAttribute("error", "❌ Mã chưa có hiệu lực.");
             return ResponseEntity.badRequest().body("❌ Mã chưa có hiệu lực.");
         }
 
-        // ❌ Đã hết hạn
-        if (giamGia.getNgayKetThuc() != null && giamGia.getNgayKetThuc().isBefore(LocalDate.now())) {
+        if (giamGia.getNgayKetThuc().isBefore(LocalDate.now())) {
+            redirectAttributes.addFlashAttribute("error", "❌ Mã đã hết hạn.");
             return ResponseEntity.badRequest().body("❌ Mã đã hết hạn.");
         }
 
-        // ❌ Không đạt giá trị tối thiểu
         if (tongTien < giamGia.getGiaTriToiThieu()) {
-            return ResponseEntity.badRequest().body("❌ Đơn hàng chưa đủ giá trị tối thiểu " +
-                    "(" + String.format("%,.0f", giamGia.getGiaTriToiThieu()) + " ₫) để áp dụng mã này.");
+            redirectAttributes.addFlashAttribute("error", "❌ Đơn hàng chưa đủ giá trị tối thiểu " +
+                    String.format("%,.0f", giamGia.getGiaTriToiThieu()) + " ₫ để áp dụng mã này.");
+            return ResponseEntity.badRequest().body("❌ Đơn hàng chưa đủ giá trị tối thiểu.");
         }
 
         // ✅ Tính số tiền giảm
-        double soTienGiam = 0;
-        if (giamGia.getSoTienGiam() != null) {
-            soTienGiam = giamGia.getSoTienGiam();
-        } else if (giamGia.getPhanTramGiam() != null) {
-            soTienGiam = tongTien * giamGia.getPhanTramGiam() / 100;
-        }
+        double soTienGiam = giamGia.getSoTienGiam() != null ? giamGia.getSoTienGiam() : tongTien * giamGia.getPhanTramGiam() / 100;
+
+        // Gửi thông báo thành công
+        redirectAttributes.addFlashAttribute("successMessage", "✅ Mã đã được áp dụng!");
 
         return ResponseEntity.ok(Map.of("soTienGiam", (int) soTienGiam));
     }
+
 
     @GetMapping("/cancel")
     public String cancelDiscount(HttpSession session, RedirectAttributes redirectAttributes) {
@@ -93,44 +97,58 @@ public class MaGiamGiaController {
     @PostMapping("/apply")
     public ResponseEntity<?> applyMaGiamGia(@RequestParam String ma,
                                             @AuthenticationPrincipal UserDetails userDetails,
-                                            HttpSession session) {
+                                            HttpSession session,
+                                            RedirectAttributes redirectAttributes) {
         User user = userService.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy user"));
 
         Optional<MaGiamGiaNguoiDung> opt = maGiamGiaService.findForUser(user, ma.trim());
 
         if (opt.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "❌ Mã không áp dụng cho bạn hoặc không tồn tại");
             return ResponseEntity.badRequest().body("❌ Mã không áp dụng cho bạn hoặc không tồn tại");
         }
 
         MaGiamGia giamGia = opt.get().getMaGiamGia();
 
-        // ✅ Kiểm tra trạng thái mã
-        if (!giamGia.getKichHoat()) {
-            return ResponseEntity.badRequest().body("❌ Mã chưa được kích hoạt.");
-        }
-
-        if (giamGia.getNgayBatDau().isAfter(LocalDate.now())) {
-            return ResponseEntity.badRequest().body("❌ Mã chưa có hiệu lực.");
-        }
-
-        if (giamGia.getNgayKetThuc().isBefore(LocalDate.now())) {
-            return ResponseEntity.badRequest().body("❌ Mã đã hết hạn.");
-        }
-
-        if (giamGia.getSoLuong() == null || giamGia.getSoLuong() <= 0) {
-            return ResponseEntity.badRequest().body("❌ Mã giảm giá đã hết lượt sử dụng.");
-        }
-        System.out.println("Session ID: " + session.getId());
-
-        // ✅ Lưu mã vào session
+        // Lưu mã vào session
         session.setAttribute("maGiamGiaNguoiDung", opt.get());
-        System.out.println("✅ SET SESSION: " + session.getId() + " | " + session.getAttribute("maGiamGiaNguoiDung"));
+        session.setAttribute("soTienGiam", giamGia.getSoTienGiam() != null ? giamGia.getSoTienGiam() : 0);
+
+        // Thêm thông báo thành công vào RedirectAttributes và chuyển hướng
+        redirectAttributes.addFlashAttribute("successMessage", "✅ Mã đã được áp dụng!");
 
         return ResponseEntity.ok(Map.of(
                 "message", "✅ Mã đã được áp dụng!",
                 "ma", giamGia.getMa()
         ));
+    }
+
+
+    @GetMapping("/list")
+    public ResponseEntity<?> getDanhSachMaGiamGiaKhachApDung(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        User user = userService.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy user"));
+
+        List<MaGiamGiaNguoiDung> list = maGiamGiaService.findAllForUser(user);
+
+        List<Map<String, Object>> result = list.stream()
+                .map(item -> {
+                    MaGiamGia mgg = item.getMaGiamGia();
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("ma", mgg.getMa());
+                    map.put("phanTramGiam", mgg.getPhanTramGiam());
+                    map.put("soTienGiam", mgg.getSoTienGiam());
+                    map.put("ngayKetThuc", mgg.getNgayKetThuc());
+                    map.put("soLuongConLai", mgg.getSoLuong());
+                    map.put("giaTriToiThieu", mgg.getGiaTriToiThieu());
+                    return map;
+                })
+                .toList();
+
+
+        return ResponseEntity.ok(result);
     }
 
 

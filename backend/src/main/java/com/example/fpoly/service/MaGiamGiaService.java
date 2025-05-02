@@ -17,4 +17,5 @@ public interface MaGiamGiaService {
     MaGiamGia save(MaGiamGia maGiamGia);
 
     void deleteById(Integer id);
-}
+    public List<MaGiamGiaNguoiDung> findAllForUser(User user) ;
+    }

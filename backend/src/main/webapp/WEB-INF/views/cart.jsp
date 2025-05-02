@@ -12,14 +12,21 @@
         body {
             background: linear-gradient(135deg, #74b9ff, #0984e3);
             color: #333;
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .content-wrapper {
             background-color: rgba(255, 255, 255, 0.97);
             padding: 30px;
             border-radius: 16px;
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
             margin-top: 40px;
         }
 
@@ -68,22 +75,19 @@
             margin-bottom: 1rem;
         }
 
-        /* Tổng thể card */
-        .col-md-5 {
+        .col-md-7, .col-md-5 {
             background: #ffffff;
             border-radius: 16px;
             padding: 24px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
             transition: box-shadow 0.3s ease;
         }
 
-        /* Header */
-        .col-md-5 h3 {
+        .col-md-5 h3, .col-md-7 h3 {
             font-weight: bold;
             color: #007bff;
         }
 
-        /* Form input và select */
         .col-md-5 .form-control {
             border-radius: 10px;
             border: 1px solid #ced4da;
@@ -96,7 +100,6 @@
             border-color: #007bff;
         }
 
-        /* Nút bấm */
         .col-md-5 .btn {
             border-radius: 10px;
             transition: box-shadow 0.3s ease, transform 0.2s ease;
@@ -107,13 +110,11 @@
             transform: translateY(-2px);
         }
 
-        /* Tổng giá và phần giảm giá */
         #total-price, #finalAmount, #discountAmount, #shippingFee {
             font-size: 1.2rem;
             font-weight: bold;
         }
 
-        /* Phần hiển thị giảm giá */
         #discountRow {
             margin-top: 10px;
         }
@@ -144,6 +145,40 @@
             transform: scale(0.98);
             box-shadow: 0 3px 10px rgba(0, 123, 255, 0.3);
         }
+
+        /* Nút xem mã giảm giá */
+        #availableCoupons {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 1rem;
+            background-color: #f1f1f1;
+        }
+
+        /* Thêm hiệu ứng hover cho nút */
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Hiển thị danh sách mã giảm giá */
+        #couponList {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        #couponList li {
+            padding: 5px 0;
+            font-size: 16px;
+        }
+
+        .btn-primary, .btn-danger {
+            width: 120px;
+        }
+
+        #discountAmount {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
     </style>
 </head>
 <body>
@@ -154,20 +189,11 @@
     <c:if test="${not empty error}">
         <div class="alert alert-danger">${error}</div>
     </c:if>
-    <c:if test="${not empty sessionScope.maGiamGiaNguoiDung}">
-        <div class="alert alert-info">
-            ✅ Đã áp dụng mã: ${sessionScope.maGiamGiaNguoiDung.maGiamGia.ma}
-        </div>
-    </c:if>
 
     <div class="container mt-4">
-        <input type="hidden" name="maGiamGia.id" value="${maGiamGia.id}" />
-
         <div class="row">
-            <!-- 🧾 Cột trái: Giỏ hàng -->
             <div class="col-md-7">
                 <h3 class="mb-3">🛒 Giỏ hàng của bạn</h3>
-
                 <c:choose>
                     <c:when test="${gioHang != null and not empty gioHang.gioHangChiTietList}">
                         <table class="table table-bordered table-hover">
@@ -192,14 +218,14 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <button class="btn btn-sm btn-outline-secondary btn-decrease" data-id="${item.id}">-</button>
-                                            <input type="text" class="form-control mx-1 text-center quantity-input" id="quantity-${item.id}" value="${item.soLuong}" style="width: 60px;">
+                                            <input type="text" class="form-control mx-1 text-center quantity-input" id="quantity-${item.id}" value="${item.soLuong}">
                                             <button class="btn btn-sm btn-outline-secondary btn-increase" data-id="${item.id}">+</button>
                                         </div>
                                     </td>
                                     <td>
-                                        <span id="gia-${item.id}" data-gia="${item.sanPhamChiTiet.gia}">
-                                            <fmt:formatNumber value="${item.sanPhamChiTiet.gia}" type="number" maxFractionDigits="0"/> ₫
-                                        </span>
+                                                <span id="gia-${item.id}" data-gia="${item.sanPhamChiTiet.gia}">
+                                                    <fmt:formatNumber value="${item.sanPhamChiTiet.gia}" type="number" maxFractionDigits="0"/> ₫
+                                                </span>
                                     </td>
                                     <td>
                                         <button class="btn btn-sm btn-danger btn-remove" data-id="${item.id}">❌</button>
@@ -213,61 +239,53 @@
                         <div class="alert alert-info">🛒 Giỏ hàng của bạn đang trống.</div>
                     </c:otherwise>
                 </c:choose>
-
                 <a href="${pageContext.request.contextPath}/sanpham/list" class="btn btn-back">Quay lại</a>
             </div>
 
-            <!-- 🧾 Cột phải: Thông tin đặt hàng -->
             <div class="col-md-5">
                 <h3 class="mb-3">📦 Thông tin đặt hàng</h3>
-
-                <!-- Thông báo -->
-                <c:if test="${not empty successMessage}">
-                    <div class="alert alert-success">${successMessage}</div>
-                </c:if>
-                <c:if test="${not empty error}">
-                    <div class="alert alert-danger">${error}</div>
-                </c:if>
-
-                <!-- Mã giảm giá -->
+                <div id="availableCoupons" class="alert alert-info mt-3" style="display: none;">
+                    <strong>🎁 Mã áp dụng được:</strong>
+                    <ul id="couponList" class="mb-0"></ul>
+                </div>
                 <div class="form-group">
+                    <button type="button" class="btn btn-info" id="showAvailableCouponsBtn">
+                        <i class="fas fa-clipboard-list"></i> Xem mã giảm giá khả dụng
+                    </button>
+
                     <label for="maGiamGiaInput">Mã giảm giá:</label>
-                    <div class="d-flex">
-                        <input type="text" class="form-control" id="maGiamGiaInput" placeholder="Nhập mã">
+                    <div class="d-flex align-items-center">
+                        <input type="text" class="form-control" id="maGiamGiaInput" placeholder="Nhập mã giảm giá">
                         <button type="button" class="btn btn-primary ml-2" id="applyCouponBtn">Áp dụng</button>
                         <button type="button" class="btn btn-danger ml-2" id="cancelCouponBtn">Hủy</button>
                     </div>
                 </div>
 
                 <div id="discountRow" style="display: none;">
-                    <p class="text-success">✅ Giảm giá: <span id="discountAmount" data-giam="0">-0 ₫</span></p>
+                    <p class="text-success font-weight-bold">✅ Giảm giá: <span id="discountAmount" data-giam="0">-0 ₫</span></p>
                 </div>
 
-                <!-- Tổng tiền -->
                 <div class="form-group mt-3">
                     <label>Tạm tính:</label>
                     <h5><span id="total-price" data-tong="${tongTien}">
-                    <fmt:formatNumber value="${tongTien}" type="number" maxFractionDigits="0"/> ₫
-                </span></h5>
+                        <fmt:formatNumber value="${tongTien}" type="number" maxFractionDigits="0"/> ₫
+                    </span></h5>
                 </div>
 
-                <!-- Form đặt hàng -->
                 <form action="/api/donhang/dat-hang" method="post" onsubmit="return confirm('Bạn chắc chắn muốn đặt hàng?')">
                     <div class="form-group">
                         <label>Tên người nhận:</label>
-                        <input type="text" class="form-control" name="tenNguoiNhan" value="${user.hoTen}" required >
+                        <input type="text" class="form-control" name="tenNguoiNhan" value="${user.hoTen}" required>
                     </div>
                     <div class="form-group">
                         <label>SĐT người nhận:</label>
                         <input type="text" class="form-control" name="soDienThoaiNguoiNhan" value="${user.soDienThoai}" required>
                     </div>
-
                     <div class="form-group">
                         <label>Địa chỉ giao hàng:</label>
                         <input type="text" class="form-control" name="diaChiGiaoHang" value="${diaChi.diaChiChiTiet}" required>
                     </div>
 
-                    <!-- Địa chỉ -->
                     <div class="form-group">
                         <label>Tỉnh/Thành phố:</label>
                         <select class="form-control" id="tinhThanh" name="tinhThanh" value="${diaChi.tenTinhThanh}" required></select>
@@ -281,7 +299,6 @@
                         <select class="form-control" id="phuongXa" name="phuongXa" value="${diaChi.tenPhuongXa}" required></select>
                     </div>
 
-                    <!-- Thanh toán -->
                     <div class="form-group">
                         <label>Phương thức thanh toán:</label>
                         <select class="form-control" name="phuongThucThanhToanId" required>
@@ -291,7 +308,6 @@
                         </select>
                     </div>
 
-                    <!-- Phí ship & tổng cộng -->
                     <div class="form-group">
                         <label>Phí vận chuyển:</label>
                         <p><strong><span id="shippingFee">0</span> ₫</strong></p>
@@ -306,9 +322,9 @@
             </div>
         </div>
     </div>
-
-
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script><script>
+</div>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
     function tinhTongThanhToan() {
         const tienHang = parseInt($("#total-price").data("tong")) || 0;
         const soTienGiam = parseInt($("#discountAmount").data("giam")) || 0;
@@ -629,35 +645,47 @@
     $("#applyCouponBtn").click(function () {
         const ma = $("#maGiamGiaInput").val().trim();
 
+        // Bước 1: Gửi yêu cầu kiểm tra mã giảm giá
         $.ajax({
-            url: "/api/ma-giam-gia/apply",
-            method: "POST",
-            data: { ma },
-            success: function (res) {
-                alert(res.message || "✅ Mã đã áp dụng");
+            url: "/api/ma-giam-gia/check",
+            method: "GET",
+            data: {
+                ma: ma,
+                tongTien: parseInt($("#total-price").data("tong")) // Tổng tiền trong giỏ hàng
+            },
+            success: function (data) {
+                // Kiểm tra nếu có tiền giảm và không phải thông báo lỗi
+                if (data.soTienGiam > 0) {
+                    // Bước 2: Gửi yêu cầu áp dụng mã giảm giá nếu kiểm tra thành công
+                    $.ajax({
+                        url: "/api/ma-giam-gia/apply",
+                        method: "POST",
+                        data: { ma: ma },
+                        success: function (res) {
+                            alert(res.message || "✅ Mã đã áp dụng");
 
-                // Gọi thêm /check để lấy số tiền giảm:
-                $.ajax({
-                    url: "/api/ma-giam-gia/check",
-                    method: "GET",
-                    data: {
-                        ma: ma,
-                        tongTien: parseInt($("#total-price").data("tong"))
-                    },
-                    success: function (data) {
-                        $("#discountAmount")
-                            .text("-" + data.soTienGiam.toLocaleString("vi-VN") + " ₫")
-                            .data("giam", data.soTienGiam);
-                        $("#discountRow").show();
-                        tinhTongThanhToan();
-                    }
-                });
+                            // Cập nhật số tiền giảm từ phản hồi /check:
+                            $("#discountAmount")
+                                .text("-" + data.soTienGiam.toLocaleString("vi-VN") + " ₫")
+                                .data("giam", data.soTienGiam);
+                            $("#discountRow").show();
+                            tinhTongThanhToan(); // Tính lại tổng thanh toán
+                        },
+                        error: function (xhr) {
+                            alert(xhr.responseText || "❌ Lỗi khi áp dụng mã giảm giá");
+                        }
+                    });
+                } else {
+                    // Nếu không có tiền giảm, nghĩa là mã không hợp lệ hoặc không đủ điều kiện
+                    alert("❌ Mã giảm giá không hợp lệ hoặc không đủ điều kiện.");
+                }
             },
             error: function (xhr) {
-                alert(xhr.responseText || "❌ Mã không hợp lệ");
+                alert(xhr.responseText || "❌ Lỗi khi kiểm tra mã giảm giá.");
             }
         });
     });
+
 
     $("#cancelCouponBtn").click(function () {
         $.ajax({
@@ -674,11 +702,81 @@
             }
         });
     });
+    $("#showAvailableCouponsBtn").click(function () {
+        $.ajax({
+            url: "/api/ma-giam-gia/list", // Gọi API
+            method: "GET",
+            success: function (data) {
+                const listElem = $("#couponList");
+                listElem.empty();  // Xóa danh sách cũ
+
+                // Đảm bảo data là mảng, nếu không sẽ ép thành mảng
+                const coupons = Array.isArray(data) ? data : [data];
+
+                // Kiểm tra nếu không có mã nào
+                if (coupons.length === 0) {
+                    listElem.append("<li>Không có mã nào khả dụng.</li>");
+                } else {
+                    // Duyệt qua từng mã giảm giá và hiển thị
+                    coupons.forEach(mgg => {
+                        // Kiểm tra ngày bắt đầu và ngày kết thúc
+                        const today = new Date();
+                        const startDate = new Date(mgg.ngayBatDau);
+                        const endDate = new Date(mgg.ngayKetThuc);
+
+                        // Kiểm tra ngày có hợp lệ không
+                        if (today < startDate || today > endDate) {
+                            return; // Không hiển thị mã nếu ngày hiện tại không nằm trong khoảng
+                        }
+
+                        // Kiểm tra số lượng còn lại
+                        if (mgg.soLuongConLai <= 0) {
+                            return; // Không hiển thị nếu số lượng còn lại <= 0
+                        }
+
+                        // Kiểm tra giá trị tối thiểu của đơn hàng
+                        const minOrderValue = mgg.giaTriToiThieu || 0;
+                        const totalOrderValue = parseInt(document.getElementById("total-price").getAttribute("data-tong")) || 0;
+
+                        if (totalOrderValue < minOrderValue) {
+                            return; // Không hiển thị nếu giá trị đơn hàng không đủ điều kiện
+                        }
+
+                        // Hiển thị mã giảm giá hợp lệ
+                        const percent = mgg.phanTramGiam ? mgg.phanTramGiam + "%" : "";
+                        const expires = mgg.ngayKetThuc || "Không rõ";
+                        const remaining = mgg.soLuongConLai ?? 0;
+
+                        const text = "<strong>" + mgg.ma + "</strong> - " +
+                            (percent ? percent : "") +
+                            " | còn " + (remaining ?? 0) + " lượt | hết hạn: " + (expires || "Không rõ");
+
+                        const li = $("<li>").html("<a href='#' class='text-primary mgg-item' data-ma='" + mgg.ma + "'>" + text + "</a>");
+                        listElem.append(li); // Thêm vào danh sách
+                    });
+                }
+
+                // Hiển thị danh sách mã
+                $("#availableCoupons").css("display", "block");
+            },
+            error: function () {
+                alert("❌ Không lấy được danh sách mã.");
+            }
+        });
+    });
 
 
+    // Khi click vào mã → tự điền vào input
+    // Khi click vào mã → tự điền vào input
+    $(document).on("click", ".mgg-item", function (e) {
+        e.preventDefault();
+        const ma = $(this).data("ma");
+        $("#maGiamGiaInput").val(ma);
+        $("#availableCoupons").hide();
+    });
 
 
-</script>
+    </script>
 
 </body>
 </html>
