@@ -9,6 +9,7 @@
     <title>Quản Lý Sản Phẩm</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
     <style>
         body {
             background-color: #f1f4f9;
@@ -46,18 +47,20 @@
 </head>
 <body>
 
-<div class="container">
-    <h2 class="text-center form-title mb-4"><i class="bi bi-box-seam-fill"></i> Quản Lý Sản Phẩm</h2>
+<div class="container" data-aos="fade-up">
+    <h2 class="text-center form-title mb-4" data-aos="fade-down">
+        <i class="bi bi-box-seam-fill"></i> Quản Lý Sản Phẩm
+    </h2>
 
     <!-- Thông báo thành công/thất bại -->
     <c:if test="${not empty successMessage}">
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <div class="alert alert-success alert-dismissible fade show" role="alert" data-aos="zoom-in">
             <i class="bi bi-check-circle-fill"></i> ${successMessage}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
         </div>
     </c:if>
     <c:if test="${not empty errorMessage}">
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" data-aos="zoom-in">
             <i class="bi bi-exclamation-triangle-fill"></i> ${errorMessage}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
         </div>
@@ -67,7 +70,7 @@
     <form id="sanphamForm" action="${pageContext.request.contextPath}/sanpham/admin/add" method="post" class="needs-validation" novalidate>
         <input type="hidden" name="id" value="${sanPham.id}" />
 
-        <div class="mb-3">
+        <div class="mb-3" data-aos="fade-left">
             <label class="form-label">Tên sản phẩm</label>
             <input type="text" name="tenSanPham" class="form-control" placeholder="Nhập tên sản phẩm"
                    value="${sanPham.tenSanPham}" required minlength="3" maxlength="50"
@@ -75,13 +78,13 @@
             <div class="invalid-feedback">Tên sản phẩm từ 3–50 ký tự, không chứa ký tự đặc biệt.</div>
         </div>
 
-        <div class="mb-3">
+        <div class="mb-3" data-aos="fade-left" data-aos-delay="100">
             <label class="form-label">Mô tả</label>
             <textarea name="moTa" class="form-control" rows="3" placeholder="Nhập mô tả sản phẩm" required>${sanPham.moTa}</textarea>
             <div class="invalid-feedback">Mô tả không được để trống.</div>
         </div>
 
-        <div class="mb-3">
+        <div class="mb-3" data-aos="fade-left" data-aos-delay="200">
             <label class="form-label">Danh mục</label>
             <select name="danhMuc" class="form-select" required>
                 <c:forEach items="${listDanhMuc}" var="item">
@@ -93,7 +96,7 @@
             <div class="invalid-feedback">Vui lòng chọn danh mục.</div>
         </div>
 
-        <div class="text-center mt-4">
+        <div class="text-center mt-4" data-aos="fade-up">
             <button type="submit" class="btn btn-success">
                 <i class="bi bi-save-fill"></i>
                 <c:choose>
@@ -107,7 +110,7 @@
         </div>
     </form>
 
-    <div class="text-center mt-4">
+    <div class="text-center mt-4" data-aos="fade-up" data-aos-delay="200">
         <a href="${pageContext.request.contextPath}/admin/home" class="btn btn-primary">
             <i class="bi bi-house-door-fill"></i> Trang chủ
         </a>
@@ -134,5 +137,12 @@
     })();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+    AOS.init({
+        duration: 800,
+        once: true
+    });
+</script>
 </body>
 </html>
