@@ -5,9 +5,12 @@
     <title>Quản Lý Size</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- AOS CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
+
     <style>
         body {
-            background-color: #f1f4f9;
+            background-color: #f4f6f9;
             font-family: "Segoe UI", sans-serif;
         }
         .container {
@@ -17,12 +20,12 @@
         .card {
             border: none;
             border-radius: 12px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
             transition: all 0.3s ease-in-out;
         }
         .card:hover {
             transform: scale(1.01);
-            box-shadow: 0 0 30px rgba(0,0,0,0.08);
+            box-shadow: 0 6px 30px rgba(0,0,0,0.08);
         }
         .form-label {
             font-weight: 600;
@@ -38,30 +41,29 @@
         }
         .table tbody tr:hover {
             background-color: #f8f9fa;
-            transition: background-color 0.3s;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2 class="text-center mb-4 fw-bold">Quản Lý Size</h2>
+    <h2 class="text-center mb-4 fw-bold text-primary" data-aos="fade-down">Quản Lý Size</h2>
 
     <c:if test="${not empty successMessage}">
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <div class="alert alert-success alert-dismissible fade show" role="alert" data-aos="fade-right">
             <i class="bi bi-check-circle-fill"></i> ${successMessage}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </c:if>
     <c:if test="${not empty errorMessage}">
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" data-aos="fade-right">
             <i class="bi bi-exclamation-triangle-fill"></i> ${errorMessage}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </c:if>
 
-    <!-- Form Thêm/Sửa Size -->
-    <div class="card p-4 mb-4">
+    <!-- Form Thêm/Sửa -->
+    <div class="card p-4 mb-4" data-aos="fade-up" data-aos-delay="100">
         <form method="POST" action="${pageContext.request.contextPath}/admin/size/save" class="needs-validation" novalidate>
             <input type="hidden" name="id" value="${size.id}" />
 
@@ -90,11 +92,11 @@
         </form>
     </div>
 
-    <!-- Bảng Danh Sách Size -->
-    <div class="card p-4">
+    <!-- Bảng Danh Sách -->
+    <div class="card p-4" data-aos="fade-up" data-aos-delay="200">
         <h4 class="fw-bold mb-3">Danh Sách Size</h4>
         <table class="table table-hover table-bordered align-middle">
-            <thead class="table-dark text-center">
+            <thead class="table-primary text-center">
             <tr>
                 <th>ID</th>
                 <th>Tên Size</th>
@@ -126,7 +128,7 @@
 <script>
     function validateInput() {
         let input = document.getElementById("tenSize");
-        let regex = /^[a-zA-ZÀ-ỹ ]+$/;  // Chỉ cho phép chữ cái và khoảng trắng
+        let regex = /^[a-zA-ZÀ-ỹ ]+$/;
         if (!regex.test(input.value)) {
             input.setCustomValidity("Tên size không được chứa ký tự đặc biệt.");
         } else {
@@ -134,7 +136,6 @@
         }
     }
 
-    // Bootstrap form validation
     (() => {
         'use strict';
         window.addEventListener('load', () => {
@@ -152,6 +153,17 @@
         }, false);
     })();
 </script>
+
+<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- AOS JS -->
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+    AOS.init({
+        once: true,
+        duration: 1000,
+        easing: 'ease-in-out'
+    });
+</script>
 </body>
 </html>
