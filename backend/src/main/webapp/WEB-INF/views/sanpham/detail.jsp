@@ -5,6 +5,9 @@
 <head>
     <title>Chi tiết Sản phẩm</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- AOS CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
     <style>
         body {
             background-color: #f8f9fa;
@@ -33,27 +36,61 @@
             margin-bottom: 20px;
             color: #333;
         }
+        .color-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .color-option {
+            position: relative;
+        }
+
+        .color-option input[type="radio"] {
+            display: none;
+        }
+
         .color-box {
             width: 40px;
             height: 40px;
-            display: inline-block;
             border-radius: 50%;
-            cursor: pointer;
             border: 2px solid transparent;
-            margin-right: 5px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            display: inline-block;
         }
 
         .color-box:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transform: scale(1.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
         .color-radio:checked + .color-box {
-            border: 3px solid #333;
+            border: 3px solid #0d6efd;
             transform: scale(1.15);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 6px 12px rgba(13,110,253,0.6);
+        }
+
+        .color-box::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: -28px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0,0,0,0.75);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            opacity: 0;
+            white-space: nowrap;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .color-box:hover::after {
+            opacity: 1;
         }
 
         .size-btn {
@@ -154,10 +191,10 @@
 <body>
 <%@ include file="../include/header.jsp" %>
 
-<div class="container product-container">
+<div class="container product-container" data-aos="fade-up">
     <div class="row">
         <!-- Hình ảnh sản phẩm -->
-        <div class="col-md-6">
+        <div class="col-md-6" data-aos="zoom-in">
             <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
                 <div class="carousel-inner">
                     <c:forEach items="${sanPham.hinhAnhs}" var="img" varStatus="loop">
@@ -176,35 +213,34 @@
         </div>
 
         <!-- Thông tin sản phẩm -->
-        <div class="col-md-6">
+        <div class="col-md-6" data-aos="fade-left" >
             <h2>${sanPham.tenSanPham}</h2>
             <p><strong>Mô tả:</strong> ${sanPham.moTa}</p>
 
             <!-- Chọn màu sắc -->
-            <div class="mb-3">
+            <div class="mb-3" data-aos="fade-up" data-aos-delay="200">
                 <label><strong>Màu sắc:</strong></label>
-                <div>
+                <div class="color-selector">
                     <c:forEach items="${mauSacList}" var="mau">
-                        <label class="d-flex align-items-center m-2">
-                            <input type="radio" name="mauSac" value="${mau.id}" class="color-radio d-none">
+                        <label class="color-option">
+                            <input type="radio" name="mauSac" value="${mau.id}" class="color-radio ">
                             <span class="color-box"
+                                  data-tooltip="${mau.tenMauSac}"
                                   style="background-color:
                                   <c:choose>
                                   <c:when test="${mau.tenMauSac == 'Đỏ'}">#FF0000</c:when>
-                                  <c:when test="${mau.tenMauSac == 'Xanh dương'}">#0000FF</c:when>
                                   <c:when test="${mau.tenMauSac == 'Vàng'}">#FFFF00</c:when>
                                   <c:when test="${mau.tenMauSac == 'Trắng'}">#FFFFFF</c:when>
                                   <c:when test="${mau.tenMauSac == 'Đen'}">#000000</c:when>
-                                  <c:when test="${mau.tenMauSac == 'Xanh navy'}">#000080</c:when>
                                   <c:when test="${mau.tenMauSac == 'Xám'}">#808080</c:when>
                                   <c:when test="${mau.tenMauSac == 'Hồng'}">#FF69B4</c:when>
                                   <c:when test="${mau.tenMauSac == 'Tím'}">#800080</c:when>
                                   <c:when test="${mau.tenMauSac == 'Be'}">#F5F5DC</c:when>
-                                  <c:when test="${mau.tenMauSac == 'Xanh lá'}">#008000</c:when>
+                                  <c:when test="${mau.tenMauSac == 'Xanh'}">#008000</c:when>
                                   <c:otherwise>#000000</c:otherwise>
                                   </c:choose>;">
-                </span>
-                            <span class="ms-2">${mau.tenMauSac}</span>
+                            </span>
+<%--                            <span class="ms-2">${mau.tenMauSac}</span>--%>
                         </label>
                     </c:forEach>
                 </div>
@@ -213,7 +249,7 @@
 
 
             <!-- Chọn kích thước -->
-            <div class="mb-3">
+            <div class="mb-3" data-aos="fade-up" data-aos-delay="200">
                 <label><strong>Kích thước:</strong></label>
                 <div>
                     <c:forEach items="${sizeList}" var="size">
@@ -221,7 +257,7 @@
                     </c:forEach>
                 </div>
             </div>
-            <div class="quantity-container">
+            <div class="quantity-container" data-aos="fade-up" data-aos-delay="200">
                 <label for="soLuong">Số lượng:</label>
                 <div class="quantity-wrapper">
                     <button class="quantity-btn" onclick="decrease()">-</button>
@@ -232,28 +268,37 @@
 
 
             <!-- Hiển thị số lượng tồn -->
-            <div class="mb-3">
+            <div class="mb-3" data-aos="fade-up" data-aos-delay="200">
                 <label><strong>Số lượng tồn:</strong></label>
                 <span id="soLuongTon">0</span>
                 <span id="hetHang" class="text-danger" style="display: none;"> (Hết hàng)</span>
             </div>
-            <div class="mb-3">
+            <div class="mb-3" data-aos="fade-up" data-aos-delay="200">
                 <label><strong>Giá tiền:</strong></label>
                 <span id="giaTien">0 VNĐ</span>
             </div>
 
 
             <!-- Nút thêm vào giỏ hàng -->
-            <button id="btnThemVaoGio" class="btn btn-success">Thêm vào giỏ hàng</button>
+            <button id="btnThemVaoGio" class="btn btn-success" data-aos="fade-up" data-aos-delay="200">Thêm vào giỏ hàng</button>
             <!-- Nút mua hàng -->
 <%--            <button id="btnMuaHang" class="btn btn-primary">Mua hàng</button>--%>
-            <a href="/sanpham/list" class="btn btn-secondary">Quay lại danh sách</a>
+            <a href="/sanpham/list" class="btn btn-secondary" data-aos="fade-up" data-aos-delay="200">Quay lại danh sách</a>
             <input type="hidden" id="sanPhamId" value="${sanPham.id}">
         </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- AOS JS -->
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+    AOS.init({
+        duration: 1000, // thời gian hiệu ứng (ms)
+        once: true      // chỉ chạy 1 lần khi scroll đến
+    });
+</script>
+
 <script>
     // Xử lý chọn màu sắc
     document.addEventListener("DOMContentLoaded", function () {
