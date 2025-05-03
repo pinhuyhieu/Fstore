@@ -275,33 +275,33 @@
                 <form action="/api/donhang/dat-hang" method="post" onsubmit="return confirm('Bạn chắc chắn muốn đặt hàng?')">
                     <div class="form-group">
                         <label>Tên người nhận:</label>
-                        <input type="text" class="form-control" name="tenNguoiNhan" value="${user.hoTen}" required>
+                        <input type="text" class="form-control" name="tenNguoiNhan" value="${user.hoTen}" >
                     </div>
                     <div class="form-group">
                         <label>SĐT người nhận:</label>
-                        <input type="text" class="form-control" name="soDienThoaiNguoiNhan" value="${user.soDienThoai}" required>
+                        <input type="text" class="form-control" name="soDienThoaiNguoiNhan" value="${user.soDienThoai}" >
                     </div>
                     <div class="form-group">
                         <label>Địa chỉ giao hàng:</label>
-                        <input type="text" class="form-control" name="diaChiGiaoHang" value="${diaChi.diaChiChiTiet}" required>
+                        <input type="text" class="form-control" name="diaChiGiaoHang" value="${diaChi.diaChiChiTiet}" >
                     </div>
 
                     <div class="form-group">
                         <label>Tỉnh/Thành phố:</label>
-                        <select class="form-control" id="tinhThanh" name="tinhThanh" value="${diaChi.tenTinhThanh}" required></select>
+                        <select class="form-control" id="tinhThanh" name="tinhThanh" value="${diaChi.tenTinhThanh}" ></select>
                     </div>
                     <div class="form-group">
                         <label>Quận/Huyện:</label>
-                        <select class="form-control" id="quanHuyen" name="quanHuyen" value="${diaChi.tenQuanHuyen}" required></select>
+                        <select class="form-control" id="quanHuyen" name="quanHuyen" value="${diaChi.tenQuanHuyen}" ></select>
                     </div>
                     <div class="form-group">
                         <label>Phường/Xã:</label>
-                        <select class="form-control" id="phuongXa" name="phuongXa" value="${diaChi.tenPhuongXa}" required></select>
+                        <select class="form-control" id="phuongXa" name="phuongXa" value="${diaChi.tenPhuongXa}" ></select>
                     </div>
 
                     <div class="form-group">
                         <label>Phương thức thanh toán:</label>
-                        <select class="form-control" name="phuongThucThanhToanId" required>
+                        <select class="form-control" name="phuongThucThanhToanId" >
                             <c:forEach var="pt" items="${dsPhuongThuc}">
                                 <option value="${pt.id}">${pt.tenPhuongThuc}</option>
                             </c:forEach>
@@ -776,7 +776,71 @@
     });
 
 
-    </script>
+        document.querySelector('form').onsubmit = function(event) {
+        var nameField = document.querySelector('[name="tenNguoiNhan"]');
+        var phoneField = document.querySelector('[name="soDienThoaiNguoiNhan"]');
+        var tinhThanhField = document.querySelector('[name="tinhThanh"]');
+        var quanHuyenField = document.querySelector('[name="quanHuyen"]');
+        var phuongXaField = document.querySelector('[name="phuongXa"]');
+
+        var errorMessage = false;
+
+        // Clear previous error messages
+        clearErrorMessages();
+
+        // Validate recipient name (must not be empty or just spaces)
+        if (nameField.value.trim() === '') {
+        showError(nameField, 'Tên người nhận không được để trống!');
+        errorMessage = true;
+    }
+
+        // Validate phone number (only numbers and length of 10-11 digits)
+        var phoneRegex = /^[0-9]{10,11}$/;
+        if (!phoneRegex.test(phoneField.value)) {
+        showError(phoneField, 'Số điện thoại không hợp lệ!');
+        errorMessage = true;
+    }
+
+        // Validate address fields
+        if (!tinhThanhField.value || !quanHuyenField.value || !phuongXaField.value) {
+        showError(tinhThanhField, 'Vui lòng chọn đầy đủ địa chỉ!');
+        showError(quanHuyenField, 'Vui lòng chọn đầy đủ địa chỉ!');
+        showError(phuongXaField, 'Vui lòng chọn đầy đủ địa chỉ!');
+        errorMessage = true;
+    }
+
+        // If there's an error, prevent form submission
+        if (errorMessage) {
+        event.preventDefault();
+        return false;
+    }
+
+        return confirm('Bạn chắc chắn muốn đặt hàng?');
+    };
+
+        function showError(field, message) {
+        var errorDiv = document.createElement('div');
+        errorDiv.classList.add('error-message');
+        errorDiv.style.color = 'red';
+        errorDiv.style.fontSize = '0.9rem';
+        errorDiv.textContent = message;
+
+        // Insert the error message after the input field
+        field.parentElement.appendChild(errorDiv);
+    }
+
+        function clearErrorMessages() {
+        var errorMessages = document.querySelectorAll('.error-message');
+        errorMessages.forEach(function(message) {
+        message.remove();
+    });
+    }
+
+</script>
+
+
+
+
 
 </body>
 </html>

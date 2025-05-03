@@ -59,7 +59,7 @@
     </c:if>
 
     <div class="card" data-aos="fade-up">
-        <form method="post" action="${pageContext.request.contextPath}/user/update-roles">
+        <form method="post" action="${pageContext.request.contextPath}/admin/update-roles">
             <input type="hidden" name="userId" value="${user.id}" />
 
             <div class="mb-3">
@@ -86,7 +86,7 @@
             <button type="submit" class="btn btn-success me-2" data-aos="fade-right" data-aos-delay="300">
                 <i class="bi bi-save"></i> Cập nhật vai trò
             </button>
-            <a href="${pageContext.request.contextPath}/user/list" class="btn btn-secondary" data-aos="fade-right" data-aos-delay="400">
+            <a href="${pageContext.request.contextPath}/admin/users" class="btn btn-secondary" data-aos="fade-right" data-aos-delay="400">
                 <i class="bi bi-arrow-left-circle"></i> Quay lại
             </a>
         </form>
