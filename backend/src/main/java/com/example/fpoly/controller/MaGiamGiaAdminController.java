@@ -28,15 +28,19 @@ public class MaGiamGiaAdminController {
 
 
     @PostMapping("/save")
-    public String save(@ModelAttribute MaGiamGia maGiamGia, RedirectAttributes redirectAttributes) {
-        if (maGiamGia.getKichHoat() == null) {
-            maGiamGia.setKichHoat(false); // Gán mặc định nếu không tích
+    public String saveMaGiamGia(@ModelAttribute("maGiamGia") MaGiamGia maGiamGia, RedirectAttributes redirectAttributes) {
+        try {
+            maGiamGiaService.save(maGiamGia); // Gọi phương thức save để lưu mã giảm giá
+            redirectAttributes.addFlashAttribute("success", "Đã lưu mã giảm giá thành công!");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("error", ex.getMessage()); // Hiển thị thông báo lỗi
+            return "redirect:/admin/ma-giam-gia/add"; // Quay lại trang form thêm mã giảm giá
         }
-
-        maGiamGiaService.save(maGiamGia);
-        redirectAttributes.addFlashAttribute("success", "Đã lưu mã thành công!");
-        return "redirect:/admin/ma-giam-gia";
+        return "redirect:/admin/ma-giam-gia"; // Chuyển hướng đến danh sách mã giảm giá
     }
+
+
+
 
     @GetMapping("/edit/{id}")
     public String edit(@PathVariable Integer id, Model model) {
