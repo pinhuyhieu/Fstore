@@ -77,7 +77,6 @@
                 <tr>
                     <th>Mã</th>
                     <th>Phần trăm</th>
-                    <th>Số tiền giảm</th>
                     <th>Bắt đầu</th>
                     <th>Kết thúc</th>
                     <th>Số lượng</th>
@@ -91,7 +90,6 @@
                     <tr>
                         <td><strong>${item.ma}</strong></td>
                         <td>${item.phanTramGiam}%</td>
-                        <td>${item.soTienGiam} ₫</td>
                         <td>${item.ngayBatDau}</td>
                         <td>${item.ngayKetThuc}</td>
                         <td>${item.soLuong}</td>

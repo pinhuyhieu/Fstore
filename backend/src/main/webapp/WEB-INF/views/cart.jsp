@@ -15,14 +15,21 @@
         body {
             background: linear-gradient(135deg, #74b9ff, #0984e3);
             color: #333;
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .content-wrapper {
             background-color: rgba(255, 255, 255, 0.97);
             padding: 30px;
             border-radius: 16px;
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
             margin-top: 40px;
         }
 
@@ -71,22 +78,19 @@
             margin-bottom: 1rem;
         }
 
-        /* Tổng thể card */
-        .col-md-5 {
+        .col-md-7, .col-md-5 {
             background: #ffffff;
             border-radius: 16px;
             padding: 24px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
             transition: box-shadow 0.3s ease;
         }
 
-        /* Header */
-        .col-md-5 h3 {
+        .col-md-5 h3, .col-md-7 h3 {
             font-weight: bold;
             color: #007bff;
         }
 
-        /* Form input và select */
         .col-md-5 .form-control {
             border-radius: 10px;
             border: 1px solid #ced4da;
@@ -99,7 +103,6 @@
             border-color: #007bff;
         }
 
-        /* Nút bấm */
         .col-md-5 .btn {
             border-radius: 10px;
             transition: box-shadow 0.3s ease, transform 0.2s ease;
@@ -110,13 +113,11 @@
             transform: translateY(-2px);
         }
 
-        /* Tổng giá và phần giảm giá */
         #total-price, #finalAmount, #discountAmount, #shippingFee {
             font-size: 1.2rem;
             font-weight: bold;
         }
 
-        /* Phần hiển thị giảm giá */
         #discountRow {
             margin-top: 10px;
         }
@@ -147,6 +148,40 @@
             transform: scale(0.98);
             box-shadow: 0 3px 10px rgba(0, 123, 255, 0.3);
         }
+
+        /* Nút xem mã giảm giá */
+        #availableCoupons {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 1rem;
+            background-color: #f1f1f1;
+        }
+
+        /* Thêm hiệu ứng hover cho nút */
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Hiển thị danh sách mã giảm giá */
+        #couponList {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        #couponList li {
+            padding: 5px 0;
+            font-size: 16px;
+        }
+
+        .btn-primary, .btn-danger {
+            width: 120px;
+        }
+
+        #discountAmount {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
     </style>
 </head>
 <body>
@@ -164,8 +199,6 @@
     </c:if>
 
     <div class="container mt-4">
-        <input type="hidden" name="maGiamGia.id" value="${maGiamGia.id}" />
-
         <div class="row">
             <!-- 🧾 Cột trái: Giỏ hàng -->
             <div class="col-md-7" data-aos="fade-right">
@@ -195,14 +228,14 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <button class="btn btn-sm btn-outline-secondary btn-decrease" data-id="${item.id}">-</button>
-                                            <input type="text" class="form-control mx-1 text-center quantity-input" id="quantity-${item.id}" value="${item.soLuong}" style="width: 60px;">
+                                            <input type="text" class="form-control mx-1 text-center quantity-input" id="quantity-${item.id}" value="${item.soLuong}">
                                             <button class="btn btn-sm btn-outline-secondary btn-increase" data-id="${item.id}">+</button>
                                         </div>
                                     </td>
                                     <td>
-                                        <span id="gia-${item.id}" data-gia="${item.sanPhamChiTiet.gia}">
-                                            <fmt:formatNumber value="${item.sanPhamChiTiet.gia}" type="number" maxFractionDigits="0"/> ₫
-                                        </span>
+                                                <span id="gia-${item.id}" data-gia="${item.sanPhamChiTiet.gia}">
+                                                    <fmt:formatNumber value="${item.sanPhamChiTiet.gia}" type="number" maxFractionDigits="0"/> ₫
+                                                </span>
                                     </td>
                                     <td>
                                         <button class="btn btn-sm btn-danger btn-remove" data-id="${item.id}">❌</button>
@@ -234,9 +267,20 @@
 
                 <!-- Mã giảm giá -->
                 <div class="form-group" data-aos="fade-up" data-aos-delay="100">
+            <div class="col-md-5">
+                <h3 class="mb-3">📦 Thông tin đặt hàng</h3>
+                <div id="availableCoupons" class="alert alert-info mt-3" style="display: none;">
+                    <strong>🎁 Mã áp dụng được:</strong>
+                    <ul id="couponList" class="mb-0"></ul>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-info" id="showAvailableCouponsBtn">
+                        <i class="fas fa-clipboard-list"></i> Xem mã giảm giá khả dụng
+                    </button>
+
                     <label for="maGiamGiaInput">Mã giảm giá:</label>
-                    <div class="d-flex">
-                        <input type="text" class="form-control" id="maGiamGiaInput" placeholder="Nhập mã">
+                    <div class="d-flex align-items-center">
+                        <input type="text" class="form-control" id="maGiamGiaInput" placeholder="Nhập mã giảm giá">
                         <button type="button" class="btn btn-primary ml-2" id="applyCouponBtn">Áp dụng</button>
                         <button type="button" class="btn btn-danger ml-2" id="cancelCouponBtn">Hủy</button>
                     </div>
@@ -250,51 +294,47 @@
                 <div class="form-group mt-3" data-aos="fade-up">
                     <label>Tạm tính:</label>
                     <h5><span id="total-price" data-tong="${tongTien}">
-                    <fmt:formatNumber value="${tongTien}" type="number" maxFractionDigits="0"/> ₫
-                </span></h5>
+                        <fmt:formatNumber value="${tongTien}" type="number" maxFractionDigits="0"/> ₫
+                    </span></h5>
                 </div>
 
                 <!-- Form đặt hàng -->
                 <form action="/api/donhang/dat-hang" method="post" onsubmit="return confirm('Bạn chắc chắn muốn đặt hàng?')" data-aos="zoom-in">
                     <div class="form-group">
                         <label>Tên người nhận:</label>
-                        <input type="text" class="form-control" name="tenNguoiNhan" value="${user.hoTen}" required >
+                        <input type="text" class="form-control" name="tenNguoiNhan" value="${user.hoTen}" >
                     </div>
                     <div class="form-group">
                         <label>SĐT người nhận:</label>
-                        <input type="text" class="form-control" name="soDienThoaiNguoiNhan" value="${user.soDienThoai}" required>
+                        <input type="text" class="form-control" name="soDienThoaiNguoiNhan" value="${user.soDienThoai}" >
                     </div>
-
                     <div class="form-group">
                         <label>Địa chỉ giao hàng:</label>
-                        <input type="text" class="form-control" name="diaChiGiaoHang" value="${diaChi.diaChiChiTiet}" required>
+                        <input type="text" class="form-control" name="diaChiGiaoHang" value="${diaChi.diaChiChiTiet}" >
                     </div>
 
-                    <!-- Địa chỉ -->
                     <div class="form-group">
                         <label>Tỉnh/Thành phố:</label>
-                        <select class="form-control" id="tinhThanh" name="tinhThanh" value="${diaChi.tenTinhThanh}" required></select>
+                        <select class="form-control" id="tinhThanh" name="tinhThanh" value="${diaChi.tenTinhThanh}" ></select>
                     </div>
                     <div class="form-group">
                         <label>Quận/Huyện:</label>
-                        <select class="form-control" id="quanHuyen" name="quanHuyen" value="${diaChi.tenQuanHuyen}" required></select>
+                        <select class="form-control" id="quanHuyen" name="quanHuyen" value="${diaChi.tenQuanHuyen}" ></select>
                     </div>
                     <div class="form-group">
                         <label>Phường/Xã:</label>
-                        <select class="form-control" id="phuongXa" name="phuongXa" value="${diaChi.tenPhuongXa}" required></select>
+                        <select class="form-control" id="phuongXa" name="phuongXa" value="${diaChi.tenPhuongXa}" ></select>
                     </div>
 
-                    <!-- Thanh toán -->
                     <div class="form-group">
                         <label>Phương thức thanh toán:</label>
-                        <select class="form-control" name="phuongThucThanhToanId" required>
+                        <select class="form-control" name="phuongThucThanhToanId" >
                             <c:forEach var="pt" items="${dsPhuongThuc}">
                                 <option value="${pt.id}">${pt.tenPhuongThuc}</option>
                             </c:forEach>
                         </select>
                     </div>
 
-                    <!-- Phí ship & tổng cộng -->
                     <div class="form-group">
                         <label>Phí vận chuyển:</label>
                         <p><strong><span id="shippingFee">0</span> ₫</strong></p>
@@ -642,35 +682,47 @@
     $("#applyCouponBtn").click(function () {
         const ma = $("#maGiamGiaInput").val().trim();
 
+        // Bước 1: Gửi yêu cầu kiểm tra mã giảm giá
         $.ajax({
-            url: "/api/ma-giam-gia/apply",
-            method: "POST",
-            data: { ma },
-            success: function (res) {
-                alert(res.message || "✅ Mã đã áp dụng");
+            url: "/api/ma-giam-gia/check",
+            method: "GET",
+            data: {
+                ma: ma,
+                tongTien: parseInt($("#total-price").data("tong")) // Tổng tiền trong giỏ hàng
+            },
+            success: function (data) {
+                // Kiểm tra nếu có tiền giảm và không phải thông báo lỗi
+                if (data.soTienGiam > 0) {
+                    // Bước 2: Gửi yêu cầu áp dụng mã giảm giá nếu kiểm tra thành công
+                    $.ajax({
+                        url: "/api/ma-giam-gia/apply",
+                        method: "POST",
+                        data: { ma: ma },
+                        success: function (res) {
+                            alert(res.message || "✅ Mã đã áp dụng");
 
-                // Gọi thêm /check để lấy số tiền giảm:
-                $.ajax({
-                    url: "/api/ma-giam-gia/check",
-                    method: "GET",
-                    data: {
-                        ma: ma,
-                        tongTien: parseInt($("#total-price").data("tong"))
-                    },
-                    success: function (data) {
-                        $("#discountAmount")
-                            .text("-" + data.soTienGiam.toLocaleString("vi-VN") + " ₫")
-                            .data("giam", data.soTienGiam);
-                        $("#discountRow").show();
-                        tinhTongThanhToan();
-                    }
-                });
+                            // Cập nhật số tiền giảm từ phản hồi /check:
+                            $("#discountAmount")
+                                .text("-" + data.soTienGiam.toLocaleString("vi-VN") + " ₫")
+                                .data("giam", data.soTienGiam);
+                            $("#discountRow").show();
+                            tinhTongThanhToan(); // Tính lại tổng thanh toán
+                        },
+                        error: function (xhr) {
+                            alert(xhr.responseText || "❌ Lỗi khi áp dụng mã giảm giá");
+                        }
+                    });
+                } else {
+                    // Nếu không có tiền giảm, nghĩa là mã không hợp lệ hoặc không đủ điều kiện
+                    alert("❌ Mã giảm giá không hợp lệ hoặc không đủ điều kiện.");
+                }
             },
             error: function (xhr) {
-                alert(xhr.responseText || "❌ Mã không hợp lệ");
+                alert(xhr.responseText || "❌ Lỗi khi kiểm tra mã giảm giá.");
             }
         });
     });
+
 
     $("#cancelCouponBtn").click(function () {
         $.ajax({
@@ -687,11 +739,145 @@
             }
         });
     });
+    $("#showAvailableCouponsBtn").click(function () {
+        $.ajax({
+            url: "/api/ma-giam-gia/list", // Gọi API
+            method: "GET",
+            success: function (data) {
+                const listElem = $("#couponList");
+                listElem.empty();  // Xóa danh sách cũ
+
+                // Đảm bảo data là mảng, nếu không sẽ ép thành mảng
+                const coupons = Array.isArray(data) ? data : [data];
+
+                // Kiểm tra nếu không có mã nào
+                if (coupons.length === 0) {
+                    listElem.append("<li>Không có mã nào khả dụng.</li>");
+                } else {
+                    // Duyệt qua từng mã giảm giá và hiển thị
+                    coupons.forEach(mgg => {
+                        // Kiểm tra ngày bắt đầu và ngày kết thúc
+                        const today = new Date();
+                        const startDate = new Date(mgg.ngayBatDau);
+                        const endDate = new Date(mgg.ngayKetThuc);
+
+                        // Kiểm tra ngày có hợp lệ không
+                        if (today < startDate || today > endDate) {
+                            return; // Không hiển thị mã nếu ngày hiện tại không nằm trong khoảng
+                        }
+
+                        // Kiểm tra số lượng còn lại
+                        if (mgg.soLuongConLai <= 0) {
+                            return; // Không hiển thị nếu số lượng còn lại <= 0
+                        }
+
+                        // Kiểm tra giá trị tối thiểu của đơn hàng
+                        const minOrderValue = mgg.giaTriToiThieu || 0;
+                        const totalOrderValue = parseInt(document.getElementById("total-price").getAttribute("data-tong")) || 0;
+
+                        if (totalOrderValue < minOrderValue) {
+                            return; // Không hiển thị nếu giá trị đơn hàng không đủ điều kiện
+                        }
+
+                        // Hiển thị mã giảm giá hợp lệ
+                        const percent = mgg.phanTramGiam ? mgg.phanTramGiam + "%" : "";
+                        const expires = mgg.ngayKetThuc || "Không rõ";
+                        const remaining = mgg.soLuongConLai ?? 0;
+
+                        const text = "<strong>" + mgg.ma + "</strong> - " +
+                            (percent ? percent : "") +
+                            " | còn " + (remaining ?? 0) + " lượt | hết hạn: " + (expires || "Không rõ");
+
+                        const li = $("<li>").html("<a href='#' class='text-primary mgg-item' data-ma='" + mgg.ma + "'>" + text + "</a>");
+                        listElem.append(li); // Thêm vào danh sách
+                    });
+                }
+
+                // Hiển thị danh sách mã
+                $("#availableCoupons").css("display", "block");
+            },
+            error: function () {
+                alert("❌ Không lấy được danh sách mã.");
+            }
+        });
+    });
 
 
+    // Khi click vào mã → tự điền vào input
+    // Khi click vào mã → tự điền vào input
+    $(document).on("click", ".mgg-item", function (e) {
+        e.preventDefault();
+        const ma = $(this).data("ma");
+        $("#maGiamGiaInput").val(ma);
+        $("#availableCoupons").hide();
+    });
 
+
+        document.querySelector('form').onsubmit = function(event) {
+        var nameField = document.querySelector('[name="tenNguoiNhan"]');
+        var phoneField = document.querySelector('[name="soDienThoaiNguoiNhan"]');
+        var tinhThanhField = document.querySelector('[name="tinhThanh"]');
+        var quanHuyenField = document.querySelector('[name="quanHuyen"]');
+        var phuongXaField = document.querySelector('[name="phuongXa"]');
+
+        var errorMessage = false;
+
+        // Clear previous error messages
+        clearErrorMessages();
+
+        // Validate recipient name (must not be empty or just spaces)
+        if (nameField.value.trim() === '') {
+        showError(nameField, 'Tên người nhận không được để trống!');
+        errorMessage = true;
+    }
+
+        // Validate phone number (only numbers and length of 10-11 digits)
+        var phoneRegex = /^[0-9]{10,11}$/;
+        if (!phoneRegex.test(phoneField.value)) {
+        showError(phoneField, 'Số điện thoại không hợp lệ!');
+        errorMessage = true;
+    }
+
+        // Validate address fields
+        if (!tinhThanhField.value || !quanHuyenField.value || !phuongXaField.value) {
+        showError(tinhThanhField, 'Vui lòng chọn đầy đủ địa chỉ!');
+        showError(quanHuyenField, 'Vui lòng chọn đầy đủ địa chỉ!');
+        showError(phuongXaField, 'Vui lòng chọn đầy đủ địa chỉ!');
+        errorMessage = true;
+    }
+
+        // If there's an error, prevent form submission
+        if (errorMessage) {
+        event.preventDefault();
+        return false;
+    }
+
+        return confirm('Bạn chắc chắn muốn đặt hàng?');
+    };
+
+        function showError(field, message) {
+        var errorDiv = document.createElement('div');
+        errorDiv.classList.add('error-message');
+        errorDiv.style.color = 'red';
+        errorDiv.style.fontSize = '0.9rem';
+        errorDiv.textContent = message;
+
+        // Insert the error message after the input field
+        field.parentElement.appendChild(errorDiv);
+    }
+
+        function clearErrorMessages() {
+        var errorMessages = document.querySelectorAll('.error-message');
+        errorMessages.forEach(function(message) {
+        message.remove();
+    });
+    }
 
 </script>
+
+
+
+
 
 </body>
 </html>

@@ -54,16 +54,21 @@ public class GioHangChiTietController {
 
             // Kiểm tra số lượng yêu cầu có vượt quá tồn kho không
             if (soLuong > soLuongTon) {
+                // Nếu số lượng yêu cầu vượt quá tồn kho, trả về thông báo lỗi
                 return ResponseEntity.badRequest().body("❌ Số lượng tồn kho không đủ. Hiện chỉ còn " + soLuongTon + " sản phẩm.");
             }
 
-            // Cập nhật số lượng nếu hợp lệ
+            // Nếu số lượng hợp lệ, cập nhật số lượng trong giỏ hàng
             gioHangChiTietService.updateQuantity(gioHangChiTietId, soLuong);
+
+            // Trả về thông báo thành công
             return ResponseEntity.ok("✅ Cập nhật số lượng thành công.");
         } catch (RuntimeException e) {
+            // Xử lý lỗi nếu có vấn đề với việc cập nhật
             return ResponseEntity.badRequest().body("❌ " + e.getMessage());
         }
     }
+
 
     // 🗑 Xóa sản phẩm khỏi giỏ hàng
     @DeleteMapping("/remove/{gioHangChiTietId}")

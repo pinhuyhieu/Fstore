@@ -62,6 +62,12 @@ public class MaGiamGiaServiceImpl implements MaGiamGiaService {
 
     @Override
     public MaGiamGia save(MaGiamGia maGiamGia) {
+        // Kiểm tra nếu mã giảm giá đã tồn tại trong cơ sở dữ liệu
+        if (maGiamGiaRepository.existsByMa(maGiamGia.getMa())) {
+            throw new IllegalArgumentException("Mã giảm giá này đã tồn tại!");
+        }
+
+        // Nếu không có lỗi, thực hiện lưu mã giảm giá
         return maGiamGiaRepository.save(maGiamGia);
     }
 
@@ -69,4 +75,16 @@ public class MaGiamGiaServiceImpl implements MaGiamGiaService {
     public void deleteById(Integer id) {
         maGiamGiaRepository.deleteById(id);
     }
+    public List<MaGiamGiaNguoiDung> findAllForUser(User user) {
+        return nguoiDungRepo.findByUser(user).stream()
+                .filter(mggnd -> mggnd.getKichHoat() != null && mggnd.getKichHoat())
+                .filter(mggnd -> {
+                    MaGiamGia mgg = mggnd.getMaGiamGia();
+                    return mgg.getKichHoat() != null && mgg.getKichHoat()
+                            && (mgg.getSoLuong() == null || mgg.getSoLuong() > 0)
+                            && (mgg.getNgayKetThuc() == null || !mgg.getNgayKetThuc().isBefore(LocalDate.now()));
+                })
+                .toList();
+    }
+
 }

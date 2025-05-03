@@ -7,6 +7,7 @@ import java.util.Optional;
 
 public interface MaGiamGiaRepository extends JpaRepository<MaGiamGia, Integer> {
     Optional<MaGiamGia> findByMa(String ma);
+    boolean existsByMa(String ma);
 }
 
 
