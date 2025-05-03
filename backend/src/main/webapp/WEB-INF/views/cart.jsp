@@ -8,6 +8,9 @@
     <title>🛒 Giỏ hàng</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- AOS CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+
     <style>
         body {
             background: linear-gradient(135deg, #74b9ff, #0984e3);
@@ -147,15 +150,15 @@
     </style>
 </head>
 <body>
-<div class="container content-wrapper">
+<div class="container content-wrapper"  data-aos="fade-in">
     <c:if test="${not empty successMessage}">
-        <div class="alert alert-success">${successMessage}</div>
+        <div class="alert alert-success" data-aos="fade-down">${successMessage}</div>
     </c:if>
     <c:if test="${not empty error}">
-        <div class="alert alert-danger">${error}</div>
+        <div class="alert alert-danger" data-aos="fade-down">${error}</div>
     </c:if>
     <c:if test="${not empty sessionScope.maGiamGiaNguoiDung}">
-        <div class="alert alert-info">
+        <div class="alert alert-info" data-aos="fade-down">
             ✅ Đã áp dụng mã: ${sessionScope.maGiamGiaNguoiDung.maGiamGia.ma}
         </div>
     </c:if>
@@ -165,12 +168,12 @@
 
         <div class="row">
             <!-- 🧾 Cột trái: Giỏ hàng -->
-            <div class="col-md-7">
-                <h3 class="mb-3">🛒 Giỏ hàng của bạn</h3>
+            <div class="col-md-7" data-aos="fade-right">
+                <h3 class="mb-3" data-aos="fade-up">🛒 Giỏ hàng của bạn</h3>
 
                 <c:choose>
                     <c:when test="${gioHang != null and not empty gioHang.gioHangChiTietList}">
-                        <table class="table table-bordered table-hover">
+                        <table class="table table-bordered table-hover" data-aos="zoom-in-up">
                             <thead class="thead-dark">
                             <tr>
                                 <th>Chọn</th>
@@ -184,7 +187,7 @@
                             </thead>
                             <tbody>
                             <c:forEach var="item" items="${gioHang.gioHangChiTietList}">
-                                <tr id="row-${item.id}">
+                                <tr id="row-${item.id}" data-aos="fade-up" data-aos-delay="100">
                                     <td><input type="checkbox" class="product-checkbox" data-id="${item.id}" checked></td>
                                     <td>${item.sanPhamChiTiet.sanPham.tenSanPham}</td>
                                     <td>${item.sanPhamChiTiet.size.tenSize}</td>
@@ -210,16 +213,16 @@
                         </table>
                     </c:when>
                     <c:otherwise>
-                        <div class="alert alert-info">🛒 Giỏ hàng của bạn đang trống.</div>
+                        <div class="alert alert-info" data-aos="flip-up">🛒 Giỏ hàng của bạn đang trống.</div>
                     </c:otherwise>
                 </c:choose>
 
-                <a href="${pageContext.request.contextPath}/sanpham/list" class="btn btn-back">Quay lại</a>
+                <a href="${pageContext.request.contextPath}/sanpham/list" class="btn btn-back" data-aos="fade-up">Quay lại</a>
             </div>
 
             <!-- 🧾 Cột phải: Thông tin đặt hàng -->
-            <div class="col-md-5">
-                <h3 class="mb-3">📦 Thông tin đặt hàng</h3>
+            <div class="col-md-5" data-aos="fade-left">
+                <h3 class="mb-3" data-aos="fade-up">📦 Thông tin đặt hàng</h3>
 
                 <!-- Thông báo -->
                 <c:if test="${not empty successMessage}">
@@ -230,7 +233,7 @@
                 </c:if>
 
                 <!-- Mã giảm giá -->
-                <div class="form-group">
+                <div class="form-group" data-aos="fade-up" data-aos-delay="100">
                     <label for="maGiamGiaInput">Mã giảm giá:</label>
                     <div class="d-flex">
                         <input type="text" class="form-control" id="maGiamGiaInput" placeholder="Nhập mã">
@@ -239,12 +242,12 @@
                     </div>
                 </div>
 
-                <div id="discountRow" style="display: none;">
+                <div id="discountRow" style="display: none;" data-aos="fade-up">
                     <p class="text-success">✅ Giảm giá: <span id="discountAmount" data-giam="0">-0 ₫</span></p>
                 </div>
 
                 <!-- Tổng tiền -->
-                <div class="form-group mt-3">
+                <div class="form-group mt-3" data-aos="fade-up">
                     <label>Tạm tính:</label>
                     <h5><span id="total-price" data-tong="${tongTien}">
                     <fmt:formatNumber value="${tongTien}" type="number" maxFractionDigits="0"/> ₫
@@ -252,7 +255,7 @@
                 </div>
 
                 <!-- Form đặt hàng -->
-                <form action="/api/donhang/dat-hang" method="post" onsubmit="return confirm('Bạn chắc chắn muốn đặt hàng?')">
+                <form action="/api/donhang/dat-hang" method="post" onsubmit="return confirm('Bạn chắc chắn muốn đặt hàng?')" data-aos="zoom-in">
                     <div class="form-group">
                         <label>Tên người nhận:</label>
                         <input type="text" class="form-control" name="tenNguoiNhan" value="${user.hoTen}" required >
@@ -301,14 +304,24 @@
                         <p><strong><span id="finalAmount">0</span> ₫</strong></p>
                     </div>
 
-                    <button type="submit" class="btn btn-warning btn-block">🛒 Đặt hàng</button>
+                    <button type="submit" class="btn btn-warning btn-block" data-aos="zoom-in-up">🛒 Đặt hàng</button>
                 </form>
             </div>
         </div>
     </div>
 
+        <!-- AOS JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+        <script>
+            AOS.init({
+                duration: 1000, // Thời gian hiệu ứng (ms)
+                easing: 'ease-in-out',
+                once: true // Chỉ chạy 1 lần khi cuộn
+            });
+        </script>
 
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script><script>
+
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script><script>
     function tinhTongThanhToan() {
         const tienHang = parseInt($("#total-price").data("tong")) || 0;
         const soTienGiam = parseInt($("#discountAmount").data("giam")) || 0;

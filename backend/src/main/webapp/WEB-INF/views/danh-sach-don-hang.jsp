@@ -8,6 +8,8 @@
 <head>
     <title>Danh Sách Đơn Hàng</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
     <style>
         .btn-back {
             display: inline-block;
@@ -57,17 +59,17 @@
 </head>
 <body>
 <div class="container mt-4">
-    <h2 class="text-center mb-4">📦 Lịch Sử Đơn Hàng</h2>
+    <h2 class="text-center mb-4" data-aos="fade-down">📦 Lịch Sử Đơn Hàng</h2>
 
     <!-- 🔍 Form tìm kiếm -->
-    <form method="get" class="form-inline mb-3">
+    <form method="get" class="form-inline mb-3" data-aos="fade-up" data-aos-delay="100">
         <input type="text" name="keyword" class="search-input"
                placeholder="Nhập mã đơn hàng..." value="${keyword}">
         <button type="submit" class="btn btn-back">🔍 Tìm kiếm</button>
     </form>
 
     <!-- 🧾 Bảng đơn hàng -->
-    <table class="table table-bordered table-hover">
+    <table class="table table-bordered table-hover" data-aos="zoom-in-up" data-aos-delay="200">
         <thead class="thead-dark">
         <tr>
             <th>#ID</th>
@@ -81,7 +83,7 @@
         </thead>
         <tbody>
         <c:forEach var="donHang" items="${donHangs}">
-            <tr>
+            <tr data-aos="fade-up" data-aos-delay="${status.index * 100}">
                 <td>${donHang.id}</td>
                 <td>
                         ${fn:substring(donHang.ngayDatHang, 0, 10)}
@@ -110,9 +112,9 @@
         </tbody>
     </table>
 
-    <a href="${pageContext.request.contextPath}/sanpham/list" class="btn btn-back">Quay lại</a>
+    <a href="${pageContext.request.contextPath}/sanpham/list" class="btn btn-back"  data-aos="fade-right" data-aos-delay="300">Quay lại</a>
     <!-- 🔁 Phân trang -->
-    <nav>
+    <nav data-aos="fade-up" data-aos-delay="400">
         <ul class="pagination justify-content-center">
             <c:forEach begin="1" end="${totalPages}" var="i">
                 <li class="page-item ${i == currentPage ? 'active' : ''}">
@@ -127,5 +129,14 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+    AOS.init({
+        duration: 1000, // Thời gian hiệu ứng (ms)
+        easing: 'ease-in-out',
+        once: true // Chỉ chạy 1 lần khi cuộn
+    });
+</script>
+
 </body>
 </html>

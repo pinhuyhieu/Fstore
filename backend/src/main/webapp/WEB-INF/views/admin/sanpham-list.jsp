@@ -74,7 +74,7 @@
     </div>
 
     <!-- Form tìm kiếm -->
-    <form method="get" action="${pageContext.request.contextPath}/admin/list" class="row g-3 mb-3"
+    <form method="get" action="${pageContext.request.contextPath}/sanpham/admin/list" class="row g-3 mb-3"
           data-aos="fade-right" data-aos-delay="300">
         <div class="col-md-8">
             <input type="text" name="keyword" value="${keyword}" class="form-control" placeholder="Tìm theo tên sản phẩm...">
