@@ -106,12 +106,22 @@ public class SanPhamController {
         return "sanpham/list";
     }
 
-
     @GetMapping("/list")
-    public String listSanPham(@RequestParam(value = "page", defaultValue = "1") int page, Model model) {
-        int pageSize = 15; // Mỗi trang có 15 sản phẩm
+    public String listSanPham(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "danhMucID", required = false) Integer danhMucID,
+            Model model) {
+
+        int pageSize = 9;
         Pageable pageable = PageRequest.of(page - 1, pageSize);
-        Page<SanPham> pageSanPham = sanPhamService.getAll(pageable);
+        Page<SanPham> pageSanPham;
+
+        if (danhMucID != null) {
+            pageSanPham = sanPhamService.findByDanhMucId(danhMucID, pageable);
+            model.addAttribute("danhMucID", danhMucID); // để giữ lại trạng thái chọn danh mục
+        } else {
+            pageSanPham = sanPhamService.getAll(pageable);
+        }
 
         List<DanhMuc> dsdm = danhMucRepository.findAll();
         Map<Integer, String> giaSanPhamMap = new HashMap<>();
@@ -140,6 +150,7 @@ public class SanPhamController {
 
         return "/sanpham/list";
     }
+
 
 
     @GetMapping("/detail/{id}")
@@ -211,8 +222,8 @@ public class SanPhamController {
         boolean isUpdate = sanPham.getId() != null; // Kiểm tra xem có ID hay không
 
         // Kiểm tra độ dài
-        if (sanPham.getTenSanPham().length() < 2 || sanPham.getTenSanPham().length() > 20) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Tên sản phẩm phải từ 2 đến 20 ký tự.");
+        if (sanPham.getTenSanPham().length() < 2 || sanPham.getTenSanPham().length() > 50) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Tên sản phẩm phải từ 2 đến 50 ký tự.");
             return "redirect:/sanpham/admin/add";
         }
 
@@ -246,10 +257,34 @@ public class SanPhamController {
     }
 
     @GetMapping("/admin/list")
-    public String showList(Model model) {
-        model.addAttribute("dsSanPham", sanPhamRepository.findAll());
+    public String showList(@RequestParam(value = "page", defaultValue = "0") int page,
+                           @RequestParam(value = "size", defaultValue = "10") int size,
+                           @RequestParam(value = "keyword", required = false) String search,
+                           Model model) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<SanPham> sanPhamPage;
+        if (search != null && !search.isEmpty()) {
+            // Tìm kiếm sản phẩm theo tên
+            sanPhamPage = sanPhamRepository.findByTenSanPhamContainingIgnoreCase(search, pageable);
+        } else {
+            // Nếu không có từ khóa tìm kiếm, lấy tất cả sản phẩm
+            sanPhamPage = sanPhamRepository.findAll(pageable);
+        }
+
+        model.addAttribute("dsSanPham", sanPhamPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", sanPhamPage.getTotalPages());  // Total pages
+        model.addAttribute("totalItems", sanPhamPage.getTotalElements());
+        model.addAttribute("size", size);
+        model.addAttribute("keyword", search);  // Đảm bảo keyword được trả về model
+
         return "/admin/sanpham-list";
     }
+
+
+
 
     @GetMapping("/admin/delete")
     public String deleteSanPham(@RequestParam("id") Integer id){

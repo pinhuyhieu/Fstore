@@ -61,8 +61,9 @@ public class SanPhamServiceImpl implements SanPhamService {
     // VALIDATE
     @Override
     public boolean existsByTenSanPham(String tenSanPham) {
-        return sanPhamRepository.findByTenSanPham(tenSanPham) != null;
+        return sanPhamRepository.existsByTenSanPham(tenSanPham);
     }
+
 
 
     @Override
@@ -77,4 +78,9 @@ public class SanPhamServiceImpl implements SanPhamService {
         List<SanPham> sublist = sanPhams.subList(start, end);
         return new PageImpl<>(sublist, pageable, sanPhams.size());
     }
+    @Override
+    public Page<SanPham> findByDanhMucId(Integer danhMucId, Pageable pageable) {
+        return sanPhamRepository.findByDanhMuc_Id(danhMucId, pageable);
+    }
+
 }

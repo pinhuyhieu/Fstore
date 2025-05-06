@@ -1,5 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -93,7 +95,7 @@
                         <td>${item.ngayBatDau}</td>
                         <td>${item.ngayKetThuc}</td>
                         <td>${item.soLuong}</td>
-                        <td>${item.giaTriToiThieu} ₫</td>
+                        <td><fmt:formatNumber value="${item.giaTriToiThieu}" type="number" groupingUsed="true"/> ₫</td>
                         <td>
                             <span class="badge ${item.kichHoat ? 'bg-success' : 'bg-secondary'}">
                                     ${item.kichHoat ? "Đã kích hoạt" : "Chưa kích hoạt"}
@@ -103,11 +105,7 @@
                             <a href="/admin/ma-giam-gia/edit/${item.id}" class="btn btn-sm btn-warning me-1" title="Sửa">
                                 <i class="bi bi-pencil-square"></i>
                             </a>
-                            <form action="/admin/ma-giam-gia/delete/${item.id}" method="post" class="d-inline">
-                                <button class="btn btn-sm btn-danger" onclick="return confirm('Bạn chắc chắn muốn xóa?')" title="Xóa">
-                                    <i class="bi bi-trash-fill"></i>
-                                </button>
-                            </form>
+
                         </td>
                     </tr>
                 </c:forEach>

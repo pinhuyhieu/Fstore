@@ -67,7 +67,11 @@
         <i class="bi bi-box-seam-fill"></i> Danh Sách Sản Phẩm
     </h2>
 
+
     <div class="mb-3" data-aos="fade-right" data-aos-delay="200">
+        <a href="${pageContext.request.contextPath}/admin/home" class="btn btn-primary">
+            <i class="bi bi-house-door-fill"></i> Trang chủ
+        </a>
         <a href="${pageContext.request.contextPath}/sanpham/admin/add" class="btn btn-secondary">
             <i class="bi bi-plus-circle-fill"></i> Thêm sản phẩm mới
         </a>
@@ -82,7 +86,11 @@
         <div class="col-md-4">
             <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
         </div>
+        <input type="hidden" name="page" value="${currentPage}">
+        <input type="hidden" name="size" value="${size}">
     </form>
+
+
 
     <!-- Bảng Danh Sách Sản Phẩm -->
     <table class="table table-bordered table-striped mt-3">
@@ -132,10 +140,10 @@
                     <a href="/sanphamchitiet/list/${item.id}" class="btn btn-info btn-sm btn-custom">
                         <i class="bi bi-info-circle-fill"></i> Chi tiết
                     </a>
-                    <a href="/sanpham/admin/delete?id=${item.id}" class="btn btn-danger btn-sm btn-custom"
-                       onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?');">
-                        <i class="bi bi-x-circle-fill"></i> Xóa
-                    </a>
+<%--                    <a href="/sanpham/admin/delete?id=${item.id}" class="btn btn-danger btn-sm btn-custom"--%>
+<%--                       onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?');">--%>
+<%--                        <i class="bi bi-x-circle-fill"></i> Xóa--%>
+<%--                    </a>--%>
                 </td>
             </tr>
         </c:forEach>
@@ -143,15 +151,38 @@
     </table>
 
     <!-- Phân trang -->
-    <nav aria-label="Page navigation" data-aos="fade-up" data-aos-delay="300">
-        <ul class="pagination justify-content-center">
-            <c:forEach begin="1" end="${totalPages}" var="i">
-                <li class="page-item ${i == currentPage ? 'active' : ''}">
-                    <a class="page-link" href="?page=${i}&keyword=${keyword}">${i}</a>
-                </li>
-            </c:forEach>
-        </ul>
-    </nav>
+    <c:if test="${totalPages > 0}">
+        <nav aria-label="Page navigation" data-aos="fade-up" data-aos-delay="300">
+            <ul class="pagination justify-content-center">
+                <!-- Trang trước -->
+                <c:if test="${currentPage > 0}">
+                    <li class="page-item">
+                        <a class="page-link" href="?page=${currentPage - 1}&keyword=${keyword}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                </c:if>
+
+                <!-- Các số trang -->
+                <c:forEach begin="0" end="${totalPages - 1}" var="i">
+                    <li class="page-item ${i == currentPage ? 'active' : ''}">
+                        <a class="page-link" href="?page=${i}&keyword=${keyword}">${i + 1}</a>
+                    </li>
+                </c:forEach>
+
+                <!-- Trang sau -->
+                <c:if test="${currentPage < totalPages - 1}">
+                    <li class="page-item">
+                        <a class="page-link" href="?page=${currentPage + 1}&keyword=${keyword}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </c:if>
+            </ul>
+        </nav>
+    </c:if>
+
+
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>

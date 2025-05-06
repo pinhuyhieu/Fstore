@@ -58,7 +58,6 @@
 <div class="container">
     <h2 class="text-center mb-4 fw-bold text-primary" data-aos="fade-down" >Danh Sách Chi Tiết Sản Phẩm</h2>
 
-
     <!-- Thông báo -->
     <c:if test="${not empty successMessage}">
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -66,7 +65,6 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </c:if>
-
 
     <c:if test="${not empty error}">
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -76,7 +74,7 @@
     </c:if>
 
     <!-- Danh sách -->
-        <div class="card p-4 mb-4" data-aos="fade-up">
+    <div class="card p-4 mb-4" data-aos="fade-up">
         <table class="table table-hover table-bordered align-middle">
             <thead>
             <tr>
@@ -115,7 +113,7 @@
     </div>
 
     <!-- Form -->
-        <div class="card p-4" data-aos="zoom-in">
+    <div class="card p-4" data-aos="zoom-in">
         <h4 class="fw-bold mb-3 text-success text-center">Thêm / Sửa Chi Tiết Sản Phẩm</h4>
         <form action="/sanphamchitiet/save" method="post" class="needs-validation" novalidate>
             <input type="hidden" name="id" value="${id}">
@@ -144,8 +142,7 @@
             <div class="mb-3">
                 <label class="form-label">Giá:</label>
                 <input type="text" id="gia" name="gia" class="form-control"
-                       value="${sanPhamChiTiet.gia}" required
-                       oninput="formatCurrency(this)" />
+                       value="${sanPhamChiTiet.gia}" />
                 <div class="invalid-feedback">Giá tiền phải từ 1.000 đến 10 triệu VND.</div>
             </div>
 
@@ -170,7 +167,16 @@
 </div>
 
 <script>
-    // Bootstrap validation (chuẩn)
+    function formatCurrency(input) {
+        let value = input.value.replace(/\D/g, ''); // Loại bỏ tất cả ký tự không phải số
+        if (value) {
+            input.value = Number(value).toLocaleString('vi-VN'); // Định dạng số theo kiểu VND
+        } else {
+            input.value = '';
+        }
+    }
+
+    // ✅ Bootstrap validation chuẩn
     (() => {
         'use strict';
         window.addEventListener('load', () => {
@@ -187,17 +193,10 @@
         }, false);
     })();
 
-    // ✅ Format live trong lúc gõ
-    function formatLiveCurrency(input) {
-        let value = input.value.replace(/\D/g, '');
-        if (value === '') return;
-        input.value = Number(value).toLocaleString('vi-VN');
-    }
-
-    // ✅ Validate khi blur (rời khỏi ô)
+    // ✅ Validate khi blur (rời khỏi ô nhập giá)
     function validateCurrency(input) {
-        let value = input.value.replace(/\D/g, '');
-        let numericValue = parseInt(value, 10);
+        let value = input.value.replace(/\D/g, ''); // Loại bỏ ký tự không phải số
+        let numericValue = parseInt(value, 10); // Chuyển thành số nguyên
         let errorElement = input.nextElementSibling;
 
         if (isNaN(numericValue) || numericValue < 1000) {
@@ -214,19 +213,20 @@
 
         input.classList.remove("is-invalid");
         errorElement.innerText = "";
-        input.value = numericValue.toLocaleString('vi-VN');
+
+        // Định dạng lại giá trị sau khi nhập
+        // input.value = numericValue.toLocaleString('vi-VN');
         return true;
     }
 
-    // ✅ Xử lý submit: xóa định dạng, validate lần cuối
+    // ✅ Xử lý khi submit: xóa định dạng và kiểm tra lần cuối
     window.addEventListener('load', () => {
         const forms = document.querySelectorAll('.needs-validation');
         forms.forEach(form => {
             form.addEventListener('submit', function (event) {
                 let priceInput = document.getElementById("gia");
                 if (priceInput) {
-                    // Xóa dấu chấm
-                    priceInput.value = priceInput.value.replace(/\D/g, '');
+                    priceInput.value = priceInput.value.replace(/\D/g, ''); // Xóa mọi ký tự không phải số
                     const isValid = validateCurrency(priceInput);
 
                     if (!form.checkValidity() || !isValid) {
@@ -238,8 +238,8 @@
             });
         });
     });
-
 </script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script>

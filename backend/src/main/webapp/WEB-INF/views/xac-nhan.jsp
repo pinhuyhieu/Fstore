@@ -1,5 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
 <html>
 <head>
     <title>Xác nhận đặt hàng</title>
@@ -48,7 +50,11 @@
             <p><strong>Mã đơn hàng:</strong> ${donHang.id}</p>
             <p><strong>Người đặt:</strong> ${donHang.user.hoTen}</p>
             <p><strong>Phương thức thanh toán:</strong> ${donHang.phuongThucThanhToan.tenPhuongThuc}</p>
-            <p><strong>Tổng tiền:</strong> <span class="text-danger fw-bold">${donHang.tongTien} VNĐ</span></p>
+            <p><strong>Tổng tiền:</strong>
+                <span class="text-danger fw-bold">
+        <fmt:formatNumber value="${donHang.tongTien}" type="number" groupingUsed="true"/> VNĐ
+    </span>
+            </p>
         </div>
 
         <div class="text-center mt-4">

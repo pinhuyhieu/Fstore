@@ -32,17 +32,43 @@ public class GioHangChiTietController {
     public ResponseEntity<Map<String, Object>> addToCart(@RequestParam Integer sanPhamChiTietId,
                                                          @RequestParam int soLuong,
                                                          @AuthenticationPrincipal UserDetails userDetails) {
+        // Lấy thông tin người dùng
         User user = userService.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("❌ Không tìm thấy user"));
 
+        // Lấy thông tin sản phẩm chi tiết
         SanPhamChiTiet sanPhamChiTiet = sanPhamCTService.getById(sanPhamChiTietId);
         if (sanPhamChiTiet == null) {
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", "❌ Không tìm thấy sản phẩm chi tiết!"));
         }
 
+        // Lấy số lượng tồn kho của sản phẩm
+        int soLuongTon = sanPhamChiTiet.getSoLuongTon();
+
+        // Kiểm tra số lượng sản phẩm trong giỏ hiện tại
+        GioHang gioHang = gioHangService.getGioHangByUser(user);
+        Optional<GioHangChiTiet> existingItem = gioHang.getGioHangChiTietList().stream()
+                .filter(item -> item.getSanPhamChiTiet().getId().equals(sanPhamChiTietId))
+                .findFirst();
+
+        // Nếu sản phẩm đã có trong giỏ, cộng thêm số lượng hiện tại
+        if (existingItem.isPresent()) {
+            int currentQuantity = existingItem.get().getSoLuong();
+            if (currentQuantity + soLuong > soLuongTon) {
+                return ResponseEntity.badRequest().body(Map.of("success", false, "message", "❌ Số lượng sản phẩm trong giỏ vượt quá tồn kho!"));
+            }
+        } else {
+            // Nếu sản phẩm chưa có trong giỏ, kiểm tra số lượng yêu cầu có vượt quá tồn kho không
+            if (soLuong > soLuongTon) {
+                return ResponseEntity.badRequest().body(Map.of("success", false, "message", "❌ Số lượng sản phẩm vượt quá tồn kho!"));
+            }
+        }
+
+        // Nếu không có vấn đề gì, thêm sản phẩm vào giỏ
         gioHangChiTietService.addToCart(user, sanPhamChiTiet, soLuong);
         return ResponseEntity.ok(Map.of("success", true, "message", "✅ Sản phẩm đã được thêm vào giỏ hàng!"));
     }
+
 
 
     // ✏️ Cập nhật số lượng sản phẩm trong giỏ hàng
@@ -68,6 +94,7 @@ public class GioHangChiTietController {
             return ResponseEntity.badRequest().body("❌ " + e.getMessage());
         }
     }
+
 
 
     // 🗑 Xóa sản phẩm khỏi giỏ hàng

@@ -145,7 +145,7 @@
             <table class="table table-bordered table-hover mt-3">
                 <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>Mã đơn hàng</th>
                     <th>Người Đặt</th>
                     <th>Số ĐT</th>
                     <th>Ngày Đặt</th>

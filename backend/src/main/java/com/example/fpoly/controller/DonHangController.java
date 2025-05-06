@@ -86,7 +86,9 @@ public class DonHangController {
                           @RequestParam Integer phuongThucThanhToanId,
                           @ModelAttribute DonHang donHang,
                           HttpSession session,
-                          RedirectAttributes redirectAttributes) {
+                          RedirectAttributes redirectAttributes,
+                          @RequestParam String email  // Lấy email từ form giỏ hàng
+    ) {
 
         // 🔐 Lấy thông tin user
         User user = userService.findByUsername(userDetails.getUsername())
@@ -103,6 +105,17 @@ public class DonHangController {
         if (gioHangChiTiets == null || gioHangChiTiets.isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "❌ Giỏ hàng của bạn đang trống!");
             return "redirect:/sanpham/list";
+        }
+        for (GioHangChiTiet gioHangChiTiet : gioHangChiTiets) {
+            int soLuongTon = gioHangChiTiet.getSanPhamChiTiet().getSoLuongTon();
+            if (gioHangChiTiet.getSoLuong() > soLuongTon) {
+                // Nếu số lượng trong giỏ hàng vượt quá tồn kho, thông báo lỗi
+                redirectAttributes.addFlashAttribute("error", "❌ Sản phẩm "
+                        + gioHangChiTiet.getSanPhamChiTiet().getSanPham().getTenSanPham()
+                        + " không đủ số lượng trong kho. Tối đa có thể đặt: "
+                        + soLuongTon);
+                return "redirect:/cart"; // Quay lại trang giỏ hàng
+            }
         }
 
         // 🔁 Map sang chi tiết đơn hàng
@@ -215,7 +228,7 @@ public class DonHangController {
         session.removeAttribute("soTienGiam");
 
         // 📧 Gửi thông báo
-        emailService.sendOrderConfirmationEmail(user.getEmail(), newOrder.getId().toString());
+        emailService.sendOrderConfirmationEmail(email, newOrder.getId().toString());
         redirectAttributes.addFlashAttribute("successMessage", "✅ Đặt hàng thành công!");
         return "redirect:/api/donhang/xac-nhan?id=" + newOrder.getId();
     }

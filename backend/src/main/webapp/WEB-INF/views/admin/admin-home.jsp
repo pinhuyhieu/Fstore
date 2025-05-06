@@ -76,7 +76,7 @@
             <div class="col-md-4" data-aos="zoom-in">
                 <a href="${pageContext.request.contextPath}/sanpham/admin/add" class="text-decoration-none">
                     <div class="card-dashboard">
-                        <i class="fa-solid fa-square-plus text-primary"></i>
+                        <i class="fa-solid fa-boxes-stacked text-primary"></i>
                         <h4>SẢN PHẨM</h4>
                     </div>
                 </a>
@@ -94,7 +94,7 @@
             <div class="col-md-4" data-aos="zoom-in">
                 <a href="${pageContext.request.contextPath}/admin/mausac/list" class="text-decoration-none">
                     <div class="card-dashboard">
-                        <i class="fa-solid fa-table-list text-success"></i>
+                        <i class="fa-solid fa-palette text-success"></i>
                         <h4>MÀU SẮC</h4>
                     </div>
                 </a>
@@ -103,7 +103,7 @@
             <div class="col-md-4" data-aos="zoom-in">
                 <a href="${pageContext.request.contextPath}/admin/size/list" class="text-decoration-none">
                     <div class="card-dashboard">
-                        <i class="fa-solid fa-box-open text-warning"></i>
+                        <i class="fa-solid fa-ruler-combined text-warning"></i>
                         <h4>KÍCH THƯỚC</h4>
                     </div>
                 </a>
@@ -112,7 +112,7 @@
             <div class="col-md-4" data-aos="zoom-in">
                 <a href="${pageContext.request.contextPath}/api/donhang/admin/list" class="text-decoration-none">
                     <div class="card-dashboard">
-                        <i class="fa-solid fa-circle-user text-primary"></i>
+                        <i class="fa-solid fa-receipt text-primary"></i>
                         <h4>ĐƠN HÀNG</h4>
                     </div>
                 </a>
@@ -121,7 +121,7 @@
             <div class="col-md-4" data-aos="zoom-in">
                 <a href="${pageContext.request.contextPath}/admin/ma-giam-gia" class="text-decoration-none">
                     <div class="card-dashboard">
-                        <i class="fa-solid fa-user-plus text-success"></i>
+                        <i class="fa-solid fa-ticket text-success"></i>
                         <h4>MÃ GIẢM GIÁ</h4>
                     </div>
                 </a>
@@ -130,12 +130,20 @@
             <div class="col-md-4" data-aos="zoom-in">
                 <a href="${pageContext.request.contextPath}/admin/users?type=2" class="text-decoration-none">
                     <div class="card-dashboard">
-                        <i class="fa-solid fa-circle-user text-danger"></i>
+                        <i class="fa-solid fa-user-shield text-danger"></i>
                         <h4>ADMIN</h4>
                     </div>
                 </a>
             </div>
 
+            <div class="col-md-4" data-aos="zoom-in">
+                <a  href="${pageContext.request.contextPath}/logout" class="text-decoration-none">
+                <div class="card-dashboard">
+                    <i class="fa-solid fa-right-from-bracket text-danger"></i>
+                        <h4>Đăng xuất</h4>
+                    </div>
+                </a>
+            </div>
         </div>
     </div>
 </section>

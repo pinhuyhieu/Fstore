@@ -191,6 +191,17 @@
 <%@ include file="../include/header.jsp" %>
 
 <div class="container">
+
+        <c:choose>
+            <c:when test="${danhMucID != null}">
+                <a href="${pageContext.request.contextPath}/list?page=${i}&danhMucID=${danhMucID}">${i}</a>
+            </c:when>
+            <c:otherwise>
+                <a href="${pageContext.request.contextPath}/list?page=${i}">${i}</a>
+            </c:otherwise>
+        </c:choose>
+
+
     <div class="row">
         <!-- Sidebar -->
         <div class="col-lg-3">
@@ -198,7 +209,7 @@
                 <h4>Danh mục sản phẩm</h4>
                 <ul class="list-group">
                     <c:forEach var="dm" items="${danhmuc}">
-                        <a href="${pageContext.request.contextPath}/sanpham?danhMucID=${dm.id}"
+                        <a href="${pageContext.request.contextPath}/sanpham/list?danhMucID=${dm.id}"
                            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                             <span>${dm.tenDanhMuc}</span>
                         </a>

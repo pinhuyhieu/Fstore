@@ -72,7 +72,7 @@
     <table class="table table-bordered table-hover" data-aos="zoom-in-up" data-aos-delay="200">
         <thead class="thead-dark">
         <tr>
-            <th>#ID</th>
+            <th>Mã đơn hàng</th>
             <th>Ngày đặt</th>
             <th>Tổng tiền</th>
             <th>Trạng thái</th>

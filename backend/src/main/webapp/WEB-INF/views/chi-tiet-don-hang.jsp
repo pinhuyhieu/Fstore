@@ -27,7 +27,7 @@
     <h2 class="text-center mb-4">Chi Tiết Đơn Hàng</h2>
 
     <div class="card shadow p-4">
-        <p><strong>ID đơn hàng:</strong> #${donHang.id}</p>
+        <p><strong>Mã đơn hàng:</strong> #${donHang.id}</p>
 
         <p><strong>📅 Ngày đặt:</strong>
             ${fn:substring(donHang.ngayDatHang, 0, 10)} ${fn:substring(donHang.ngayDatHang, 11, 16)}

@@ -63,9 +63,6 @@ public class MaGiamGiaServiceImpl implements MaGiamGiaService {
     @Override
     public MaGiamGia save(MaGiamGia maGiamGia) {
         // Kiểm tra nếu mã giảm giá đã tồn tại trong cơ sở dữ liệu
-        if (maGiamGiaRepository.existsByMa(maGiamGia.getMa())) {
-            throw new IllegalArgumentException("Mã giảm giá này đã tồn tại!");
-        }
 
         // Nếu không có lỗi, thực hiện lưu mã giảm giá
         return maGiamGiaRepository.save(maGiamGia);
@@ -86,5 +83,11 @@ public class MaGiamGiaServiceImpl implements MaGiamGiaService {
                 })
                 .toList();
     }
+    @Override
+
+    public boolean isMaGiamGiaExist(String ma) {
+        return maGiamGiaRepository.existsByMa(ma);
+    }
+
 
 }

@@ -22,9 +22,13 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
                 "WHERE (:danhMucId IS NULL OR sp.danhMuc.id = :danhMucId)")
         List<SanPham> findAllWithDetails(@Param("danhMucId") Integer danhMucId);
 
-        @Query("SELECT sp FROM SanPham sp WHERE LOWER(sp.tenSanPham) LIKE LOWER(CONCAT('%', :name, '%'))")
-        Page<SanPham> searchByName(@Param("name") String name, Pageable pageable);
-        SanPham findByTenSanPham(String tenSanPham);
+        @Query("SELECT CASE WHEN COUNT(sp) > 0 THEN true ELSE false END FROM SanPham sp WHERE LOWER(sp.tenSanPham) LIKE LOWER(CONCAT('%', :name, '%'))")
+        boolean existsByTenSanPham(@Param("name") String tenSanPham);
+
+        Page<SanPham> findByDanhMuc_Id(Integer danhMucId, Pageable pageable);
+        Page<SanPham> findByTenSanPhamContainingIgnoreCase(String tenSanPham, Pageable pageable);
+
+
 }
 
 

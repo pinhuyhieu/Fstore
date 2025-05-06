@@ -30,7 +30,18 @@
         </div>
     </c:if>
 
-    <form:form method="post" modelAttribute="maGiamGia" action="/admin/ma-giam-gia/save" cssClass="row g-3 shadow-sm bg-white p-4 rounded">
+    <c:choose>
+        <c:when test="${maGiamGia.id == null}">
+            <c:set var="formAction" value="/admin/ma-giam-gia/save"/>
+        </c:when>
+        <c:otherwise>
+            <c:set var="formAction" value="/admin/ma-giam-gia/update/${maGiamGia.id}"/>
+        </c:otherwise>
+
+    </c:choose>
+
+    <form:form method="post" modelAttribute="maGiamGia" action="${formAction}" cssClass="row g-3 shadow-sm bg-white p-4 rounded">
+        <!-- Các trường trong form -->
         <form:hidden path="id"/>
 
         <div class="col-md-6">

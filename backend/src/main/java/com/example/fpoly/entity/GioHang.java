@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -25,5 +26,5 @@ public class GioHang {
     private LocalDateTime ngayTao = LocalDateTime.now();
 
     @OneToMany(mappedBy = "gioHang", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<GioHangChiTiet> gioHangChiTietList;
+    private List<GioHangChiTiet> gioHangChiTietList = new ArrayList<>();  // Khởi tạo danh sách rỗng
 }

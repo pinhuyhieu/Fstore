@@ -1,5 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -185,6 +187,18 @@
             -moz-appearance: textfield; /* Firefox */
         }
 
+        .carousel-control-prev-icon, .carousel-control-next-icon {
+            background-color: #000; /* Màu đen */
+            border-radius: 50%; /* Tạo hiệu ứng nút tròn */
+        }
+
+        .carousel-control-prev, .carousel-control-next {
+            color: #000; /* Đảm bảo màu nút là đen */
+        }
+
+        .carousel-control-prev-icon:hover, .carousel-control-next-icon:hover {
+            background-color: #333; /* Đổi màu khi hover để tạo hiệu ứng */
+        }
 
     </style>
 </head>
@@ -203,12 +217,15 @@
                         </div>
                     </c:forEach>
                 </div>
+                <!-- Chỉ hiển thị nút điều hướng nếu có nhiều hơn 1 hình ảnh -->
+                <c:if test="${fn:length(sanPham.hinhAnhs) > 1}">
                 <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                 </button>
                 <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                 </button>
+                </c:if>
             </div>
         </div>
 

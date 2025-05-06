@@ -225,17 +225,24 @@
                                     <td>${item.sanPhamChiTiet.sanPham.tenSanPham}</td>
                                     <td>${item.sanPhamChiTiet.size.tenSize}</td>
                                     <td>${item.sanPhamChiTiet.mauSac.tenMauSac}</td>
+<%--                                    <td>--%>
+<%--                                        <div class="d-flex align-items-center">--%>
+<%--                                            <button class="btn btn-sm btn-outline-secondary btn-decrease" data-id="${item.id}">-</button>--%>
+<%--                                            <input type="text" class="form-control mx-1 text-center quantity-input" id="quantity-${item.id}" value="${item.soLuong}">--%>
+<%--                                            <button class="btn btn-sm btn-outline-secondary btn-increase" data-id="${item.id}">+</button>--%>
+<%--                                        </div>--%>
+<%--                                    </td>--%>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <button class="btn btn-sm btn-outline-secondary btn-decrease" data-id="${item.id}">-</button>
-                                            <input type="text" class="form-control mx-1 text-center quantity-input" id="quantity-${item.id}" value="${item.soLuong}">
-                                            <button class="btn btn-sm btn-outline-secondary btn-increase" data-id="${item.id}">+</button>
+                                            <span class="form-control mx-1 text-center" id="quantity-${item.id}">${item.soLuong}</span>
                                         </div>
                                     </td>
+
                                     <td>
-                                                <span id="gia-${item.id}" data-gia="${item.sanPhamChiTiet.gia}">
-                                                    <fmt:formatNumber value="${item.sanPhamChiTiet.gia}" type="number" maxFractionDigits="0"/> ₫
-                                                </span>
+                                              <span id="gia-${item.id}" data-gia="${item.giaTaiThoiDiemThem}">
+    <fmt:formatNumber value="${item.giaTaiThoiDiemThem}" type="number" maxFractionDigits="0"/> ₫
+</span>
+
                                     </td>
                                     <td>
                                         <button class="btn btn-sm btn-danger btn-remove" data-id="${item.id}">❌</button>
@@ -266,9 +273,6 @@
                 </c:if>
 
                 <!-- Mã giảm giá -->
-                <div class="form-group" data-aos="fade-up" data-aos-delay="100">
-            <div class="col-md-5">
-                <h3 class="mb-3">📦 Thông tin đặt hàng</h3>
                 <div id="availableCoupons" class="alert alert-info mt-3" style="display: none;">
                     <strong>🎁 Mã áp dụng được:</strong>
                     <ul id="couponList" class="mb-0"></ul>
@@ -309,6 +313,10 @@
                         <input type="text" class="form-control" name="soDienThoaiNguoiNhan" value="${user.soDienThoai}" >
                     </div>
                     <div class="form-group">
+                        <label>Email</label>
+                        <input type="text" class="form-control" name="email" value="${user.email}" >
+                    </div>
+                    <div class="form-group">
                         <label>Địa chỉ giao hàng:</label>
                         <input type="text" class="form-control" name="diaChiGiaoHang" value="${diaChi.diaChiChiTiet}" >
                     </div>
@@ -337,11 +345,11 @@
 
                     <div class="form-group">
                         <label>Phí vận chuyển:</label>
-                        <p><strong><span id="shippingFee">0</span> ₫</strong></p>
+                        <p><strong><span id="shippingFee">0</span> </strong></p>
                     </div>
                     <div class="form-group">
                         <label>Tổng cộng:</label>
-                        <p><strong><span id="finalAmount">0</span> ₫</strong></p>
+                        <p><strong><span id="finalAmount">0</span> </strong></p>
                     </div>
 
                     <button type="submit" class="btn btn-warning btn-block" data-aos="zoom-in-up">🛒 Đặt hàng</button>

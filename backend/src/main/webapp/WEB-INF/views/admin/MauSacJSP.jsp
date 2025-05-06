@@ -108,11 +108,7 @@
                         <a href="${pageContext.request.contextPath}/admin/mausac/edit/${s.id}" class="btn btn-warning btn-sm me-1" title="Sửa">
                             <i class="bi bi-pencil-square"></i>
                         </a>
-                        <a href="${pageContext.request.contextPath}/admin/mausac/delete/${s.id}"
-                           class="btn btn-danger btn-sm"
-                           onclick="return confirm('Bạn có chắc chắn muốn xóa?');" title="Xóa">
-                            <i class="bi bi-trash-fill"></i>
-                        </a>
+
                     </td>
                 </tr>
             </c:forEach>

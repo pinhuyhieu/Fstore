@@ -113,10 +113,7 @@
                         <a href="${pageContext.request.contextPath}/admin/danhmuc/edit/${d.id}" class="btn btn-warning btn-sm me-1" title="Sửa">
                             <i class="bi bi-pencil-square"></i>
                         </a>
-                        <a href="${pageContext.request.contextPath}/admin/danhmuc/delete/${d.id}" class="btn btn-danger btn-sm"
-                           onclick="return confirm('Bạn có chắc chắn muốn xóa?');" title="Xóa">
-                            <i class="bi bi-trash-fill"></i>
-                        </a>
+
                     </td>
                 </tr>
             </c:forEach>

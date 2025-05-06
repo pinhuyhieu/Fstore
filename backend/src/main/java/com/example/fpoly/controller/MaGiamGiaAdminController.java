@@ -30,14 +30,39 @@ public class MaGiamGiaAdminController {
     @PostMapping("/save")
     public String saveMaGiamGia(@ModelAttribute("maGiamGia") MaGiamGia maGiamGia, RedirectAttributes redirectAttributes) {
         try {
-            maGiamGiaService.save(maGiamGia); // Gọi phương thức save để lưu mã giảm giá
+            if (maGiamGiaService.isMaGiamGiaExist(maGiamGia.getMa())) {
+                redirectAttributes.addFlashAttribute("error", "Mã giảm giá đã tồn tại!");
+                return "redirect:/admin/ma-giam-gia/add"; // Quay lại trang thêm mã
+            }
+            maGiamGiaService.save(maGiamGia);
             redirectAttributes.addFlashAttribute("success", "Đã lưu mã giảm giá thành công!");
         } catch (IllegalArgumentException ex) {
-            redirectAttributes.addFlashAttribute("error", ex.getMessage()); // Hiển thị thông báo lỗi
-            return "redirect:/admin/ma-giam-gia/add"; // Quay lại trang form thêm mã giảm giá
+            redirectAttributes.addFlashAttribute("error", ex.getMessage());
+            return "redirect:/admin/ma-giam-gia/add";
         }
         return "redirect:/admin/ma-giam-gia"; // Chuyển hướng đến danh sách mã giảm giá
     }
+
+    @PostMapping("/update/{id}")
+    public String updateMaGiamGia(@PathVariable Integer id,
+                                  @ModelAttribute("maGiamGia") MaGiamGia maGiamGia,
+                                  RedirectAttributes redirectAttributes) {
+        try {
+            if (maGiamGiaService.isMaGiamGiaExist(maGiamGia.getMa()) &&
+                    !maGiamGia.getId().equals(id)) {  // Đảm bảo mã khác ID chính mình
+                redirectAttributes.addFlashAttribute("error", "Mã giảm giá đã tồn tại!");
+                return "redirect:/admin/ma-giam-gia/edit/" + id;
+            }
+            maGiamGia.setId(id); // Gán lại ID để chắc chắn đúng
+            maGiamGiaService.save(maGiamGia);
+            redirectAttributes.addFlashAttribute("success", "Đã cập nhật mã giảm giá thành công!");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("error", ex.getMessage());
+            return "redirect:/admin/ma-giam-gia/edit/" + id;
+        }
+        return "redirect:/admin/ma-giam-gia";
+    }
+
 
 
 
@@ -54,5 +79,8 @@ public class MaGiamGiaAdminController {
         redirectAttributes.addFlashAttribute("success", "Đã xóa mã!");
         return "redirect:/admin/ma-giam-gia";
     }
+
+
+
 }
 

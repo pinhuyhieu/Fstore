@@ -18,4 +18,6 @@ public interface MaGiamGiaService {
 
     void deleteById(Integer id);
     public List<MaGiamGiaNguoiDung> findAllForUser(User user) ;
+    public boolean isMaGiamGiaExist(String ma) ;
+
     }
